@@ -1,4 +1,8 @@
-﻿<div class="panel panel-primary">
+﻿
+
+
+
+<div class="panel panel-primary">
     <div class="panel-heading">
         <h1 class="panel-title">Network 1</h1>
     </div>
@@ -10,13 +14,23 @@
             </div>
 
             <div class="panel-body">
-
+                <canvas id="cashFlowsChart"></canvas>
             </div>
         </div>
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Nodes</h3>
             </div>
+
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-default" aria-label="Download Nodes">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-default" aria-label="Download Nodes">
+                    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+                </button>
+            </div>
+
 
             <table class="table table-striped">
                 <thead>
@@ -59,8 +73,44 @@
                         <h5 class="panel-title">Distribution</h5>
                     </div>
 
-                    <div class="panel-body">
+                    <div class="panel-body form-inline">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Average:</label>
+                                    <p class="form-control-static">1</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Volatility:</label>
+                                    <p class="form-control-static">2</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Skewness:</label>
+                                    <p class="form-control-static">3</p>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>Kurtosis:</label>
+                                    <p class="form-control-static">4</p>
+                                </div>
+                            </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group pull-right">
+                                    <select class="form-control">
+                                        <option>Left Tail</option>
+                                        <option>Left Normal</option>
+                                        <option>Right Normal</option>
+                                        <option>Right Tail</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
