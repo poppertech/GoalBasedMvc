@@ -8,23 +8,16 @@ using GoalBasedMvc.Models;
 
 namespace GoalBasedMvc.Controllers
 {
-    public class HomeController : Controller
+    public class NetworkController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult About()
+        public IActionResult Edit()
         {
             ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
 
             return View();
         }
