@@ -116,7 +116,7 @@
         <h1 class="panel-title">Network 1</h1>
     </div>
 
-    <form asp-controller="Network" asp-action="Edit" method="post" class="panel-body">
+    <form asp-controller="Network" asp-action="Edit" enctype="multipart/form-data" method="post" class="panel-body">
 
         <div class="panel panel-info">
             <div class="panel-heading">
@@ -138,16 +138,12 @@
             </div>
 
             <div class="row">
-                <div class="col-md-12">
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default" aria-label="Download Cash Flows">
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                        </button>
-                        <button type="button" class="btn btn-default" aria-label="Upload Cash Flows">
-                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-                        </button>
-                    </div>
+                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
+                    <input type="file" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
+                <button type="button" class="btn btn-default" aria-label="Download Cash Flows">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                </button>
             </div>
 
             <div class="panel-body">
@@ -165,16 +161,12 @@
             </div>
 
             <div class="row">
-                <div class="col-md-12">
-                    <div class="btn-group pull-right">
-                        <button type="button" class="btn btn-default" aria-label="Download Nodes">
-                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                        </button>
-                        <button type="button" class="btn btn-default" aria-label="Upload Nodes">
-                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-                        </button>
-                    </div>
+                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
+                    <input type="file" name="Tree" class="form-control" aria-label="Upload Nodes" />
                 </div>
+                <button type="button" class="btn btn-default" aria-label="Download Nodes">
+                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                </button>
             </div>
 
 

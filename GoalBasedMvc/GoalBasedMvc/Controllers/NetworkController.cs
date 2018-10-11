@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GoalBasedMvc.Models;
 
@@ -12,7 +8,10 @@ namespace GoalBasedMvc.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            var network1 = new NetworkViewModel { Id = 1, Name = "Network1" };
+            var network2 = new NetworkViewModel { Id = 2, Name = "Network2" };
+            var networks = new[] { network1, network2 };
+            return View(networks);
         }
 
         [HttpGet]
@@ -22,7 +21,8 @@ namespace GoalBasedMvc.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(object postedObject)
+        [Consumes("multipart/form-data")]
+        public IActionResult Edit([FromForm]PostNetworkViewModel network)
         {
             return View();
         }

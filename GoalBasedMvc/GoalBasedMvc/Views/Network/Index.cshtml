@@ -1,4 +1,6 @@
-﻿<div class="panel panel-primary">
+﻿@model IEnumerable<GoalBasedMvc.Models.NetworkViewModel>
+
+<div class="panel panel-primary">
     <div class="panel-heading">
         <h2 class="panel-title">Network Search</h2>
     </div>
@@ -11,14 +13,13 @@
             </tr>
         </thead>
         <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <td>1</td>
-                <td><a asp-area="" asp-controller="Network" asp-action="Edit" asp-route-id="1">Network 1</a></td>
+                <td>@item.Id</td>
+                <td><a asp-area="" asp-controller="Network" asp-action="Edit" asp-route-id="@item.Id">@item.Name</a></td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td><a asp-area="" asp-controller="Network" asp-action="Edit" asp-route-id="2">Network 2</a></td>
-            </tr>
+        }
         </tbody>
     </table>
 
