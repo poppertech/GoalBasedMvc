@@ -17,8 +17,6 @@ namespace GoalBasedMvc.Controllers
 
         public IActionResult Edit()
         {
-            ViewData["Message"] = "Your application description page.";
-
             return View();
         }
 

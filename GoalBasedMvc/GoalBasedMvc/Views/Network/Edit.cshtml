@@ -1,6 +1,82 @@
-﻿
+﻿@section Scripts{
 
+    <script>
+        $(function () {
+            Chart.defaults.scale.gridLines.display = false;
 
+            var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
+            var distributionCtx = document.getElementById("distributionChart").getContext("2d");
+
+            var cashFlows = new Chart(cashFlowsCtx, {
+                type: 'line',
+                data: {
+                    labels: ["Year 0", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5"],
+                    datasets: [{
+                        label: 'Cash Flow',
+                        lineTension: 0,
+                        data: [60000, 61000, 62000, 63000, 64000, 65000]
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 14,
+                                fontStyle: 'bold'
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 14,
+                                fontStyle: 'bold'
+                            }
+                        }]
+                    }
+                }
+            });
+
+            var distribution = new Chart(distributionCtx, {
+                type: 'scatter',
+                data: {
+                    labels: ["Minimum", "Worst", "Likely", "Best", "Maximum"],
+                    datasets: [{
+                        label: 'Distribution',
+                        showLine: true,
+                        lineTension: 0,
+                        data: [{ x: 50, y: 0 }, { x: 85, y: .57 }, { x: 105, y: 3.31 }, { x: 125, y: .8 }, { x: 150, y: 0 }]
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            gridLines: {
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                display: false
+                            }
+                        }],
+                        xAxes: [{
+                            type: 'linear',
+                            position: 'bottom',
+                            ticks: {
+                                fontSize: 14,
+                                fontStyle: 'bold'
+                            }
+                        }]
+                    }
+                }
+            });
+        });
+    </script>
+
+}
 
 <div class="panel panel-primary">
     <div class="panel-heading">
@@ -13,8 +89,25 @@
                 <h3 class="panel-title">Cash Flows</h3>
             </div>
 
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default" aria-label="Download Cash Flows">
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" aria-label="Upload Cash Flows">
+                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel-body">
-                <canvas id="cashFlowsChart"></canvas>
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="cashFlowsChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="panel panel-info">
@@ -22,49 +115,56 @@
                 <h3 class="panel-title">Nodes</h3>
             </div>
 
-            <div class="btn-group pull-right">
-                <button type="button" class="btn btn-default" aria-label="Download Nodes">
-                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                </button>
-                <button type="button" class="btn btn-default" aria-label="Download Nodes">
-                    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
-                </button>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group pull-right">
+                        <button type="button" class="btn btn-default" aria-label="Download Nodes">
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" class="btn btn-default" aria-label="Upload Nodes">
+                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Parent</th>
-                        <th>Initial Investment</th>
-                        <th>Initial Price</th>
-                        <th>Portfolio Component?</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Parent</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>No</td>
-                        <td><button type="button" class="btn btn-success">Select</button></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Child</td>
-                        <td>Parent</td>
-                        <td>200000</td>
-                        <td>100</td>
-                        <td>Yes</td>
-                        <td><button type="button" class="btn btn-success">Select</button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Parent</th>
+                            <th>Initial Investment</th>
+                            <th>Initial Price</th>
+                            <th>Portfolio Component?</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Parent</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>No</td>
+                            <td><button type="button" class="btn btn-success">Select</button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Child</td>
+                            <td>Parent</td>
+                            <td>200000</td>
+                            <td>100</td>
+                            <td>Yes</td>
+                            <td><button type="button" class="btn btn-success">Select</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
 
             <div class="panel-body">
 
@@ -73,42 +173,39 @@
                         <h5 class="panel-title">Distribution</h5>
                     </div>
 
-                    <div class="panel-body form-inline">
+                    <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Average:</label>
-                                    <p class="form-control-static">1</p>
-                                </div>
+                            <div class="col-xs-6 col-sm-3 col-md-2">
+                                <label>Average:</label>
+                                <span class="form-control-static">1</span>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Volatility:</label>
-                                    <p class="form-control-static">2</p>
-                                </div>
+                            <div class="col-xs-6 col-sm-3 col-md-2">
+                                <label>Volatility:</label>
+                                <span class="form-control-static">2</span>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Skewness:</label>
-                                    <p class="form-control-static">3</p>
-                                </div>
+                            <div class="col-xs-6 col-sm-3 col-md-2">
+                                <label>Skewness:</label>
+                                <span class="form-control-static">3</span>
                             </div>
-                            <div class="col-md-2">
-                                <div class="form-group">
-                                    <label>Kurtosis:</label>
-                                    <p class="form-control-static">4</p>
-                                </div>
+                            <div class="col-xs-6 col-sm-3 col-md-2">
+                                <label>Kurtosis:</label>
+                                <span class="form-control-static">4</span>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="form-group pull-right">
-                                    <select class="form-control">
-                                        <option>Left Tail</option>
-                                        <option>Left Normal</option>
-                                        <option>Right Normal</option>
-                                        <option>Right Tail</option>
-                                    </select>
-                                </div>
+                            <div class="col-sm-6 col-sm-offset-6 col-md-offset-0 col-md-4">
+
+                                <select class="form-control pull-right">
+                                    <option>Left Tail</option>
+                                    <option>Left Normal</option>
+                                    <option>Right Normal</option>
+                                    <option>Right Tail</option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <canvas id="distributionChart"></canvas>
                             </div>
                         </div>
                     </div>
