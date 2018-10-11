@@ -4,8 +4,40 @@
         $(function () {
             Chart.defaults.scale.gridLines.display = false;
 
+            var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
             var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
             var distributionCtx = document.getElementById("distributionChart").getContext("2d");
+
+            var goalAttainment = new Chart(goalAttainmentCtx, {
+                type: 'line',
+                data: {
+                    labels: ["Year 0", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5"],
+                    datasets: [{
+                        label: 'Cash Flow',
+                        lineTension: 0,
+                        data: [1, .9, .7, .3, .1, 0]
+                    }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                fontSize: 14,
+                                fontStyle: 'bold'
+                            }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                fontSize: 14,
+                                fontStyle: 'bold'
+                            }
+                        }]
+                    }
+                }
+            });
 
             var cashFlows = new Chart(cashFlowsCtx, {
                 type: 'line',
@@ -73,6 +105,7 @@
                     }
                 }
             });
+
         });
     </script>
 
@@ -83,7 +116,22 @@
         <h1 class="panel-title">Network 1</h1>
     </div>
 
-    <div class="panel-body">
+    <form asp-controller="Network" asp-action="Edit" method="post" class="panel-body">
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Probability of Success</h3>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="goalAttainmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Cash Flows</h3>
@@ -110,6 +158,7 @@
                 </div>
             </div>
         </div>
+
         <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Nodes</h3>
@@ -213,6 +262,7 @@
 
             </div>
         </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="btn-group pull-right" role="group">
@@ -221,5 +271,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
+    </form>
+
 </div>

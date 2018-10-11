@@ -15,7 +15,14 @@ namespace GoalBasedMvc.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Edit()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Edit(object postedObject)
         {
             return View();
         }
