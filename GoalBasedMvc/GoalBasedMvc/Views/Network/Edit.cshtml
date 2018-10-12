@@ -1,8 +1,37 @@
-﻿@section Scripts{
+﻿@model GoalBasedMvc.Models.NetworkEditViewModel
+
+@section Scripts{
 
     <script>
         $(function () {
             Chart.defaults.scale.gridLines.display = false;
+
+            var goalAttainmentLabels = [];
+            var goalAttainmentData = [];
+
+            var cashFlowsLabels = [];
+            var cashFlowsData = [];
+
+            var distributionData = [
+                { x: @Model.Nodes[0].Distributions[0].Minimum, y: 0 },
+                { x: @Model.Nodes[0].Distributions[0].Worst, y:@Model.Nodes[0].Distributions[0].HeightWorst },
+                { x: @Model.Nodes[0].Distributions[0].Likely, y:@Model.Nodes[0].Distributions[0].HeightLikely },
+                { x: @Model.Nodes[0].Distributions[0].Best, y:@Model.Nodes[0].Distributions[0].HeightBest },
+                { x: @Model.Nodes[0].Distributions[0].Maximum, y: 0}
+            ];
+
+            @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
+            {
+                @:cashFlowsLabels.push("Year @cnt");
+                @:cashFlowsData.push(@Model.CashFlows[cnt].Cost);
+            }
+
+            @for(var cnt = 0; cnt < Model.Portfolio.SuccessProbabilities.Count; cnt++)
+            {
+                @:goalAttainmentLabels.push("Year @cnt");
+                @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
+            }
+
 
             var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
             var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
@@ -11,11 +40,11 @@
             var goalAttainment = new Chart(goalAttainmentCtx, {
                 type: 'line',
                 data: {
-                    labels: ["Year 0", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5"],
+                    labels: goalAttainmentLabels,
                     datasets: [{
-                        label: 'Cash Flow',
+                        label: 'Goal Attainment',
                         lineTension: 0,
-                        data: [1, .9, .7, .3, .1, 0]
+                        data: goalAttainmentData
                     }]
                 },
                 options: {
@@ -42,11 +71,11 @@
             var cashFlows = new Chart(cashFlowsCtx, {
                 type: 'line',
                 data: {
-                    labels: ["Year 0", "Year 1", "Year 2", "Year 3", "Year 4", "Year 5"],
+                    labels: cashFlowsLabels,
                     datasets: [{
                         label: 'Cash Flow',
                         lineTension: 0,
-                        data: [60000, 61000, 62000, 63000, 64000, 65000]
+                        data: cashFlowsData
                     }]
                 },
                 options: {
@@ -78,7 +107,7 @@
                         label: 'Distribution',
                         showLine: true,
                         lineTension: 0,
-                        data: [{ x: 50, y: 0 }, { x: 85, y: .57 }, { x: 105, y: 3.31 }, { x: 125, y: .8 }, { x: 150, y: 0 }]
+                        data: distributionData
                     }]
                 },
                 options: {
@@ -184,24 +213,18 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Parent</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>No</td>
-                            <td><button type="button" class="btn btn-success">Select</button></td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Child</td>
-                            <td>Parent</td>
-                            <td>200000</td>
-                            <td>100</td>
-                            <td>Yes</td>
-                            <td><button type="button" class="btn btn-success">Select</button></td>
-                        </tr>
+                        @foreach (var node in Model.Nodes)
+                        {
+                            <tr>
+                                <td>@node.Id</td>
+                                <td>@node.Name</td>
+                                <td>@node.Parent</td>
+                                <td>@node.InitialInvestment</td>
+                                <td>@node.InitialPrice</td>
+                                <td>@(node.IsPortfolioComponent ? "Yes": "No")</td>                          
+                                <td><button type="button" class="btn btn-success">Select</button></td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -218,19 +241,27 @@
                         <div class="row">
                             <div class="col-xs-6 col-sm-3 col-md-2">
                                 <label>Average:</label>
-                                <span class="form-control-static">1</span>
+                                <span class="form-control-static">
+                                    @Model.Nodes[0].Distributions[0].Mean
+                                </span>
                             </div>
                             <div class="col-xs-6 col-sm-3 col-md-2">
                                 <label>Volatility:</label>
-                                <span class="form-control-static">2</span>
+                                <span class="form-control-static">
+                                    @Model.Nodes[0].Distributions[0].Stdev
+                                </span>
                             </div>
                             <div class="col-xs-6 col-sm-3 col-md-2">
                                 <label>Skewness:</label>
-                                <span class="form-control-static">3</span>
+                                <span class="form-control-static">
+                                    @Model.Nodes[0].Distributions[0].Skew
+                                </span>
                             </div>
                             <div class="col-xs-6 col-sm-3 col-md-2">
                                 <label>Kurtosis:</label>
-                                <span class="form-control-static">4</span>
+                                <span class="form-control-static">
+                                    @Model.Nodes[0].Distributions[0].Kurt
+                                </span>
                             </div>
 
                             <div class="col-sm-6 col-sm-offset-6 col-md-offset-0 col-md-4">
