@@ -31,7 +31,14 @@ namespace GoalBasedMvc.Controllers
         [Consumes("multipart/form-data")]
         public IActionResult Edit([FromForm]PostNetworkViewModel network)
         {
-            return View();
+            var viewModel = new NetworkEditViewModel()
+            {
+                Id = 1,
+                CashFlows = GetCashFlows(),
+                Nodes = GetNodes(),
+                Portfolio = GetPortfolio()
+            };
+            return View(viewModel);
         }
 
         public IActionResult Error()

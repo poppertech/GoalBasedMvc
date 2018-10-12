@@ -17,7 +17,7 @@
                 { x: @Model.Nodes[0].Distributions[0].Worst, y:@Model.Nodes[0].Distributions[0].HeightWorst },
                 { x: @Model.Nodes[0].Distributions[0].Likely, y:@Model.Nodes[0].Distributions[0].HeightLikely },
                 { x: @Model.Nodes[0].Distributions[0].Best, y:@Model.Nodes[0].Distributions[0].HeightBest },
-                { x: @Model.Nodes[0].Distributions[0].Maximum, y: 0}
+                { x: @Model.Nodes[0].Distributions[0].Maximum, y: 0 }
             ];
 
             @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
@@ -135,7 +135,7 @@
                 }
             });
 
-        });
+         });
     </script>
 
 }
@@ -221,7 +221,7 @@
                                 <td>@node.Parent?.Name</td>
                                 <td>@node.InitialInvestment</td>
                                 <td>@node.InitialPrice</td>
-                                <td>@(node.IsPortfolioComponent ? "Yes": "No")</td>                          
+                                <td>@(node.IsPortfolioComponent ? "Yes" : "No")</td>
                                 <td><button type="button" class="btn btn-success">Select</button></td>
                             </tr>
                         }
