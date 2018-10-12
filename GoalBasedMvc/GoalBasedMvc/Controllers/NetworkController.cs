@@ -19,6 +19,7 @@ namespace GoalBasedMvc.Controllers
         {
             var network = new NetworkEditViewModel()
             {
+                Id = id,
                 CashFlows = GetCashFlows(),
                 Nodes = GetNodes(),
                 Portfolio = GetPortfolio()
@@ -67,19 +68,33 @@ namespace GoalBasedMvc.Controllers
                 Skew = 3,
                 Kurt = 4
             };
-            return new NodeViewModel[]{
-                new NodeViewModel{Id = 1, Name = "Parent", IsPortfolioComponent = false, Distributions = new[]{distribution} },
-                new NodeViewModel{Id = 2, Name = "Child", InitialInvestment = 200000, InitialPrice = 100, Parent = "Parent", IsPortfolioComponent = true, Distributions = new[]{distribution, distribution, distribution, distribution} }
-            };
-        }
-
-        private PortfolioViewModel GetPortfolio()
-        {
-            return new PortfolioViewModel
+            var parentNode = new NodeViewModel
             {
-                SuccessProbabilities = new[] { 1, .9, .7, .3, .1, 0 }
+                Id = 1,
+                Name = "Parent",
+                IsPortfolioComponent = false,
+                Distributions = new[] { distribution }
             };
-        }
-
+            var childNode = new NodeViewModel
+            {
+                Id = 2,
+                Name = "Child",
+                InitialInvestment = 200000,
+                InitialPrice = 100,
+                Parent = parentNode,
+                IsPortfolioComponent = true,
+                Distributions = new[] { distribution, distribution, distribution, distribution }
+            };
+            return new NodeViewModel[] { parentNode, childNode};
     }
+
+    private PortfolioViewModel GetPortfolio()
+    {
+        return new PortfolioViewModel
+        {
+            SuccessProbabilities = new[] { 1, .9, .7, .3, .1, 0 }
+        };
+    }
+
+}
 }

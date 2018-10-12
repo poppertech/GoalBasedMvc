@@ -2,11 +2,12 @@
 
 namespace GoalBasedMvc.Models
 {
-    public class NodeViewModel
+    public class NodeEditViewModel
     {
-        public NodeViewModel()
+        public NodeEditViewModel()
         {
             Distributions = new List<DistributionViewModel>();
+            Children = new List<NodeEditViewModel>();
         }
 
         public int Id { get; set; }
@@ -17,7 +18,6 @@ namespace GoalBasedMvc.Models
 
         public IList<DistributionViewModel> Distributions { get; set; }
 
-        public NodeViewModel Parent { get; set; }
-
+        public IList<NodeEditViewModel> Children { get; set; }
     }
 }

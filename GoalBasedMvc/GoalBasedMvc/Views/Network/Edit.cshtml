@@ -170,9 +170,9 @@
                 <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
                     <input type="file" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
-                <button type="button" class="btn btn-default" aria-label="Download Cash Flows">
+                <a class="btn btn-default" aria-label="Download Cash Flows" asp-controller="CashFlow" asp-action="Get" asp-route-networkId="@Model.Id">
                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                </button>
+                </a>
             </div>
 
             <div class="panel-body">
@@ -193,9 +193,9 @@
                 <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
                     <input type="file" name="Tree" class="form-control" aria-label="Upload Nodes" />
                 </div>
-                <button type="button" class="btn btn-default" aria-label="Download Nodes">
+                <a class="btn btn-default" aria-label="Download Nodes" asp-controller="Node" asp-action="Get" asp-route-networkId="@Model.Id">
                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                </button>
+                </a>
             </div>
 
 
@@ -218,7 +218,7 @@
                             <tr>
                                 <td>@node.Id</td>
                                 <td>@node.Name</td>
-                                <td>@node.Parent</td>
+                                <td>@node.Parent?.Name</td>
                                 <td>@node.InitialInvestment</td>
                                 <td>@node.InitialPrice</td>
                                 <td>@(node.IsPortfolioComponent ? "Yes": "No")</td>                          
