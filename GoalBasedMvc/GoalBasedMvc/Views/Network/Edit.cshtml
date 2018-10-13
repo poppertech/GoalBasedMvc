@@ -167,7 +167,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
+                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
                     <input type="file" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
                 <a class="btn btn-default" aria-label="Download Cash Flows" asp-controller="CashFlow" asp-action="Get" asp-route-networkId="@Model.Id">
@@ -190,7 +190,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-3 col-md-offset-8">
+                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
                     <input type="file" name="Tree" class="form-control" aria-label="Upload Nodes" />
                 </div>
                 <a class="btn btn-default" aria-label="Download Nodes" asp-controller="Node" asp-action="Get" asp-route-networkId="@Model.Id">
@@ -239,32 +239,9 @@
 
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <label>Average:</label>
-                                <span class="form-control-static">
-                                    @Model.Nodes[0].Distributions[0].Mean
-                                </span>
-                            </div>
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <label>Volatility:</label>
-                                <span class="form-control-static">
-                                    @Model.Nodes[0].Distributions[0].Stdev
-                                </span>
-                            </div>
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <label>Skewness:</label>
-                                <span class="form-control-static">
-                                    @Model.Nodes[0].Distributions[0].Skew
-                                </span>
-                            </div>
-                            <div class="col-xs-6 col-sm-3 col-md-2">
-                                <label>Kurtosis:</label>
-                                <span class="form-control-static">
-                                    @Model.Nodes[0].Distributions[0].Kurt
-                                </span>
-                            </div>
 
-                            <div class="col-sm-6 col-sm-offset-6 col-md-offset-0 col-md-4">
+
+                            <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
 
                                 <select class="form-control pull-right">
                                     <option>Left Tail</option>
@@ -280,6 +257,34 @@
                                 <canvas id="distributionChart"></canvas>
                             </div>
                         </div>
+
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Average</th>
+                                                <th>Volatility</th>
+                                                <th>Skewness</th>
+                                                <th>Kurtosis</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>@Model.Nodes[0].Distributions[0].Mean</td>
+                                                <td>@Model.Nodes[0].Distributions[0].Stdev</td>
+                                                <td>@Model.Nodes[0].Distributions[0].Skew</td>
+                                                <td>@Model.Nodes[0].Distributions[0].Kurt</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
