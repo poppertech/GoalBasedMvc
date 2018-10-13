@@ -2,9 +2,11 @@
 
 @section Scripts{
 
-    <script>
+<script>
         $(function () {
             Chart.defaults.scale.gridLines.display = false;
+
+            var nodes = @Html.Raw(Json.Serialize(Model.Nodes));
 
             var goalAttainmentLabels = [];
             var goalAttainmentData = [];
@@ -136,7 +138,7 @@
             });
 
          });
-    </script>
+</script>
 
 }
 
