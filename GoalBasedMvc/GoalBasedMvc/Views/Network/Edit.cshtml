@@ -2,143 +2,198 @@
 
 @section Scripts{
 
-<script>
+    <script>
         $(function () {
             Chart.defaults.scale.gridLines.display = false;
 
-            var nodes = @Html.Raw(Json.Serialize(Model.Nodes));
+            $('#selectDistribution').change(selectDistributionByIndex);
+            $('button[data-node-id]').click(selectNode);
 
-            var goalAttainmentLabels = [];
-            var goalAttainmentData = [];
+            @*var nodes = @Html.Raw(Json.Serialize(Model.Nodes));*@
 
-            var cashFlowsLabels = [];
-            var cashFlowsData = [];
+            var distribution = {
+                Minimum : 50, Worst : 85, Likely : 105, Best : 125, Maximum : 150,
+                HeightWorst : .57, HeightLikely : 3.31, HeightBest : .8,
+                Mean : 1, Stdev : 2, Skew : 3, Kurt : 4
+            };
 
-            var distributionData = [
-                { x: @Model.Nodes[0].Distributions[0].Minimum, y: 0 },
-                { x: @Model.Nodes[0].Distributions[0].Worst, y:@Model.Nodes[0].Distributions[0].HeightWorst },
-                { x: @Model.Nodes[0].Distributions[0].Likely, y:@Model.Nodes[0].Distributions[0].HeightLikely },
-                { x: @Model.Nodes[0].Distributions[0].Best, y:@Model.Nodes[0].Distributions[0].HeightBest },
-                { x: @Model.Nodes[0].Distributions[0].Maximum, y: 0 }
-            ];
+            var parentNode = { Id : 1, Name : "Parent", IsPortfolioComponent : false, Distributions : [distribution] };
 
-            @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
-            {
-                @:cashFlowsLabels.push("Year @cnt");
-                @:cashFlowsData.push(@Model.CashFlows[cnt].Cost);
+            var childNode = {
+                Id: 2, Name : "Child", InitialInvestment : 200000, InitialPrice : 100,
+                Parent : parentNode, IsPortfolioComponent : true,
+                Distributions : [distribution, distribution, distribution, distribution]
+            };
+
+            var nodes = { 1: parentNode, 2: childNode };
+            var selectedNode = parentNode;
+            setSelectDistributionOptions(selectedNode);
+            var selectedDistribution = selectedNode.Distributions[0];
+            createDistributionGraph(selectedDistribution);
+            createCashFlowsGraph();
+            createGoalAttainmentGraph();
+
+            function selectNode() {
+                var element = $(this);
+                $('button[data-node-id]').removeClass('btn-success');
+                element.addClass('btn-success');
+                var nodeId = element.data('nodeId');
+                selectedNode = nodes[nodeId];
+                setSelectDistributionOptions(selectedNode);
+                selectDistributionByIndex();
             }
 
-            @for(var cnt = 0; cnt < Model.Portfolio.SuccessProbabilities.Count; cnt++)
-            {
-                @:goalAttainmentLabels.push("Year @cnt");
-                @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
+            function selectDistributionByIndex() {
+                var index = $('#selectDistribution').val();
+                selectedDistribution = parentNode.Distributions[index];
             }
 
-
-            var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
-            var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
-            var distributionCtx = document.getElementById("distributionChart").getContext("2d");
-
-            var goalAttainment = new Chart(goalAttainmentCtx, {
-                type: 'line',
-                data: {
-                    labels: goalAttainmentLabels,
-                    datasets: [{
-                        label: 'Goal Attainment',
-                        lineTension: 0,
-                        data: goalAttainmentData
-                    }]
-                },
-                options: {
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontStyle: 'bold'
-                            }
-                        }],
-                        xAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontStyle: 'bold'
-                            }
-                        }]
-                    }
+            function setSelectDistributionOptions(selectedNode) {
+                $('#selectDistribution').empty();
+                if (!selectedNode.Parent) {
+                    $('<option>Distribution</option>').val(0).appendTo('#selectDistribution');
+                }else{
+                    $('<option>Left Tail</option>').val(0).appendTo('#selectDistribution');
+                    $('<option>Left Normal</option>').val(1).appendTo('#selectDistribution');
+                    $('<option>Right Normal</option>').val(2).appendTo('#selectDistribution');
+                    $('<option>Right Tail</option>').val(3).appendTo('#selectDistribution');
                 }
-            });
+            }
 
-            var cashFlows = new Chart(cashFlowsCtx, {
-                type: 'line',
-                data: {
-                    labels: cashFlowsLabels,
-                    datasets: [{
-                        label: 'Cash Flow',
-                        lineTension: 0,
-                        data: cashFlowsData
-                    }]
-                },
-                options: {
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontStyle: 'bold'
-                            }
-                        }],
-                        xAxes: [{
-                            ticks: {
-                                fontSize: 14,
-                                fontStyle: 'bold'
-                            }
+            function createDistributionGraph(selectedDistribution) {
+                var distributionData = getDistributionGraphData(selectedDistribution);
+                var distributionCtx = document.getElementById("distributionChart").getContext("2d");
+                var distribution = new Chart(distributionCtx, {
+                    type: 'scatter',
+                    data: {
+                        labels: ["Minimum", "Worst", "Likely", "Best", "Maximum"],
+                        datasets: [{
+                            label: 'Distribution',
+                            showLine: true,
+                            lineTension: 0,
+                            data: distributionData
                         }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                type: 'linear',
+                                position: 'bottom',
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
                     }
-                }
-            });
+                });
+            }
 
-            var distribution = new Chart(distributionCtx, {
-                type: 'scatter',
-                data: {
-                    labels: ["Minimum", "Worst", "Likely", "Best", "Maximum"],
-                    datasets: [{
-                        label: 'Distribution',
-                        showLine: true,
-                        lineTension: 0,
-                        data: distributionData
-                    }]
-                },
-                options: {
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            gridLines: {
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                display: false
-                            }
-                        }],
-                        xAxes: [{
-                            type: 'linear',
-                            position: 'bottom',
-                            ticks: {
-                                fontSize: 14,
-                                fontStyle: 'bold'
-                            }
-                        }]
-                    }
+            function getDistributionGraphData(distribution) {
+                return [
+                    { x: distribution.Minimum, y: 0 },
+                    { x: distribution.Worst, y: distribution.HeightWorst },
+                    { x: distribution.Likely, y: distribution.HeightLikely },
+                    { x: distribution.Best, y: distribution.HeightBest },
+                    { x: distribution.Maximum, y: 0 }
+                ];
+            }
+
+            function createCashFlowsGraph() {
+                var cashFlowsLabels = [];
+                var cashFlowsData = [];
+                var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
+                @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
+                {
+                    @:cashFlowsLabels.push("Year @cnt");
+                    @:cashFlowsData.push(@Model.CashFlows[cnt].Cost);
                 }
-            });
+                var cashFlows = new Chart(cashFlowsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: cashFlowsLabels,
+                        datasets: [{
+                            label: 'Cash Flow',
+                            lineTension: 0,
+                            data: cashFlowsData
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function createGoalAttainmentGraph() {
+                var goalAttainmentLabels = [];
+                var goalAttainmentData = [];
+                var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
+                @for(var cnt = 0; cnt < Model.Portfolio.SuccessProbabilities.Count; cnt++)
+                {
+                    @:goalAttainmentLabels.push("Year @cnt");
+                    @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
+                }
+                var goalAttainment = new Chart(goalAttainmentCtx, {
+                    type: 'line',
+                    data: {
+                        labels: goalAttainmentLabels,
+                        datasets: [{
+                            label: 'Goal Attainment',
+                            lineTension: 0,
+                            data: goalAttainmentData
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
 
          });
-</script>
+    </script>
 
 }
 
@@ -224,7 +279,11 @@
                                 <td>@node.InitialInvestment</td>
                                 <td>@node.InitialPrice</td>
                                 <td>@(node.IsPortfolioComponent ? "Yes" : "No")</td>
-                                <td><button type="button" class="btn btn-success">Select</button></td>
+                                <td>
+                                    <button type="button" class="btn" data-node-id="@node.Id">
+                                        Select
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -245,12 +304,7 @@
 
                             <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
 
-                                <select class="form-control pull-right">
-                                    <option>Left Tail</option>
-                                    <option>Left Normal</option>
-                                    <option>Right Normal</option>
-                                    <option>Right Tail</option>
-                                </select>
+                                <select id="selectDistribution" class="form-control pull-right"></select>
 
                             </div>
                         </div>
