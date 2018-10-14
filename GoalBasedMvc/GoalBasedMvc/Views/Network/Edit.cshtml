@@ -5,7 +5,11 @@
     <script>
         $(function () {
             Chart.defaults.scale.gridLines.display = false;
-
+            // TODO: initialize node button
+            // TODO: refactor initialization statements into a function
+            // TODO: download javascript node dictionary to file
+            // TODO: update the distribution statistics on distribution change
+            // TODO: update distribution graph on distribution change
             $('#selectDistribution').change(selectDistributionByIndex);
             $('button[data-node-id]').click(selectNode);
 
