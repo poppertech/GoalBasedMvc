@@ -50,6 +50,7 @@
                 $('input[data-distribution-field]').change(changeDistributionInput);
                 $('#btnDownloadNodes').click(downloadNodeFile);
                 $('#CashFlows').change(loadCashFlowFile);
+                $('#Nodes').change(loadNodesFile);
                 var selectedNode = parentNode;
                 setSelectDistributionOptions(selectedNode);
                 var selectedDistribution = selectedNode.Distributions[0];
@@ -291,6 +292,22 @@
                 addGraphData(cashFlowsChart, cashFlowsData, labels);
             }
 
+            function loadNodesFile() {
+                var input = $("#Nodes")[0];
+                var file = input.files[0];
+                var fileReader = new FileReader();
+                fileReader.onload = updateNodes;
+                fileReader.readAsText(file);
+            }
+
+            function updateNodes(e) {
+                var lines = e.target.result;
+                nodes = JSON.parse(lines);
+                debugger;
+                $("#goalAttainmentContainer").hide();
+                
+            }
+
          });
     </script>
 
@@ -324,7 +341,7 @@
 
             <div class="row">
                 <div class="col-xs-8 col-sm-6 col-md-4">
-                    <input type="file" id="CashFlows" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
+                    <input type="file" id="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
                 <a class="btn btn-default" aria-label="Download Cash Flows" asp-controller="CashFlow" asp-action="Get" asp-route-networkId="@Model.Id">
                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
@@ -347,7 +364,7 @@
 
             <div class="row">
                 <div class="col-xs-8 col-sm-6 col-md-4">
-                    <input type="file" name="Tree" class="form-control" aria-label="Upload Nodes" />
+                    <input type="file" id="Nodes" class="form-control" aria-label="Upload Nodes" />
                 </div>
                 <a id="btnDownloadNodes" class="btn btn-default" aria-label="Download Nodes" asp-controller="Node" asp-action="Get" asp-route-networkId="@Model.Id">
                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
