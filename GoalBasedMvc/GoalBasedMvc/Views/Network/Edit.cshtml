@@ -6,8 +6,23 @@
         $(function () {
 
             @*var nodes = @Html.Raw(Json.Serialize(Model.Nodes));*@
+            var cashFlowsData = [];
+            @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
+            {
+                @:cashFlowsData.push(@Model.CashFlows[cnt].Cost);
+            }
 
-            var distributionChart;
+            var goalAttainmentData = [];
+            @for(var cnt = 0; cnt < Model.Portfolio.SuccessProbabilities.Count; cnt++)
+            {
+                @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
+            }
+
+            // TODO: alter workflow so that upload file modifies the UI, cashflow variable, and node variable
+            // TODO: alter the Post method on the controller to accept cashflow and nodes as json on ajax post
+
+            var distributionChart, cashFlowsChart, goalAttainmentChart;
+
             var distribution = {
                 Minimum : 50, Worst : 85, Likely : 105, Best : 125, Maximum : 150,
                 HeightWorst : .57, HeightLikely : 3.31, HeightBest : .8,
@@ -34,6 +49,7 @@
                 $('input[data-node-id]').change(changeNodeInput);
                 $('input[data-distribution-field]').change(changeDistributionInput);
                 $('#btnDownloadNodes').click(downloadNodeFile);
+                $('#CashFlows').change(loadCashFlowFile);
                 var selectedNode = parentNode;
                 setSelectDistributionOptions(selectedNode);
                 var selectedDistribution = selectedNode.Distributions[0];
@@ -96,8 +112,10 @@
                 $("input[data-distribution-field='Likely']").val(selectedDistribution.Likely);
                 $("input[data-distribution-field='Best']").val(selectedDistribution.Best);
                 $("input[data-distribution-field='Maximum']").val(selectedDistribution.Maximum);
-                removeDistributionGraphData();
-                addDistributionGraphData(selectedDistribution)
+                removeGraphData(distributionChart);
+                var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
+                var distributionData = getDistributionGraphData(selectedDistribution);
+                addGraphData(distributionChart, distributionData, label);
             }
 
             function setSelectDistributionOptions(selectedNode) {
@@ -152,29 +170,16 @@
                 });
             }
 
-            function removeDistributionGraphData() {
-                if (!distributionChart || !distributionChart.data || !distributionChart.data.labels)
-                    return;
-                distributionChart.data.labels.pop();
-                for (var dataset in distributionChart.data.datasets) {
-                    if(dataset && dataset.data)
-                        dataset.data.pop();
-                }
-                distributionChart.update();
+            function removeGraphData(chart) {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
             }
 
-            function addDistributionGraphData(selectedDistribution) {
-                if (!distributionChart)
-                    return;
-                var distributionData = getDistributionGraphData(selectedDistribution);
-                var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
-                if(distributionChart.data.labels.length < 1)
-                    distributionChart.data.labels.push(label);
-                for (var dataset in distributionChart.data.datasets) {
-                     if(dataset && dataset.data && dataset.data.length < 1)
-                        dataset.data.push(distributionData);
-                }
-                distributionChart.update();
+            function addGraphData(chart, data, labels) {
+                chart.data.labels = labels
+                chart.data.datasets[0].data = data;
+                chart.update();
             }
 
             function getDistributionGraphData(distribution) {
@@ -188,15 +193,10 @@
             }
 
             function createCashFlowsGraph() {
-                var cashFlowsLabels = [];
-                var cashFlowsData = [];
+                var cashFlowsLabels = getTimeSeriesGraphLabels(cashFlowsData);
                 var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
-                @for(var cnt = 0; cnt < Model.CashFlows.Count; cnt++)
-                {
-                    @:cashFlowsLabels.push("Year @cnt");
-                    @:cashFlowsData.push(@Model.CashFlows[cnt].Cost);
-                }
-                var cashFlows = new Chart(cashFlowsCtx, {
+
+                cashFlowsChart = new Chart(cashFlowsCtx, {
                     type: 'line',
                     data: {
                         labels: cashFlowsLabels,
@@ -229,15 +229,10 @@
             }
 
             function createGoalAttainmentGraph() {
-                var goalAttainmentLabels = [];
-                var goalAttainmentData = [];
+                var goalAttainmentLabels = getTimeSeriesGraphLabels(goalAttainmentData);
                 var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
-                @for(var cnt = 0; cnt < Model.Portfolio.SuccessProbabilities.Count; cnt++)
-                {
-                    @:goalAttainmentLabels.push("Year @cnt");
-                    @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
-                }
-                var goalAttainment = new Chart(goalAttainmentCtx, {
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
                     type: 'line',
                     data: {
                         labels: goalAttainmentLabels,
@@ -269,6 +264,33 @@
                 });
             }
 
+            function getTimeSeriesGraphLabels(data) {
+                var labels = [];
+                for (var cnt = 0; cnt < data.length; cnt++) {
+                        labels.push("Year " + cnt);
+                }
+                return labels;
+            }
+
+            function loadCashFlowFile() {
+                var input = $("#CashFlows")[0];
+                var file = input.files[0];
+                var fileReader = new FileReader();
+                fileReader.onload = updateCashFlowChart;
+                fileReader.readAsText(file);
+            }
+
+            function updateCashFlowChart(e) {
+                var lines = e.target.result;
+                cashFlowsData = lines.split(/\n/);
+                cashFlowsData.splice(0, 1);
+                cashFlowsData = cashFlowsData.filter(function (el) { return el.length > 0 });
+                $("#goalAttainmentContainer").hide();
+                removeGraphData(cashFlowsChart);
+                var labels = getTimeSeriesGraphLabels(cashFlowsData);
+                addGraphData(cashFlowsChart, cashFlowsData, labels);
+            }
+
          });
     </script>
 
@@ -281,7 +303,7 @@
 
     <form asp-controller="Network" asp-action="Edit" enctype="multipart/form-data" method="post" class="panel-body">
 
-        <div class="panel panel-info">
+        <div id="goalAttainmentContainer" class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Probability of Success</h3>
             </div>
@@ -302,7 +324,7 @@
 
             <div class="row">
                 <div class="col-xs-8 col-sm-6 col-md-4">
-                    <input type="file" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
+                    <input type="file" id="CashFlows" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
                 <a class="btn btn-default" aria-label="Download Cash Flows" asp-controller="CashFlow" asp-action="Get" asp-route-networkId="@Model.Id">
                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
