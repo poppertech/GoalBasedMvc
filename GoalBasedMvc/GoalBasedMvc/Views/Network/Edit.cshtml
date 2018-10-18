@@ -51,13 +51,9 @@
                 $('#btnDownloadNodes').click(downloadNodeFile);
                 $('#CashFlows').change(loadCashFlowFile);
                 $('#Nodes').change(loadNodesFile);
-                var selectedNode = parentNode;
-                setSelectDistributionOptions(selectedNode);
-                var selectedDistribution = selectedNode.Distributions[0];
-                createDistributionGraph(selectedDistribution);
+                $('button[data-node-id]').first().click();
                 createCashFlowsGraph();
                 createGoalAttainmentGraph();
-                $('button[data-node-id]').first().click();
             }
 
             function downloadNodeFile(event) {
@@ -104,19 +100,25 @@
             function selectDistributionByIndex() {
                 var index = $('#selectDistribution').val();
                 selectedDistribution = selectedNode.Distributions[index];
-                $('#mean').val(selectedDistribution.Mean);
-                $('#stdev').val(selectedDistribution.Stdev);
-                $('#skew').val(selectedDistribution.Skew);
-                $('#kurt').val(selectedDistribution.Kurt);
+                $('#mean').html(selectedDistribution.Mean);
+                $('#stdev').html(selectedDistribution.Stdev);
+                $('#skew').html(selectedDistribution.Skew);
+                $('#kurt').html(selectedDistribution.Kurt);
                 $("input[data-distribution-field='Minimum']").val(selectedDistribution.Minimum);
                 $("input[data-distribution-field='Worst']").val(selectedDistribution.Worst);
                 $("input[data-distribution-field='Likely']").val(selectedDistribution.Likely);
                 $("input[data-distribution-field='Best']").val(selectedDistribution.Best);
                 $("input[data-distribution-field='Maximum']").val(selectedDistribution.Maximum);
-                removeGraphData(distributionChart);
-                var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
-                var distributionData = getDistributionGraphData(selectedDistribution);
-                addGraphData(distributionChart, distributionData, label);
+
+                if (distributionChart) {
+                    var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
+                    var distributionData = getDistributionGraphData(selectedDistribution);
+                    removeGraphData(distributionChart);
+                    addGraphData(distributionChart, distributionData, label);
+                } else {
+                    createDistributionGraph(selectedDistribution);
+                }
+
             }
 
             function setSelectDistributionOptions(selectedNode) {
@@ -305,7 +307,7 @@
                 nodes = JSON.parse(lines);
                 debugger;
                 $("#goalAttainmentContainer").hide();
-                
+
             }
 
          });
@@ -444,31 +446,31 @@
                             <div class="col-sm-2 col-sm-offset-1">
                                 <div class="form-group">
                                     <label>Minimum</label>
-                                    <input data-distribution-field="Minimum" class="form-control" value="@Model.Nodes[0].Distributions[0].Minimum" />
+                                    <input data-distribution-field="Minimum" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
                                     <label>Worst</label>
-                                    <input data-distribution-field="Worst" class="form-control" value="@Model.Nodes[0].Distributions[0].Worst" />
+                                    <input data-distribution-field="Worst" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
                                     <label>Likely</label>
-                                    <input data-distribution-field="Likely" class="form-control" value="@Model.Nodes[0].Distributions[0].Likely" />
+                                    <input data-distribution-field="Likely" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
                                     <label>Best</label>
-                                    <input data-distribution-field="Best" class="form-control" value="@Model.Nodes[0].Distributions[0].Best" />
+                                    <input data-distribution-field="Best" class="form-control" />
                                 </div>
                             </div>
                             <div class="col-sm-2">
                                 <div class="form-group">
                                     <label>Maximum</label>
-                                    <input data-distribution-field="Maximum" class="form-control" value="@Model.Nodes[0].Distributions[0].Maximum" />
+                                    <input data-distribution-field="Maximum" class="form-control" />
                                 </div>
                             </div>
                         </div>
@@ -493,10 +495,10 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td id="mean">@Model.Nodes[0].Distributions[0].Mean</td>
-                                                <td id="stdev">@Model.Nodes[0].Distributions[0].Stdev</td>
-                                                <td id="skew">@Model.Nodes[0].Distributions[0].Skew</td>
-                                                <td id="kurt">@Model.Nodes[0].Distributions[0].Kurt</td>
+                                                <td id="mean"></td>
+                                                <td id="stdev"></td>
+                                                <td id="skew"></td>
+                                                <td id="kurt"></td>
                                             </tr>
 
                                         </tbody>
@@ -524,3 +526,35 @@
     </form>
 
 </div>
+
+<script id="NonPortfolioComponentTemplate" type="text/x-jquery-tmpl">
+    <tr>
+        <td data-node-field="Id"></td>
+        <td data-node-field="Name"></td>
+        <td data-node-field="Parent.Name"></td>
+        <td data-node-field='InitialInvestment'></td>
+        <td data-node-field="InitialPrice"></td>
+        <td data-node-field="IsPortfolioComponent"></td>
+        <td><button type="button" data-node-id="">Select</button></td>
+    </tr>
+</script>
+
+<script id="PortfolioComponentTemplate" type="text/x-jquery-tmpl">
+    <tr>
+        <td data-node-field="Id"></td>
+        <td data-node-field="Name"></td>
+        <td data-node-field="Parent.Name"></td>
+        <td data-node-field='InitialInvestment'>
+            <input class='form-control' data-node-field='InitialInvestment' data-node-id=''/>
+        </td>
+        <td data-node-field="InitialPrice">
+            <input class="form-control" data-node-field='InitialPrice' data-node-id=''/>
+        </td>
+        <td data-node-field="IsPortfolioComponent"></td>
+        <td>
+            <button type="button" data-node-id="">
+                Select
+            </button>
+        </td>
+    </tr>
+</script>
