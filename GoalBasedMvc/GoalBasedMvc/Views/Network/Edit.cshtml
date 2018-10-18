@@ -31,6 +31,8 @@
                 Chart.defaults.scale.gridLines.display = false;
                 $('#selectDistribution').change(selectDistributionByIndex);
                 $('button[data-node-id]').click(selectNode);
+                $('input[data-node-id]').change(changeNodeInput);
+                $('input[data-distribution-field]').change(changeDistributionInput);
                 $('#btnDownloadNodes').click(downloadNodeFile);
                 var selectedNode = parentNode;
                 setSelectDistributionOptions(selectedNode);
@@ -68,6 +70,20 @@
                 selectDistributionByIndex();
             }
 
+            function changeNodeInput() {
+                var element = $(this);
+                var nodeId = element.data('nodeId');
+                var nodeField = element.data('nodeField');
+                var node = nodes[nodeId];
+                node[nodeField] = element.val();
+            }
+
+            function changeDistributionInput() {
+                var element = $(this);
+                var distributionField = element.data('distributionField');
+                selectedDistribution[distributionField] = element.val();
+            }
+
             function selectDistributionByIndex() {
                 var index = $('#selectDistribution').val();
                 selectedDistribution = selectedNode.Distributions[index];
@@ -75,6 +91,11 @@
                 $('#stdev').val(selectedDistribution.Stdev);
                 $('#skew').val(selectedDistribution.Skew);
                 $('#kurt').val(selectedDistribution.Kurt);
+                $("input[data-distribution-field='Minimum']").val(selectedDistribution.Minimum);
+                $("input[data-distribution-field='Worst']").val(selectedDistribution.Worst);
+                $("input[data-distribution-field='Likely']").val(selectedDistribution.Likely);
+                $("input[data-distribution-field='Best']").val(selectedDistribution.Best);
+                $("input[data-distribution-field='Maximum']").val(selectedDistribution.Maximum);
                 removeDistributionGraphData();
                 addDistributionGraphData(selectedDistribution)
             }
@@ -280,7 +301,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
+                <div class="col-xs-8 col-sm-6 col-md-4">
                     <input type="file" name="CashFlows" class="form-control" aria-label="Upload Cash Flows" />
                 </div>
                 <a class="btn btn-default" aria-label="Download Cash Flows" asp-controller="CashFlow" asp-action="Get" asp-route-networkId="@Model.Id">
@@ -303,7 +324,7 @@
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
+                <div class="col-xs-8 col-sm-6 col-md-4">
                     <input type="file" name="Tree" class="form-control" aria-label="Upload Nodes" />
                 </div>
                 <a id="btnDownloadNodes" class="btn btn-default" aria-label="Download Nodes" asp-controller="Node" asp-action="Get" asp-route-networkId="@Model.Id">
@@ -332,11 +353,29 @@
                                 <td>@node.Id</td>
                                 <td>@node.Name</td>
                                 <td>@node.Parent?.Name</td>
-                                <td>@node.InitialInvestment</td>
-                                <td>@node.InitialPrice</td>
+                                <td>
+                                    @if (node.IsPortfolioComponent)
+                                    {
+                                        <input class="form-control" data-node-field='InitialInvestment' data-node-id='@node.Id' value='@node.InitialInvestment' />
+                                    }
+                                    else
+                                    {
+                                        @node.InitialInvestment
+                                    }
+                                </td>
+                                <td>
+                                    @if (node.IsPortfolioComponent)
+                                    {
+                                        <input class="form-control" data-node-field="InitialPrice" data-node-id="@node.Id" value="@node.InitialPrice" />
+                                    }
+                                    else
+                                    {
+                                        @node.InitialPrice
+                                    }
+                                </td>
                                 <td>@(node.IsPortfolioComponent ? "Yes" : "No")</td>
                                 <td>
-                                    <button type="button" class="btn" data-node-id="@node.Id">
+                                    <button type="button" data-node-id="@node.Id">
                                         Select
                                     </button>
                                 </td>
@@ -354,16 +393,47 @@
                         <h5 class="panel-title">Distribution</h5>
                     </div>
 
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-6 col-md-4">
+                            <select id="selectDistribution" class="form-control"></select>
+                        </div>
+                    </div>
+
                     <div class="panel-body">
+
                         <div class="row">
-
-
-                            <div class="col-xs-8 col-xs-offset-2 col-sm-6 col-sm-offset-5 col-md-4 col-md-offset-7">
-
-                                <select id="selectDistribution" class="form-control pull-right"></select>
-
+                            <div class="col-sm-2 col-sm-offset-1">
+                                <div class="form-group">
+                                    <label>Minimum</label>
+                                    <input data-distribution-field="Minimum" class="form-control" value="@Model.Nodes[0].Distributions[0].Minimum" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Worst</label>
+                                    <input data-distribution-field="Worst" class="form-control" value="@Model.Nodes[0].Distributions[0].Worst" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Likely</label>
+                                    <input data-distribution-field="Likely" class="form-control" value="@Model.Nodes[0].Distributions[0].Likely" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Best</label>
+                                    <input data-distribution-field="Best" class="form-control" value="@Model.Nodes[0].Distributions[0].Best" />
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Maximum</label>
+                                    <input data-distribution-field="Maximum" class="form-control" value="@Model.Nodes[0].Distributions[0].Maximum" />
+                                </div>
                             </div>
                         </div>
+
                         <div class="row">
                             <div class="col-md-10 col-md-offset-1">
                                 <canvas id="distributionChart"></canvas>
