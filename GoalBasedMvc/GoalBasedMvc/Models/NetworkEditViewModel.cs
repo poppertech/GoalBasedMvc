@@ -8,6 +8,6 @@ namespace GoalBasedMvc.Models
         public int Id { get; set; }
         public IList<NodeViewModel> Nodes { get; set; }
         public PortfolioViewModel Portfolio { get; set; }
-        public IList<CashFlowViewModel> CashFlows { get; set; }
+        public IList<double> CashFlows { get; set; }
     }
 }

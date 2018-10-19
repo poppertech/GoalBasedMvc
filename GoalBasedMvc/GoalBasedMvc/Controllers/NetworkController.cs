@@ -46,15 +46,10 @@ namespace GoalBasedMvc.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private IList<CashFlowViewModel> GetCashFlows()
+        private IList<double> GetCashFlows()
         {
-            return new CashFlowViewModel[] {
-                new CashFlowViewModel { Cost = 60000 },
-                new CashFlowViewModel { Cost = 61000 },
-                new CashFlowViewModel { Cost = 62000 },
-                new CashFlowViewModel { Cost = 63000 },
-                new CashFlowViewModel { Cost = 64000 },
-                new CashFlowViewModel { Cost = 65000 },
+            return new double[] {
+                60000, 61000, 62000, 63000, 64000, 65000
             };
         }
 
