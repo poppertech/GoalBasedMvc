@@ -18,9 +18,9 @@
                 @:goalAttainmentData.push(@Model.Portfolio.SuccessProbabilities[cnt]);
             }
 
-            // TODO: alter workflow so that upload file modifies the UI, cashflow variable, and node variable
             // TODO: alter the Post method on the controller to accept cashflow and nodes as json on ajax post
 
+            var selectedNode;
             var distributionChart, cashFlowsChart, goalAttainmentChart;
 
             var distribution = {
@@ -44,6 +44,7 @@
             function init() {
 
                 Chart.defaults.scale.gridLines.display = false;
+                createNodeTable();
                 $('#selectDistribution').change(selectDistributionByIndex);
                 $('button[data-node-id]').click(selectNode);
                 $('input[data-node-id]').change(changeNodeInput);
@@ -54,6 +55,44 @@
                 $('button[data-node-id]').first().click();
                 createCashFlowsGraph();
                 createGoalAttainmentGraph();
+
+            }
+
+            function createNodeTable() {
+                var strTemplate;
+                for (var nodeId in nodes) {
+                    var node = nodes[nodeId];
+                    if (node.IsPortfolioComponent) {
+                        var strTemplate = $('#PortfolioComponentTemplate').html();
+                    } else {
+                        var strTemplate = $('#NonPortfolioComponentTemplate').html();
+                    }
+                    fillTemplate(node, strTemplate);
+                }
+            }
+
+            function fillTemplate(node, strTemplate) {
+                    var template = $($.parseHTML(strTemplate));
+                    template.find('td[data-node-field]').each(function () {
+                        var fieldValue;
+                            var fieldName = $(this).attr('data-node-field');
+                            if (fieldName === 'Parent.Name') {
+                                var parent = node['Parent'];
+                                fieldValue = parent ? parent['Name']:"";
+                            } else {
+                                fieldValue = node[fieldName];
+                            }
+                            $(this).html(fieldValue);
+                    });
+                template.find('[data-node-id]').each(function () {
+                            $(this).attr('data-node-id', node.Id);
+                    });
+                    template.find('input[data-node-field]').each(function () {
+                            var fieldName = $(this).attr('data-node-field');
+                            var fieldValue = node[fieldName];
+                            $(this).val(fieldValue);
+                    });
+                    $('#tblNodes tbody').append(template);
             }
 
             function downloadNodeFile(event) {
@@ -305,9 +344,9 @@
             function updateNodes(e) {
                 var lines = e.target.result;
                 nodes = JSON.parse(lines);
-                debugger;
+                $('#tblNodes tbody').empty();
+                createNodeTable();
                 $("#goalAttainmentContainer").hide();
-
             }
 
          });
@@ -375,7 +414,7 @@
 
 
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table id="tblNodes" class="table table-striped">
                     <thead>
                         <tr>
                             <th>Id</th>
@@ -387,42 +426,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var node in Model.Nodes)
-                        {
-                            <tr>
-                                <td>@node.Id</td>
-                                <td>@node.Name</td>
-                                <td>@node.Parent?.Name</td>
-                                <td>
-                                    @if (node.IsPortfolioComponent)
-                                    {
-                                        <input class="form-control" data-node-field='InitialInvestment' data-node-id='@node.Id' value='@node.InitialInvestment' />
-                                    }
-                                    else
-                                    {
-                                        @node.InitialInvestment
-                                    }
-                                </td>
-                                <td>
-                                    @if (node.IsPortfolioComponent)
-                                    {
-                                        <input class="form-control" data-node-field="InitialPrice" data-node-id="@node.Id" value="@node.InitialPrice" />
-                                    }
-                                    else
-                                    {
-                                        @node.InitialPrice
-                                    }
-                                </td>
-                                <td>@(node.IsPortfolioComponent ? "Yes" : "No")</td>
-                                <td>
-                                    <button type="button" data-node-id="@node.Id">
-                                        Select
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
 
@@ -544,11 +548,11 @@
         <td data-node-field="Id"></td>
         <td data-node-field="Name"></td>
         <td data-node-field="Parent.Name"></td>
-        <td data-node-field='InitialInvestment'>
-            <input class='form-control' data-node-field='InitialInvestment' data-node-id=''/>
+        <td>
+            <input class='form-control' data-node-field='InitialInvestment' data-node-id='' />
         </td>
-        <td data-node-field="InitialPrice">
-            <input class="form-control" data-node-field='InitialPrice' data-node-id=''/>
+        <td>
+            <input class="form-control" data-node-field='InitialPrice' data-node-id='' />
         </td>
         <td data-node-field="IsPortfolioComponent"></td>
         <td>
