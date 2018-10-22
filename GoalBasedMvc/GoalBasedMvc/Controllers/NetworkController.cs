@@ -2,16 +2,22 @@
 using Microsoft.AspNetCore.Mvc;
 using GoalBasedMvc.Models;
 using System.Collections.Generic;
+using GoalBasedMvc.Logic;
 
 namespace GoalBasedMvc.Controllers
 {
     public class NetworkController : Controller
     {
+        private readonly INetworkService _service;
+
+        public NetworkController(INetworkService service)
+        {
+            _service = service;
+        }
+
         public IActionResult Index()
         {
-            var network1 = new NetworkSearchViewModel { Id = 1, Name = "Network1" };
-            var network2 = new NetworkSearchViewModel { Id = 2, Name = "Network2" };
-            var networks = new[] { network1, network2 };
+            var networks = _service.GetNetworks();
             return View(networks);
         }
 
