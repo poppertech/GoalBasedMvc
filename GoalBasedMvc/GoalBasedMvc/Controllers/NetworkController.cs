@@ -23,13 +23,7 @@ namespace GoalBasedMvc.Controllers
 
         public IActionResult Edit(int id)
         {
-            var network = new NetworkEditViewModel()
-            {
-                Id = id,
-                CashFlows = GetCashFlows(),
-                Nodes = GetNodes(),
-                Portfolio = GetPortfolio()
-            };
+            var network = _service.GetNetworkById(id);
             return View(network);
         }
 

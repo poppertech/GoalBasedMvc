@@ -14,6 +14,9 @@ namespace GoalBasedMvc.Repository
     public class NetworkRepository: INetworkRepository
     {
         private readonly string _connectionString;
+        private readonly INodeRepository _nodeRepository;
+        private readonly ICashFlowRepository _cashFlowRepository;
+
         public NetworkRepository(IOptions<MvcOptions> optionsAccessor)
         {
             _connectionString = optionsAccessor.Value.ConnString;
@@ -42,5 +45,7 @@ namespace GoalBasedMvc.Repository
             }
             return networks;
         }
+
+
     }
 }
