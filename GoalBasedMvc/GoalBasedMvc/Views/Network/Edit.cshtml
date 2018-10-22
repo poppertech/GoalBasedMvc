@@ -7,10 +7,8 @@
 
             var network = @Html.Raw(Json.Serialize(Model));
 
-            // TODO: Update probability graph based on response from post
-
             var selectedNode;
-            var distributionChart, cashFlowsChart;
+            var distributionChart, cashFlowsChart, goalAttainmentChart;
 
             init();
 
@@ -86,7 +84,6 @@
                 window.URL.revokeObjectURL(url);
                 a.remove();
             }
-
 
             function downloadCashFlowFile(event) {
                 event.preventDefault();
@@ -267,7 +264,7 @@
                 var goalAttainmentLabels = getTimeSeriesGraphLabels(network.portfolio.successProbabilities);
                 var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
 
-                var goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
                     type: 'line',
                     data: {
                         labels: goalAttainmentLabels,
@@ -326,6 +323,12 @@
                 addGraphData(cashFlowsChart, network.cashFlows, labels);
             }
 
+            function updateGoalAttainmentChart() {
+                removeGraphData(goalAttainmentChart);
+                var labels = getTimeSeriesGraphLabels(network.portfolio.successProbabilities);
+                addGraphData(goalAttainmentChart, network.portfolio.successProbabilities, labels);
+            }
+
             function loadNodesFile() {
                 var input = $("#Nodes")[0];
                 var file = input.files[0];
@@ -343,7 +346,6 @@
             }
 
             function calculateNetwork() {
-                debugger;
                 $.ajax({
                     method: "Post",
                     url: '/Network/Edit',
@@ -355,8 +357,11 @@
             }
 
             function calculateNetworkSuccess(response) {
+                debugger;
                 network = response;
+                updateGoalAttainmentChart();
             }
+
          });
     </script>
 
