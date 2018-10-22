@@ -24,7 +24,7 @@ namespace GoalBasedMvc.Models
         public IList<IList<double>> CumulativeSimulations { get; set; }
         [JsonIgnore]
         public IList<IList<double>> ValueSimulations { get; set; }
-        [JsonIgnore]
+
         public Node Parent { get; set; }
 
     }

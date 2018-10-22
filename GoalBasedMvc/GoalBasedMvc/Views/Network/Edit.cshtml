@@ -49,7 +49,8 @@
                     var template = $($.parseHTML(strTemplate));
                     template.find('td[data-node-field]').each(function () {
                         var fieldValue;
-                            var fieldName = $(this).attr('data-node-field');
+                        var fieldName = $(this).attr('data-node-field');
+                        debugger;
                             if (fieldName === 'parent.name') {
                                 var parent = node['parent'];
                                 fieldValue = parent ? parent['name']:"";
