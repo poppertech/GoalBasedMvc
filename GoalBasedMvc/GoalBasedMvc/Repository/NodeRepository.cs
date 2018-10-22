@@ -54,6 +54,7 @@ namespace GoalBasedMvc.Repository
             if (nodeId > 0 && !_nodeDictionary.ContainsKey(nodeId))
             {
                 node = new Node { Id = nodeId };
+                node.Name = (string)reader["NodeName"];
                 node.InitialInvestment = reader["InitialInvestment"] != DBNull.Value ? (double?)reader["InitialInvestment"] : null;
                 node.InitialPrice = reader["InitialPrice"] != DBNull.Value ? (double?)reader["InitialPrice"] : null;
                 node.IsPortfolioComponent = (bool)reader["IsPortfolioComponent"];

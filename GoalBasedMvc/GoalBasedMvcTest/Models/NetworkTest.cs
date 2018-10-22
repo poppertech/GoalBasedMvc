@@ -16,8 +16,8 @@ namespace GoalBasedMvcTest.Models
             //arrange
             var cashFlow = new CashFlow() { Id = 3 };
             var cashFlows = new[] { cashFlow };
-            var child = new Node { Id = 2 };
-            var parent = new Node { Id = 1, Children = new[] { child } };
+            var parent = new Node { Id = 1};
+            var child = new Node { Id = 2, Parent = parent };
 
             IDictionary<int, Node> nodeDictionary = new Dictionary<int, Node> { { parent.Id, parent }, { child.Id, child } };
             IList<Node> nodes = new List<Node> { parent, child };

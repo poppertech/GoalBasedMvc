@@ -8,11 +8,10 @@ namespace GoalBasedMvc.Models
         public Node()
         {
             Distributions = new List<Distribution>();
-            Children = new List<Node>();
         }
 
         public int Id { get; set; }
-
+        public string Name { get; set; }
         public double? InitialPrice { get; set; }
         public double? InitialInvestment { get; set; }
         public double? PortfolioWeight { get; set; }
@@ -28,6 +27,5 @@ namespace GoalBasedMvc.Models
         [JsonIgnore]
         public Node Parent { get; set; }
 
-        public IEnumerable<Node> Children { get; set; }
     }
 }
