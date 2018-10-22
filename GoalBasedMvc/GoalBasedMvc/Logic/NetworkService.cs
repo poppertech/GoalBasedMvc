@@ -6,7 +6,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INetworkService
     {
-        IEnumerable<NetworkSearchViewModel> GetNetworks();
+        IEnumerable<NetworkViewModel> GetNetworks();
         INetwork GetNetworkById(int id);
     }
 
@@ -30,7 +30,7 @@ namespace GoalBasedMvc.Logic
             _network = network;
         }
 
-        public IEnumerable<NetworkSearchViewModel> GetNetworks()
+        public IEnumerable<NetworkViewModel> GetNetworks()
         {
             return _networkRepository.GetNetworks();
         }

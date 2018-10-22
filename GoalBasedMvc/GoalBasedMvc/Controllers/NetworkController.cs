@@ -28,7 +28,7 @@ namespace GoalBasedMvc.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromBody]NetworkEditViewModel network)
+        public IActionResult Edit([FromBody]INetwork network)
         {
             return Json(network);
         }
@@ -38,57 +38,6 @@ namespace GoalBasedMvc.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private IList<double> GetCashFlows()
-        {
-            return new double[] {
-                60000, 61000, 62000, 63000, 64000, 65000
-            };
-        }
-
-        private IList<NodeViewModel> GetNodes()
-        {
-            var distribution = new DistributionViewModel
-            {
-                Minimum = 50,
-                Worst = 85,
-                Likely = 105,
-                Best = 125,
-                Maximum = 150,
-                HeightWorst = .57,
-                HeightLikely = 3.31,
-                HeightBest = .8,
-                Mean = 1,
-                Stdev = 2,
-                Skew = 3,
-                Kurt = 4
-            };
-            var parentNode = new NodeViewModel
-            {
-                Id = 1,
-                Name = "Parent",
-                IsPortfolioComponent = false,
-                Distributions = new[] { distribution }
-            };
-            var childNode = new NodeViewModel
-            {
-                Id = 2,
-                Name = "Child",
-                InitialInvestment = 200000,
-                InitialPrice = 100,
-                Parent = parentNode,
-                IsPortfolioComponent = true,
-                Distributions = new[] { distribution, distribution, distribution, distribution }
-            };
-            return new NodeViewModel[] { parentNode, childNode};
-    }
-
-    private PortfolioViewModel GetPortfolio()
-    {
-        return new PortfolioViewModel
-        {
-            SuccessProbabilities = new[] { 1, .9, .7, .3, .1, 0 }
-        };
-    }
 
 }
 }

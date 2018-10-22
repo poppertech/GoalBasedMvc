@@ -6,6 +6,7 @@
         $(function () {
 
             var network = @Html.Raw(Json.Serialize(Model));
+            network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
 
             var selectedNode;
             var distributionChart, cashFlowsChart, goalAttainmentChart;
