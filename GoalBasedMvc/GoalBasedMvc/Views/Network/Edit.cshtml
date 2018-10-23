@@ -131,10 +131,10 @@
             function selectDistributionByIndex() {
                 var index = $('#selectDistribution').val();
                 selectedDistribution = selectedNode.distributions[index];
-                $('#mean').html(selectedDistribution.mean);
-                $('#stdev').html(selectedDistribution.stdev);
-                $('#skew').html(selectedDistribution.skew);
-                $('#kurt').html(selectedDistribution.kurt);
+                $('#mean').html(selectedDistribution.mean.toFixed(3));
+                $('#stdev').html(selectedDistribution.stdev.toFixed(3));
+                $('#skew').html(selectedDistribution.skew.toFixed(3));
+                $('#kurt').html(selectedDistribution.kurt.toFixed(3));
                 $("input[data-distribution-field='minimum']").val(selectedDistribution.minimum);
                 $("input[data-distribution-field='worst']").val(selectedDistribution.worst);
                 $("input[data-distribution-field='likely']").val(selectedDistribution.likely);
