@@ -87,7 +87,7 @@ namespace GoalBasedMvc.Models
             var xLower = XLower[index];
             var c1 = mSim / 2;
             var c2 = bSim;
-            var c3 = aLower - uniformRandom * 100 - ((mSim / 2) * Math.Pow(xLower, 2) + bSim * xLower);
+            var c3 = aLower - uniformRandom - ((mSim / 2) * Math.Pow(xLower, 2) + bSim * xLower);
             var xSim = (-c2 + Math.Sqrt(Math.Pow(c2, 2) - 4 * c1 * c3)) / (2 * c1);
             return xSim;
         }

@@ -11,7 +11,7 @@ namespace GoalBasedMvc
         {
             builder.RegisterType<CashFlowRepository>().As<ICashFlowRepository>();
             builder.RegisterType<NodeRepository>().As<INodeRepository>();
-            builder.RegisterType<UniformRandomRepository>().As<IUniformRandomRepository>();
+            builder.RegisterType<UniformRandomDbRepository>().As<IUniformRandomRepository>();
             builder.RegisterType<NetworkRepository>().As<INetworkRepository>();
 
             builder.RegisterType<NetworkService>().As<INetworkService>();

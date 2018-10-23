@@ -17,10 +17,10 @@ namespace GoalBasedMvcTest.Models
             double xGood = 125;
             double xMax = 150;
 
-            var uniformRandom1 = .0365182845504721;
-            var uniformRandom2 = .121312092438079;
-            var uniformRandom3 = .66673560619284;
-            var uniformRandom4 = .945083821398705;
+            var uniformRandom1 = 3.65182845504721;
+            var uniformRandom2 = 12.1312092438079;
+            var uniformRandom3 = 66.673560619284;
+            var uniformRandom4 = 94.5083821398705;
 
             //act
             var distribution = new Distribution(id, xMin, xBad, xLikely, xGood, xMax);
