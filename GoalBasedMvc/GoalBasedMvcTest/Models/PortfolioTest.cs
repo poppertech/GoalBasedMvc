@@ -46,7 +46,7 @@ namespace GoalBasedMvcTest.Models
 
             Assert.AreEqual(1, portfolio.SuccessProbabilities[0]);
             Assert.AreEqual(1, portfolio.SuccessProbabilities[1]);
-            Assert.AreEqual(0.999, portfolio.SuccessProbabilities[1], .001);
+            Assert.AreEqual(1, portfolio.SuccessProbabilities[2]);
         }
     }
 }

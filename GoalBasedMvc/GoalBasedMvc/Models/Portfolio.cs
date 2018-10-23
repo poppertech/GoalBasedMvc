@@ -51,50 +51,47 @@ namespace GoalBasedMvc.Models
             node.PortfolioWeight = node.InitialInvestment / InitialValue;
             node.ValueSimulations = new double[_numSimulations, _cashFlows.Count];
             var cumulativeSimulations = new double[_numSimulations, _cashFlows.Count - 1];
-            Parallel.For(0, _numSimulations, portfolioCnt =>
+            Parallel.For(0, node.Simulations.Count, simulationCnt =>
             {
+                var portfolioCnt = simulationCnt % _numSimulations;
+                var cashFlowCnt = simulationCnt / _numSimulations;
                 node.ValueSimulations[portfolioCnt, 0] = node.InitialInvestment.Value;
-                var lBound = (_cashFlows.Count - 1) * portfolioCnt;
-                var uBound = (_cashFlows.Count - 1) * (portfolioCnt + 1);
-                for (int simulationCnt = lBound; simulationCnt < uBound; simulationCnt++)
-                {
-                    var index = simulationCnt % (_cashFlows.Count - 1);
-                    var simulation = node.Simulations[simulationCnt].Price;
-                    var cumulativeSimulation = simulation / node.InitialPrice;
-                    cumulativeSimulations[portfolioCnt, index] = cumulativeSimulation.Value;
-                }
+
+                var simulation = node.Simulations[simulationCnt].Price;
+                var cumulativeSimulation = simulation / node.InitialPrice;
+                cumulativeSimulations[portfolioCnt, cashFlowCnt] = cumulativeSimulation.Value;
             });
             node.CumulativeSimulations = cumulativeSimulations;
         }
 
-        private void CalculateSuccessCounts()
+    private void CalculateSuccessCounts()
+    {
+        var portfolioSimulations = new double[_numSimulations][];
+        for (int portfolioCnt = 0; portfolioCnt < _numSimulations; portfolioCnt++)
         {
-            var portfolioSimulations = new double[_numSimulations][];
-            for (int portfolioCnt = 0; portfolioCnt < _numSimulations; portfolioCnt++)
-            {
-                portfolioSimulations[portfolioCnt] = new double[_cashFlows.Count];
-                for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
-                {
-                    var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt,periodCnt] * n.PortfolioWeight);
-                    var portfolioValueNet = portfolioValue - _cashFlows[periodCnt].Cost;
-                    portfolioValueNet = portfolioValueNet > 0 ? portfolioValueNet : 0;
-                    portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet.Value;
-                    if (periodCnt < _cashFlows.Count - 1)
-                        foreach (var node in _nodes)
-                            node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt,periodCnt] * portfolioValueNet.Value * node.PortfolioWeight.Value;
-
-                    SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
-                }
-            }
-        }
-
-        private void CalculateSuccessProbabilities()
-        {
+            portfolioSimulations[portfolioCnt] = new double[_cashFlows.Count];
             for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
             {
-                SuccessProbabilities[periodCnt] = SuccessProbabilities[periodCnt] / _numSimulations;
+                var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt, periodCnt] * n.PortfolioWeight);
+                var portfolioValueNet = portfolioValue - _cashFlows[periodCnt].Cost;
+                portfolioValueNet = portfolioValueNet > 0 ? portfolioValueNet : 0;
+                portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet.Value;
+                if (periodCnt < _cashFlows.Count - 1)
+                    foreach (var node in _nodes)
+                        node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet.Value * node.PortfolioWeight.Value;
+
+                SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
             }
         }
-
     }
+
+    private void CalculateSuccessProbabilities()
+    {
+        for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
+        {
+            SuccessProbabilities[periodCnt] = SuccessProbabilities[periodCnt] / _numSimulations;
+        }
+    }
+
+}
 }
