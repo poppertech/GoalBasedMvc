@@ -33,23 +33,23 @@ namespace GoalBasedMvcTest.Controllers
         }
 
         [TestMethod]
-        public void GetByIdReturnsNetwork()
+        public void GetByUrlReturnsNetwork()
         {
             //arrange
-            var networkId = 1;
+            var url = "url";
             var network = new Mock<INetwork>();
             var service = new Mock<INetworkService>();
-            service.Setup(s => s.GetNetworkById(It.Is<int>(id => id == networkId))).Returns(network.Object);
+            service.Setup(s => s.GetNetworkByUrl(It.Is<string>(u=> u == url))).Returns(network.Object);
 
             var controller = new NetworkController(service.Object);
 
             //act
-            var response = (ViewResult)controller.Edit(networkId);
+            var response = (ViewResult)controller.Edit(url);
             var result = response.Model as INetwork;
 
             //assert
             Assert.AreSame(network.Object, result);
-            service.Verify(s => s.GetNetworkById(It.Is<int>(id => id == networkId)));
+            service.Verify(s => s.GetNetworkByUrl(It.Is<string>(u => u == url)));
         }
 
         [TestMethod]

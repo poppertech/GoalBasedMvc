@@ -1,13 +1,14 @@
 ﻿using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GoalBasedMvc.Logic
 {
     public interface INetworkService
     {
         IEnumerable<NetworkViewModel> GetNetworks();
-        INetwork GetNetworkById(int id);
+        INetwork GetNetworkByUrl(string url);
     }
 
     public class NetworkService: INetworkService
@@ -35,10 +36,11 @@ namespace GoalBasedMvc.Logic
             return _networkRepository.GetNetworks();
         }
 
-        public INetwork GetNetworkById(int id)
+        public INetwork GetNetworkByUrl(string url)
         {
-            IDictionary<int, Node> nodeDictionary = _nodeRepository.GetNodesByNetworkId(id);
-            var cashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(id);
+            var network = _networkRepository.GetNetworks(url).Single();
+            IDictionary<int, Node> nodeDictionary = _nodeRepository.GetNodesByNetworkId(network.Id);
+            var cashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
             _network.Calculate(ref nodeDictionary, cashFlows);
             return _network;
         }

@@ -21,9 +21,10 @@ namespace GoalBasedMvc.Controllers
             return View(networks);
         }
 
-        public IActionResult Edit(int id)
+        [HttpGet("{url}")]
+        public IActionResult Edit(string url)
         {
-            var network = _service.GetNetworkById(id);
+            var network = _service.GetNetworkByUrl(url);
             return View(network);
         }
 

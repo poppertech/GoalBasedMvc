@@ -19,7 +19,7 @@ namespace GoalBasedMvcTest.Logic
             var networks = new[] { network };
 
             var repository = new Mock<INetworkRepository>();
-            repository.Setup(r => r.GetNetworks()).Returns(networks);
+            repository.Setup(r => r.GetNetworks(It.IsAny<string>())).Returns(networks);
 
             var service = new NetworkService(repository.Object, null, null, null);
 
@@ -34,9 +34,16 @@ namespace GoalBasedMvcTest.Logic
         public void GetNetworkByIdReturnNetwork()
         {
             //arrange
+            var url = "url";
             var networkId = 1;
             IDictionary<int, Node> nodeDictionary = new SortedDictionary<int, Node>();
             var cashFlows = new CashFlow[0];
+
+            var view = new NetworkViewModel { Id = 1 };
+            var networks = new[] { view };
+
+            var repository = new Mock<INetworkRepository>();
+            repository.Setup(r => r.GetNetworks(It.Is<string>(u => u == url))).Returns(networks);
 
             var nodeRepository = new Mock<INodeRepository>();
             nodeRepository.Setup(r => r.GetNodesByNetworkId(It.Is<int>(id => id == networkId))).Returns(nodeDictionary);
@@ -46,10 +53,10 @@ namespace GoalBasedMvcTest.Logic
 
             var network = new Mock<INetwork>();
 
-            var service = new NetworkService(null, nodeRepository.Object, cashFlowRepository.Object, network.Object);
+            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object);
 
             //act
-            var result = service.GetNetworkById(networkId);
+            var result = service.GetNetworkByUrl(url);
 
             //assert
             Assert.AreSame(network.Object, result);
