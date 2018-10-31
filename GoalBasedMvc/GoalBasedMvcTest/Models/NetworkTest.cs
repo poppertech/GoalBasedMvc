@@ -26,9 +26,11 @@ namespace GoalBasedMvcTest.Models
             var nodeSimulator = new Mock<INodeSimulator>();
 
             var network = new Network(nodeSimulator.Object, portfolio.Object);
+            network.CashFlows = cashFlows;
+            network.Nodes = nodeDictionary;
 
             //act
-            network.Calculate(ref nodeDictionary, cashFlows);
+            network.Calculate();
 
             //assert
             Assert.AreEqual(portfolio.Object, network.Portfolio);

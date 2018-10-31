@@ -35,7 +35,7 @@ namespace GoalBasedMvcTest.Logic
             var simulator = new NodeSimulator(evaluator.Object, repository.Object);
 
             //act
-            simulator.SimulateNodes(ref nodeDictionary);
+            simulator.SimulateNodes(nodeDictionary);
 
             //assert
             Assert.AreEqual(price, parent.Simulations[0].Price);

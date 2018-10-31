@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INodeSimulator
     {
-        void SimulateNodes(ref IDictionary<int, Node> nodeDictionary);
+        void SimulateNodes(IDictionary<int, Node> nodeDictionary);
     }
 
     public class NodeSimulator : INodeSimulator
@@ -22,7 +22,7 @@ namespace GoalBasedMvc.Logic
             _uniformRandomRepository = uniformRandomRepository;
         }
 
-        public void SimulateNodes(ref IDictionary<int, Node> nodeDictionary)
+        public void SimulateNodes(IDictionary<int, Node> nodeDictionary)
         {
 
             var nodes = nodeDictionary.Values.ToArray();

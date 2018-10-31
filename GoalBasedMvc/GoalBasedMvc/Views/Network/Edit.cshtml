@@ -6,7 +6,7 @@
         $(function () {
 
             var network = @Html.Raw(Json.Serialize(Model));
-            network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
+
 
             var selectedNode;
             var distributionChart, cashFlowsChart, goalAttainmentChart;
@@ -14,7 +14,7 @@
             init();
 
             function init() {
-
+                network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
                 Chart.defaults.scale.gridLines.display = false;
                 createNodeTable();
                 $('#btnCalculate').click(calculateNetwork);
@@ -343,10 +343,13 @@
                 network.nodes = JSON.parse(lines);
                 $('#tblNodes tbody').empty();
                 createNodeTable();
+                $('button[data-node-id]').click(selectNode);
+                $('button[data-node-id]').first().click();
                 $("#goalAttainmentContainer").hide();
             }
 
             function calculateNetwork() {
+                network.cashFlows = network.cashFlows.map(function (cashflow, idx) { return { id: idx, cost: cashflow } });
                 $.ajax({
                     method: "Post",
                     url: '/Network/Edit',
@@ -358,9 +361,8 @@
             }
 
             function calculateNetworkSuccess(response) {
-                debugger;
                 network = response;
-                updateGoalAttainmentChart();
+                init();
             }
 
          });

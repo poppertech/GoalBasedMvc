@@ -31,6 +31,7 @@ namespace GoalBasedMvc.Controllers
         [HttpPost]
         public IActionResult Edit([FromBody]INetwork network)
         {
+            network.Calculate();
             return Json(network);
         }
 

@@ -9,6 +9,7 @@ namespace GoalBasedMvc.Logic
     {
         IEnumerable<NetworkViewModel> GetNetworks();
         INetwork GetNetworkByUrl(string url);
+        INetwork CalculateNetwork(INetwork network);
     }
 
     public class NetworkService: INetworkService
@@ -39,9 +40,15 @@ namespace GoalBasedMvc.Logic
         public INetwork GetNetworkByUrl(string url)
         {
             var network = _networkRepository.GetNetworks(url).Single();
-            IDictionary<int, Node> nodeDictionary = _nodeRepository.GetNodesByNetworkId(network.Id);
-            var cashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
-            _network.Calculate(ref nodeDictionary, cashFlows);
+            _network.Nodes = _nodeRepository.GetNodesByNetworkId(network.Id);
+            _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
+            _network.Calculate();
+            return _network;
+        }
+
+        public INetwork CalculateNetwork(INetwork network)
+        {
+            network.Calculate();
             return _network;
         }
     }

@@ -60,7 +60,7 @@ namespace GoalBasedMvcTest.Logic
 
             //assert
             Assert.AreSame(network.Object, result);
-            network.Verify(n => n.Calculate(ref It.Ref<IDictionary<int, Node>>.IsAny, It.Is<IList<CashFlow>>(c => c == cashFlows)));
+            network.Verify(n => n.Calculate());
         }
 
 
