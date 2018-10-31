@@ -309,22 +309,29 @@
                 var input = $("#CashFlows")[0];
                 var file = input.files[0];
                 var fileReader = new FileReader();
-                fileReader.onload = updateCashFlowChart;
+                fileReader.onload = onloadCashFlowFile;
                 fileReader.readAsText(file);
             }
 
-            function updateCashFlowChart(e) {
+            function onloadCashFlowFile(e) {
                 var lines = e.target.result;
                 network.cashFlows = lines.split(/\n/);
                 network.cashFlows.splice(0, 1);
                 network.cashFlows = network.cashFlows.filter(function (el) { return el.length > 0 });
                 $("#goalAttainmentContainer").hide();
+                updateCashFlowChart();
+            }
+
+            function updateCashFlowChart() {
                 removeGraphData(cashFlowsChart);
                 var labels = getTimeSeriesGraphLabels(network.cashFlows);
                 addGraphData(cashFlowsChart, network.cashFlows, labels);
             }
 
+
+
             function updateGoalAttainmentChart() {
+                $("#goalAttainmentContainer").show();
                 removeGraphData(goalAttainmentChart);
                 var labels = getTimeSeriesGraphLabels(network.portfolio.successProbabilities);
                 addGraphData(goalAttainmentChart, network.portfolio.successProbabilities, labels);
@@ -334,19 +341,24 @@
                 var input = $("#Nodes")[0];
                 var file = input.files[0];
                 var fileReader = new FileReader();
-                fileReader.onload = updateNodes;
+                fileReader.onload = onloadNodeFile;
                 fileReader.readAsText(file);
             }
 
-            function updateNodes(e) {
+            function onloadNodeFile(e) {
                 var lines = e.target.result;
                 network.nodes = JSON.parse(lines);
+                $("#goalAttainmentContainer").hide();
+                updateNodes()
+            }
+
+            function updateNodes() {
                 $('#tblNodes tbody').empty();
                 createNodeTable();
+                $('input[data-node-id]').change(changeNodeInput);
                 $('button[data-node-id]').click(selectNode);
-                $('button[data-node-id]').first().click();
-                $("#goalAttainmentContainer").hide();
-            }
+                $('button[data-node-id]').first().click();  
+            }   
 
             function calculateNetwork() {
                 network.cashFlows = network.cashFlows.map(function (cashflow, idx) { return { id: idx, cost: cashflow } });
@@ -362,7 +374,10 @@
 
             function calculateNetworkSuccess(response) {
                 network = response;
-                init();
+                network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
+                updateNodes();
+                updateCashFlowChart();
+                updateGoalAttainmentChart();
             }
 
          });
