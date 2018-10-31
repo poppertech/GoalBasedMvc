@@ -57,11 +57,15 @@ namespace GoalBasedMvcTest.Controllers
         {
             //arrange
             var network = new Mock<INetwork>();
+            var viewModel = new NetworkEditViewModel();
 
-            var controller = new NetworkController(null);
+            var service = new Mock<INetworkService>();
+            service.Setup(s => s.CalculateNetwork(It.Is<NetworkEditViewModel>(n => n == viewModel))).Returns(network.Object);
+
+            var controller = new NetworkController(service.Object);
 
             //act
-            var response = (JsonResult)controller.Edit(network.Object);
+            var response = (JsonResult)controller.Edit(viewModel);
             var result = response.Value as INetwork;
 
             //assert

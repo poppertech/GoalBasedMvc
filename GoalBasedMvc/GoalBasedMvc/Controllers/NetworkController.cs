@@ -29,9 +29,9 @@ namespace GoalBasedMvc.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromBody]INetwork network)
+        public IActionResult Edit([FromBody]NetworkEditViewModel viewModel)
         {
-            network.Calculate();
+            var network = _service.CalculateNetwork(viewModel);
             return Json(network);
         }
 

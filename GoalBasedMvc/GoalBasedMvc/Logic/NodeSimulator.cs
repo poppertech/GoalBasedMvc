@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INodeSimulator
     {
-        void SimulateNodes(IDictionary<int, Node> nodeDictionary);
+        IDictionary<int, Node> SimulateNodes(IDictionary<int, Node> nodeDictionary);
     }
 
     public class NodeSimulator : INodeSimulator
@@ -22,34 +22,33 @@ namespace GoalBasedMvc.Logic
             _uniformRandomRepository = uniformRandomRepository;
         }
 
-        public void SimulateNodes(IDictionary<int, Node> nodeDictionary)
+        public IDictionary<int, Node> SimulateNodes(IDictionary<int, Node> nodeDictionary)
         {
-
-            var nodes = nodeDictionary.Values.ToArray();
-
-            for (int cnt = 0; cnt < nodes.Length; cnt++)
+            var keys = nodeDictionary.Keys.ToList();
+            for (int cnt = 0; cnt < nodeDictionary.Count; cnt++)
             {
-                var node = nodes[cnt];
+                var key = keys[cnt];
+                var node = nodeDictionary[key];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
-                nodeDictionary[node.Id] = SimulateNode(node, uniformRandoms);
+                SimulateNode(ref node, uniformRandoms);
             }
-
+            return nodeDictionary;
         }
 
-        private Node SimulateNode(Node node, IList<double> uniformRandoms)
+        private void SimulateNode(ref Node node, IList<double> uniformRandoms)
         {
             var simulations = new Simulation[uniformRandoms.Count];
             IList<Distribution> distributions = node.Distributions;
+            var parent = node.Parent;
             _evaluator.Init(node.Distributions);
             Parallel.For(0, uniformRandoms.Count, cnt =>
             {
                 var uniformRandom = uniformRandoms[cnt];
-                var distributionIndex = node.Parent == null ? 0 : node.Parent.Simulations[cnt].DistributionIndex;
+                var distributionIndex = parent == null ? 0 : parent.Simulations[cnt].DistributionIndex;
                 var simulation = _evaluator.Evaluate(distributionIndex, uniformRandom);
                 simulations[cnt] = simulation;
             });
             node.Simulations = simulations;
-            return node;
         }
     }
 }

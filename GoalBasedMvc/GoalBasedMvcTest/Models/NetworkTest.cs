@@ -24,6 +24,7 @@ namespace GoalBasedMvcTest.Models
 
             var portfolio = new Mock<IPortfolio>();
             var nodeSimulator = new Mock<INodeSimulator>();
+            nodeSimulator.Setup(s => s.SimulateNodes(It.Is<IDictionary<int, Node>>(n => n == nodeDictionary))).Returns(nodeDictionary);
 
             var network = new Network(nodeSimulator.Object, portfolio.Object);
             network.CashFlows = cashFlows;

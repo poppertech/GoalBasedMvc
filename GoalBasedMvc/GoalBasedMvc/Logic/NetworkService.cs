@@ -9,7 +9,7 @@ namespace GoalBasedMvc.Logic
     {
         IEnumerable<NetworkViewModel> GetNetworks();
         INetwork GetNetworkByUrl(string url);
-        INetwork CalculateNetwork(INetwork network);
+        INetwork CalculateNetwork(NetworkEditViewModel viewModel);
     }
 
     public class NetworkService: INetworkService
@@ -46,9 +46,19 @@ namespace GoalBasedMvc.Logic
             return _network;
         }
 
-        public INetwork CalculateNetwork(INetwork network)
+        public INetwork CalculateNetwork(NetworkEditViewModel viewModel)
         {
-            network.Calculate();
+            var nodes = viewModel.Nodes;
+            var keys = nodes.Keys.ToList();
+            for (int cnt = 0; cnt < keys.Count; cnt++)
+            {
+                var key = keys[cnt];
+                var node = nodes[key];
+                node.Parent = node.Parent != null ? nodes[node.Parent.Id] : null;
+            }
+            _network.CashFlows = viewModel.CashFlows;
+            _network.Nodes = viewModel.Nodes;
+            _network.Calculate();
             return _network;
         }
     }

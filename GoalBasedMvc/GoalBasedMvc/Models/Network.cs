@@ -1,8 +1,6 @@
 ﻿using GoalBasedMvc.Logic;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GoalBasedMvc.Models
 {
@@ -34,7 +32,7 @@ namespace GoalBasedMvc.Models
 
         public void Calculate()
         {
-            _nodeSimulator.SimulateNodes(Nodes);
+            Nodes = _nodeSimulator.SimulateNodes(Nodes);
             IList<Node> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
             _portfolio.Init(ref nodes, cashFlows);
