@@ -36,7 +36,7 @@
                 var strTemplate;
                 for (var nodeId in network.nodes) {
                     var node = network.nodes[nodeId];
-                    if (node.IsPortfolioComponent) {
+                    if (node.isPortfolioComponent) {
                         var strTemplate = $('#PortfolioComponentTemplate').html();
                     } else {
                         var strTemplate = $('#NonPortfolioComponentTemplate').html();
