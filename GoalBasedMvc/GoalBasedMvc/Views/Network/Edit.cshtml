@@ -91,6 +91,7 @@
                 var name = "cashflows.csv";
                 var type = "csv";
                 var data = 'Cost\r\n' + network.cashFlows.join('\r\n');
+                debugger;
                 if (data && navigator.msSaveBlob)
                     return navigator.msSaveBlob(new Blob([data], { type: type }, name));
                 var a = $("<a style='display: none;'/>");
@@ -318,6 +319,8 @@
                 network.cashFlows = lines.split(/\n/);
                 network.cashFlows.splice(0, 1);
                 network.cashFlows = network.cashFlows.filter(function (el) { return el.length > 0 });
+                network.cashFlows = network.cashFlows.map(function (cashFlow) { return parseFloat(cashFlow); })
+                debugger;
                 $("#goalAttainmentContainer").hide();
                 updateCashFlowChart();
             }
