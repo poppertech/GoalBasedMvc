@@ -1,0 +1,76 @@
+﻿<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h1 class="panel-title">Instructions</h1>
+    </div>
+    <div class="panel-body">
+        <p>The purpose of this site is to calculate the probability of reaching one or more investment goals over a period of time (See Figure 1).</p>
+
+        <figure>
+            <figcaption>Figure 1: The Probability of reaching one or more financial targets vs time</figcaption>
+            <img src="~/images/ProbabilityOfSucessGraph.png" />
+        </figure>
+
+        <p>Two inputs are required to produce Figure 1: 1) cash flows required to attain the goal (Figure 2); 2) forecasts for the investments used to fund the cash flows. The site uses default assumptions for both inputs (Figure 3). You can modify these defaults to reflect your own goals or investment views.</p>
+
+        <figure>
+            <figcaption>Figure 2: Cash flows required to attain goals versus time. You can download the default cash flows into a .csv file (button with down arrow), modify the values in the .csv file, and then upload the modified .csv (button with “Choose File”).</figcaption>
+            <img src="~/images/CashFlowsGraph.png" />
+        </figure>
+
+        <p>Figure 2 shows the cash flows required to attain one or more goals over time. As previously mentioned, this graph is initially populated with default values. You can modify these cash flows through downloading a comma separated value (.csv) file, modifying the cash flows in the file, and then uploading the new values back into the site.</p>
+
+        <figure>
+            <figcaption>Figure 3: Once the download button is clicked, the web browser downloads a .csv containing the cash flows. You can edit this file using a program such as Microsoft Excel or Notepad++ and upload it back into the browser.</figcaption>
+            <img src="~/images/cashflowdownload.png" />
+        </figure>
+
+        <br />
+
+        <figure>
+            <figcaption>Figure 4: The .csv file can be edited using Microsoft Excel. </figcaption>
+            <img src="~/images/cashflowsfile.png" />
+        </figure>
+
+        <br />
+
+        <figure>
+            <figcaption>Figure 5: After the cash flows have been modified, ensure that file continues to be saved as a .csv file (click the “Yes” button)</figcaption>
+            <img src="~/images/savecashflows.png" />
+        </figure>
+
+        <br />
+
+        <figure>
+            <figcaption>Figure 6: Once the new cash flow file is uploaded, the cash flows graph displays the new data.</figcaption>
+            <img src="~/images/modifiedcashflows.png" />
+        </figure>
+
+        <br />
+
+        <p>
+            Similarly, you can modify the investment properties to fit your own circumstances. As shown in Figure 7, this step is performed in the “Nodes” section.
+        </p>
+
+        <figure>
+            <figcaption>Figure 7: The initial investment amount and price paid can be modified in the “Nodes” section. </figcaption>
+            <img src="~/images/NodesTable.png" />
+        </figure>
+
+        <br />
+
+        <p>Also, you can modify the forecast to reflect your own views. This is performed in the “Distributions” section shown in Figure 8.</p>
+
+        <figure>
+            <figcaption>Figure 8: Forecasts can be modified in the Distribution section </figcaption>
+            <img src="~/images/DistributionGraph.png" />
+        </figure>
+
+        <br />
+
+        <p>After the forecasts and investment properties have been modified, you can save these to a file similarly to the cash flows. Unlike the cash flows, you should not modify the saved file directly. However, both the cash flow and nodes file can be uploaded to the browser again in the future. This is useful because the site does not store any user data and will return the default assumptions once the browser is refreshed. Therefore, these two files enable you to rerun your analysis in the future.</p>
+
+        <p>Once you have modified the assumptions to your satisfaction, click the “Calculate” button. This will rerun the analysis using your assumptions and will produce a new “Probability of Success” Graph.</p>
+    </div>
+</div>
+
+

@@ -3,3 +3,8 @@
         display: table-cell;
     }
 }
+
+figcaption{
+    font-style: italic;
+    font-weight: bold;
+}
