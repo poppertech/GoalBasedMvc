@@ -9,6 +9,6 @@ figcaption{
     font-weight: bold;
 }
 
-img{
-    width: 100%;
+img {
+     max-width:100%;
 }
