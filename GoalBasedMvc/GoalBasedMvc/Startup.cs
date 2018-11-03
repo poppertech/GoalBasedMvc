@@ -1,8 +1,11 @@
 ﻿using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 
 namespace GoalBasedMvc
 {
@@ -40,6 +43,16 @@ namespace GoalBasedMvc
             }
 
             app.UseStaticFiles();
+
+            app.UseRouter(r =>
+            {
+                r.MapGet(".well-known/acme-challenge/{id}", async (request, response, routeData) =>
+                {
+                    var id = routeData.Values["id"] as string;
+                    var file = Path.Combine(env.WebRootPath, ".well-known", "acme-challenge", id);
+                    await response.SendFileAsync(file);
+                });
+            });
 
             app.UseMvc(routes =>
             {
