@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using Microsoft.Extensions.FileProviders;
 
 namespace GoalBasedMvc
 {
@@ -44,14 +45,11 @@ namespace GoalBasedMvc
 
             app.UseStaticFiles();
 
-            app.UseRouter(r =>
+            app.UseStaticFiles(new StaticFileOptions
             {
-                r.MapGet(".well-known/acme-challenge/{id}", async (request, response, routeData) =>
-                {
-                    var id = routeData.Values["id"] as string;
-                    var file = Path.Combine(env.WebRootPath, ".well-known", "acme-challenge", id);
-                    await response.SendFileAsync(file);
-                });
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @".well-known")),
+                RequestPath = new PathString("/.well-known"),
+                ServeUnknownFileTypes = true
             });
 
             app.UseMvc(routes =>
