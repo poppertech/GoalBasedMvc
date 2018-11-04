@@ -45,11 +45,14 @@ namespace GoalBasedMvc
 
             app.UseStaticFiles();
 
-            app.UseStaticFiles(new StaticFileOptions
+            app.UseRouter(r => 
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @".well-known")),
-                RequestPath = new PathString("/.well-known"),
-                ServeUnknownFileTypes = true
+                r.MapGet(".well-known/acme-challenge/{id}", async (request, response, routeData) =>
+                {
+                    var id = routeData.Values["id"] as string;
+                    var file = Path.Combine(env.WebRootPath, ".well-known", "acme-challenge", id);
+                    await response.SendFileAsync(file);
+                });
             });
 
             app.UseMvc(routes =>
