@@ -50,7 +50,7 @@ namespace GoalBasedMvc
                 r.MapGet(".well-known/acme-challenge/{id}", async (request, response, routeData) =>
                 {
                     var id = routeData.Values["id"] as string;
-                    var file = Path.Combine(env.WebRootPath, ".well-known", "acme-challenge", id);
+                    var file = Path.Combine(Directory.GetCurrentDirectory(), ".well-known", "acme-challenge", id);
                     await response.SendFileAsync(file);
                 });
             });
