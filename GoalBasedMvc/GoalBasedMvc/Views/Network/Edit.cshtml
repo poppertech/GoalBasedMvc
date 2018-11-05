@@ -358,8 +358,8 @@
                 createNodeTable();
                 $('input[data-node-id]').change(changeNodeInput);
                 $('button[data-node-id]').click(selectNode);
-                $('button[data-node-id]').first().click();  
-            }   
+                $('button[data-node-id]').first().click();
+            }
 
             function calculateNetwork() {
                 network.cashFlows = network.cashFlows.map(function (cashflow, idx) { return { id: idx, cost: cashflow } });
@@ -386,9 +386,10 @@
 
 }
 
+
 <div class="panel panel-primary">
-    <div class="panel-heading">
-        <h1 class="panel-title">Network</h1>
+    <div class="panel-heading clearfix">
+        <h1 class="panel-title">Network <a class="btn btn-info pull-right" href="@Url.Action("Instructions")">Instructions</a></h1>
     </div>
 
     <form class="panel-body">
