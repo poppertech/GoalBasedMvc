@@ -57,9 +57,12 @@ namespace GoalBasedMvc.Models
                 var cashFlowCnt = simulationCnt / _numSimulations;
                 node.ValueSimulations[portfolioCnt, 0] = node.InitialInvestment.Value;
 
-                var simulation = node.Simulations[simulationCnt].Price;
-                var cumulativeSimulation = simulation / node.InitialPrice;
-                cumulativeSimulations[portfolioCnt, cashFlowCnt] = cumulativeSimulation.Value;
+                if(cashFlowCnt < (_cashFlows.Count - 1))
+                {
+                    var simulation = node.Simulations[simulationCnt].Price;
+                    var cumulativeSimulation = simulation / node.InitialPrice;
+                    cumulativeSimulations[portfolioCnt, cashFlowCnt] = cumulativeSimulation.Value;
+                }
             });
             node.CumulativeSimulations = cumulativeSimulations;
         }
