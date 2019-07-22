@@ -8,7 +8,7 @@ DELETE FROM Network WHERE Id = 3
 SET IDENTITY_INSERT Network ON
 
 	INSERT INTO Network(Id, [Name], [Url]) 
-	VALUES(3, 'Choosing Investments Based on Retirement Goals', 'choosing-investments-based-on-retirement-goals')
+	VALUES(3, 'Goal-Based Investment Comparison', 'goal-based-investment-comparison')
 
 SET IDENTITY_INSERT Network OFF
 
