@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Models
     {
         IDictionary<int, Node> Nodes { get; set; }
         IPortfolio Portfolio { get; }
-        IEnumerable<CashFlow> CashFlows { get; set; }
+        IList<CashFlow> CashFlows { get; set; }
 
         void Calculate();
     }
@@ -28,7 +28,7 @@ namespace GoalBasedMvc.Models
 
         public IPortfolio Portfolio { get; private set; }
 
-        public IEnumerable<CashFlow> CashFlows { get; set; }
+        public IList<CashFlow> CashFlows { get; set; }
 
         public void Calculate()
         {

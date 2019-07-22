@@ -8,6 +8,6 @@ namespace GoalBasedMvc.Models
     public class NetworkEditViewModel
     {
         public SortedDictionary<int, Node> Nodes { get; set; }
-        public IEnumerable<CashFlow> CashFlows { get; set; }
+        public IList<CashFlow> CashFlows { get; set; }
     }
 }

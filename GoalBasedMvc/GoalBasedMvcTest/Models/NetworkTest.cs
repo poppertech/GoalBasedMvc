@@ -38,6 +38,7 @@ namespace GoalBasedMvcTest.Models
             Assert.AreEqual(parent.Id, network.Nodes.Values.First().Id);
             Assert.AreEqual(child.Id, network.Nodes.Values.Last().Id);
             Assert.AreEqual(cashFlow.Id, network.CashFlows.First().Id);
+            portfolio.Verify(p => p.Init(ref It.Ref<IList<Node>>.IsAny, It.IsAny<IList<CashFlow>>()));
         }
     }
 }
