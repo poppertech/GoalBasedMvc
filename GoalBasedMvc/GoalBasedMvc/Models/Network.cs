@@ -6,7 +6,7 @@ namespace GoalBasedMvc.Models
 {
     public interface INetwork
     {
-        IDictionary<int, Node> Nodes { get; set; }
+        IDictionary<int, INode> Nodes { get; set; }
         IPortfolio Portfolio { get; }
         IList<CashFlow> CashFlows { get; set; }
 
@@ -24,7 +24,7 @@ namespace GoalBasedMvc.Models
             _portfolio = portfolio;
         }
 
-        public IDictionary<int, Node> Nodes { get; set; }
+        public IDictionary<int, INode> Nodes { get; set; }
 
         public IPortfolio Portfolio { get; private set; }
 
@@ -33,7 +33,7 @@ namespace GoalBasedMvc.Models
         public void Calculate()
         {
             Nodes = _nodeSimulator.SimulateNodes(Nodes);
-            IList<Node> nodes = Nodes.Values.ToList();
+            IList<INode> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
             _portfolio.Init(ref nodes, cashFlows);
             Portfolio = _portfolio;

@@ -9,22 +9,30 @@ namespace GoalBasedMvc.Repository
 {
     public interface INodeRepository
     {
-        IDictionary<int, Node> GetNodesByNetworkId(int networkId);
+        IDictionary<int, INode> GetNodesByNetworkId(int networkId);
     }
 
     public class NodeRepository : INodeRepository
     {
         private readonly string _connectionString;
-        private IDictionary<int, Node> _nodeDictionary;
+        private readonly Func<INode> _nodeFactory;
+        private readonly Func<DistributionContext, IDistribution> _distributionFactory;
+        private IDictionary<int, INode> _nodeDictionary;
 
-        public NodeRepository(IOptions<MvcOptions> optionsAccessor)
+        public NodeRepository(
+            IOptions<MvcOptions> optionsAccessor, 
+            Func<INode> nodeFactory,
+            Func<DistributionContext, IDistribution> distributionFactory
+            )
         {
             _connectionString = optionsAccessor.Value.ConnString;
+            _nodeFactory = nodeFactory;
+            _distributionFactory = distributionFactory;
         }
 
-        public IDictionary<int, Node> GetNodesByNetworkId(int networkId)
+        public IDictionary<int, INode> GetNodesByNetworkId(int networkId)
         {
-            _nodeDictionary = new SortedDictionary<int, Node>();
+            _nodeDictionary = new SortedDictionary<int, INode>();
 
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand("GetNodesByNetworkId", connection))
@@ -47,13 +55,14 @@ namespace GoalBasedMvc.Repository
             return _nodeDictionary;
         }
 
-        private Node GetNode(IDataReader reader)
+        private INode GetNode(IDataReader reader)
         {
-            Node node;
+            INode node;
             var nodeId = (int)reader["NodeId"];
             if (nodeId > 0 && !_nodeDictionary.ContainsKey(nodeId))
             {
-                node = new Node { Id = nodeId };
+                node = _nodeFactory();
+                node.Id = nodeId;
                 node.Name = (string)reader["NodeName"];
                 node.InitialInvestment = reader["InitialInvestment"] != DBNull.Value ? (double?)reader["InitialInvestment"] : null;
                 node.InitialPrice = reader["InitialPrice"] != DBNull.Value ? (double?)reader["InitialPrice"] : null;
@@ -72,16 +81,17 @@ namespace GoalBasedMvc.Repository
             return node;
         }
 
-        private Distribution GetDistribution(IDataReader reader)
+        private IDistribution GetDistribution(IDataReader reader)
         {
-            var id = (int)reader["DistributionId"];
-            var index = (int)reader["DistributionIndex"];
-            var minimum = (double)reader["Minimum"];
-            var worst = (double)reader["Worst"];
-            var likely = (double)reader["Likely"];
-            var best = (double)reader["Best"];
-            var maximum = (double)reader["Maximum"];
-            return new Distribution(id: id, minimum: minimum, worst: worst, likely: likely, best: best, maximum: maximum);
+            var context = new DistributionContext();
+            context.Id = (int)reader["DistributionId"];
+            context.Minimum = (double)reader["Minimum"];
+            context.Worst = (double)reader["Worst"];
+            context.Likely = (double)reader["Likely"];
+            context.Best = (double)reader["Best"];
+            context.Maximum = (double)reader["Maximum"];
+            var distribution = _distributionFactory(context);
+            return distribution;
         }
 
     }

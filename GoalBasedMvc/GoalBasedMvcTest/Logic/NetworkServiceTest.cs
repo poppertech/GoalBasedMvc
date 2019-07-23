@@ -36,7 +36,7 @@ namespace GoalBasedMvcTest.Logic
             //arrange
             var url = "url";
             var networkId = 1;
-            IDictionary<int, Node> nodeDictionary = new SortedDictionary<int, Node>();
+            IDictionary<int, INode> nodeDictionary = new SortedDictionary<int, INode>();
             var cashFlows = new CashFlow[0];
 
             var view = new NetworkViewModel { Id = 1 };
@@ -67,11 +67,18 @@ namespace GoalBasedMvcTest.Logic
         public void CalculateNetworkOnSuccessReturnsNetwork()
         {
             //arrange
-            var parent = new Node { Id = 1 };
-            var child = new Node { Id = 2, Parent = parent };
-            var dictionary = new SortedDictionary<int, Node> {
-                {parent.Id, parent },
-                {child.Id, child }
+            var parentId = 1;
+            var parent = new Mock<INode>();
+            parent.Setup(p => p.Id).Returns(parentId);
+
+            var childId = 2;
+            var child = new Mock<INode>();
+            child.Setup(c => c.Id).Returns(childId);
+            child.Setup(c => c.Parent).Returns(parent.Object);
+ 
+            var dictionary = new SortedDictionary<int, INode> {
+                {parentId, parent.Object },
+                {childId, child.Object }
             };
 
             var cashFlow = new CashFlow { Id = 3, Cost = 100 };
@@ -89,7 +96,7 @@ namespace GoalBasedMvcTest.Logic
             var result = service.CalculateNetwork(viewModel);
 
             network.VerifySet(n => n.CashFlows = It.Is<IList<CashFlow>>(c => c[0].Id == cashFlow.Id));
-            network.VerifySet(n => n.Nodes = It.Is<IDictionary<int, Node>>(d => d[parent.Id].Id == parent.Id && d[child.Id].Id == child.Id));
+            network.VerifySet(n => n.Nodes = It.Is<IDictionary<int, INode>>(d => d[parentId].Id == parentId && d[childId].Id == childId));
             network.Verify(n => n.Calculate());
         }
 

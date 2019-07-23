@@ -20,11 +20,21 @@ namespace GoalBasedMvcTest.Logic
             var uniformRandom = .1D;
             var uniformRandoms = new[] { uniformRandom };
             var simulation = new Simulation { Price = price, DistributionIndex = 0 };
-            var distribution = new Distribution(1, 2, 3, 4, 5, 6);
-            var parent = new Node { Id = 1, Distributions = new[] { distribution }, Simulations = new[] { simulation } };
-            var child = new Node { Id = 2, Parent = parent, Distributions = new[] { distribution } };
+            var distribution = new Mock<IDistribution>();
 
-            IDictionary<int, Node> nodeDictionary = new SortedDictionary<int, Node> { { parent.Id, parent }, { child.Id, child } };
+            var parentId = 1;
+            var parent = new Mock<INode>();
+            parent.Setup(p => p.Id).Returns(parentId);
+            parent.Setup(p => p.Distributions).Returns(new[] { distribution.Object });
+            parent.Setup(p => p.Simulations).Returns(new[] { simulation });
+
+            var childId = 2;
+            var child = new Mock<INode>();
+            child.Setup(c => c.Id).Returns(childId);
+            child.Setup(c => c.Parent).Returns(parent.Object);
+            child.Setup(c => c.Distributions).Returns(new[] { distribution.Object });
+
+            IDictionary<int, INode> nodeDictionary = new SortedDictionary<int, INode> { { parentId, parent.Object }, { childId, child.Object } };
 
             var evaluator = new Mock<ISimulationEvaluator>();
             evaluator.Setup(e => e.Evaluate(It.Is<int>(ix => ix == 0), It.Is<double>(r => r == uniformRandom))).Returns(simulation);
@@ -38,9 +48,9 @@ namespace GoalBasedMvcTest.Logic
             simulator.SimulateNodes(nodeDictionary);
 
             //assert
-            Assert.AreEqual(price, parent.Simulations[0].Price);
-            Assert.AreEqual(price, child.Simulations[0].Price);
-            evaluator.Verify(e => e.Init(It.IsAny<IList<Distribution>>()));
+            parent.VerifySet(p => p.Simulations = It.Is<IList<Simulation>>(s => s[0].Price == price));
+            child.VerifySet(c => c.Simulations = It.Is<IList<Simulation>>(s => s[0].Price == price));
+            evaluator.Verify(e => e.Init(It.IsAny<IList<IDistribution>>()));
             evaluator.Verify(e => e.Evaluate(It.Is<int>(ix => ix == 0), It.Is<double>(r => r == uniformRandom)));
         }
     }

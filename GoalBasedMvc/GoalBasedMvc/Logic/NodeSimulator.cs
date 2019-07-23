@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INodeSimulator
     {
-        IDictionary<int, Node> SimulateNodes(IDictionary<int, Node> nodeDictionary);
+        IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodeDictionary);
     }
 
     public class NodeSimulator : INodeSimulator
@@ -22,7 +22,7 @@ namespace GoalBasedMvc.Logic
             _uniformRandomRepository = uniformRandomRepository;
         }
 
-        public IDictionary<int, Node> SimulateNodes(IDictionary<int, Node> nodeDictionary)
+        public IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodeDictionary)
         {
             var keys = nodeDictionary.Keys.ToList();
             for (int cnt = 0; cnt < nodeDictionary.Count; cnt++)
@@ -35,10 +35,10 @@ namespace GoalBasedMvc.Logic
             return nodeDictionary;
         }
 
-        private void SimulateNode(ref Node node, IList<double> uniformRandoms)
+        private void SimulateNode(ref INode node, IList<double> uniformRandoms)
         {
             var simulations = new Simulation[uniformRandoms.Count];
-            IList<Distribution> distributions = node.Distributions;
+            IList<IDistribution> distributions = node.Distributions;
             var parent = node.Parent;
             _evaluator.Init(node.Distributions);
             Parallel.For(0, uniformRandoms.Count, cnt =>

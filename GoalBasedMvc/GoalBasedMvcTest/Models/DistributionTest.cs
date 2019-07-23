@@ -22,8 +22,16 @@ namespace GoalBasedMvcTest.Models
             var uniformRandom3 = 66.673560619284;
             var uniformRandom4 = 94.5083821398705;
 
+            var context = new DistributionContext();
+            context.Id = id;
+            context.Minimum = xMin;
+            context.Worst = xBad;
+            context.Likely = xLikely;
+            context.Best = xGood;
+            context.Maximum = xMax;
+
             //act
-            var distribution = new Distribution(id, xMin, xBad, xLikely, xGood, xMax);
+            var distribution = new Distribution(context);
             var price1 = distribution.GetPrice(uniformRandom1, 0);
             var price2 = distribution.GetPrice(uniformRandom2, 1);
             var price3 = distribution.GetPrice(uniformRandom3, 2);

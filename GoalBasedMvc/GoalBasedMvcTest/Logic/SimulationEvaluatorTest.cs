@@ -17,7 +17,7 @@ namespace GoalBasedMvcTest.Logic
             var price = 2D;
             var cdfProbability = 1D;
             var cdfProbabilities = new[] { cdfProbability };
-            var distribution = new Mock<Distribution>(new object[] { 1, 2, 3, 4, 5, 6 });
+            var distribution = new Mock<IDistribution>();
             distribution.Setup(d => d.CdfProbabilities).Returns(cdfProbabilities);
             distribution.Setup(d => d.GetPrice(It.Is<double>(rand => rand == uniformRandom), It.Is<int>(ix => ix == distributionIndex))).Returns(price);
             var distributions = new[] { distribution.Object };

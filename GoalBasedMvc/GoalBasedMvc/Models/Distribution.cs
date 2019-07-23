@@ -4,7 +4,30 @@ using System.Collections.Generic;
 
 namespace GoalBasedMvc.Models
 {
-    public class Distribution
+    public interface IDistribution
+    {
+        int Id { get; }
+
+        double Minimum { get; }
+        double Worst { get; }
+        double Likely { get; }
+        double Best { get; }
+        double Maximum { get; }
+
+        double HeightWorst { get; }
+        double HeightLikely { get; }
+        double HeightBest { get; }
+
+        double Mean { get; }
+        double Stdev { get; }
+        double Skew { get; }
+        double Kurt { get; }
+
+        IList<double> CdfProbabilities { get; }
+        double GetPrice(double uniformRandom, int index);
+    }
+
+    public class Distribution:IDistribution
     {
         private const double LEFT_TAIL = 10;
         private const double RIGHT_TAIL = 10;
@@ -17,14 +40,14 @@ namespace GoalBasedMvc.Models
         private readonly double _leftNormalProbability, _rightNormalProbability;
         private readonly double _moment3;
 
-        public Distribution(int id, double minimum, double worst, double likely, double best, double maximum)
+        public Distribution(DistributionContext context)
         {
-            Id = id;
-            Minimum = minimum;
-            Worst = worst;
-            Likely = likely;
-            Best = best;
-            Maximum = maximum;
+            Id = context.Id;
+            Minimum = context.Minimum;
+            Worst = context.Worst;
+            Likely = context.Likely;
+            Best = context.Best;
+            Maximum = context.Maximum;
 
             HeightWorst = GetHeightWorst();
             HeightBest = GetHeightBest();

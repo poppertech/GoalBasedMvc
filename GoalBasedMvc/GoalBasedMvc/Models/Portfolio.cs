@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,7 +7,7 @@ namespace GoalBasedMvc.Models
 {
     public interface IPortfolio
     {
-        void Init(ref IList<Node> nodes, IList<CashFlow> cashFlows);
+        void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows);
 
         double InitialValue { get; }
 
@@ -15,12 +16,12 @@ namespace GoalBasedMvc.Models
 
     public class Portfolio : IPortfolio
     {
-        private IList<Node> _nodes;
+        private IList<INode> _nodes;
         private IList<CashFlow> _cashFlows;
 
         private int _numSimulations;
 
-        public void Init(ref IList<Node> nodes, IList<CashFlow> cashFlows)
+        public void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows)
         {
             _cashFlows = cashFlows;
             _nodes = nodes.Where(n => n.IsPortfolioComponent).ToList();
@@ -46,18 +47,19 @@ namespace GoalBasedMvc.Models
             }
         }
 
-        private void InitializeNode(Node node)
+        private void InitializeNode(INode node)
         {
+            var numCashFlows = _cashFlows.Count;
             node.PortfolioWeight = node.InitialInvestment / InitialValue;
-            node.ValueSimulations = new double[_numSimulations, _cashFlows.Count];
-            var cumulativeSimulations = new double[_numSimulations, _cashFlows.Count - 1];
+            node.ValueSimulations = new double[_numSimulations, numCashFlows];
+            var cumulativeSimulations = new double[_numSimulations, numCashFlows - 1];
             Parallel.For(0, node.Simulations.Count, simulationCnt =>
             {
                 var portfolioCnt = simulationCnt % _numSimulations;
                 var cashFlowCnt = simulationCnt / _numSimulations;
                 node.ValueSimulations[portfolioCnt, 0] = node.InitialInvestment.Value;
 
-                if(cashFlowCnt < (_cashFlows.Count - 1))
+                if(cashFlowCnt < (numCashFlows - 1))
                 {
                     var simulation = node.Simulations[simulationCnt].Price;
                     var cumulativeSimulation = simulation / node.InitialPrice;

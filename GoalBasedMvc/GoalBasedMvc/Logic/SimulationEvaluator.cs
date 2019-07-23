@@ -6,16 +6,16 @@ namespace GoalBasedMvc.Logic
 {
     public interface ISimulationEvaluator
     {
-        void Init(IList<Distribution> distributions);
+        void Init(IList<IDistribution> distributions);
 
         Simulation Evaluate(int distributionIndex, double uniformRandom);
     }
 
     public class SimulationEvaluator : ISimulationEvaluator
     {
-        private IList<Distribution> _distributions;
+        private IList<IDistribution> _distributions;
 
-        public void Init(IList<Distribution> distributions)
+        public void Init(IList<IDistribution> distributions)
         {
             _distributions = distributions;
         }
