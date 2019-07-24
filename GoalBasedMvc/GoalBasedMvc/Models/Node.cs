@@ -15,6 +15,7 @@ namespace GoalBasedMvc.Models
 
         IList<IDistribution> Distributions { get; set; }
         IStatistic Statistics { get; }
+        IList<HistogramDatum> Histogram { get; }
 
         [JsonIgnore]
         IList<Simulation> Simulations { get; set; }
@@ -29,10 +30,15 @@ namespace GoalBasedMvc.Models
     public class Node:INode
     {
         private readonly IStatistic _statistic;
+        private readonly IHistogram _histogram;
 
-        public Node(IStatistic statistic)
+        public Node(
+            IStatistic statistic,
+            IHistogram histogram
+            )
         {
             _statistic = statistic;
+            _histogram = histogram;
             Distributions = new List<IDistribution>();
         }
 
@@ -50,6 +56,19 @@ namespace GoalBasedMvc.Models
                 var prices = Simulations.Select(s => s.Price).ToList();
                 _statistic.Init(prices);
                 return _statistic;
+            }
+        }
+
+        public IList<HistogramDatum> Histogram
+        {
+            get
+            {
+                var context = new HistogramContext();
+                context.Simulations = Simulations.Select(s => s.Price).ToList();
+                context.GlobalXMin = Distributions.Min(d => d.Minimum);
+                context.GlobalXMax = Distributions.Max(d => d.Maximum);
+                var data = _histogram.GetHistogramData(context);
+                return data;
             }
         }
 

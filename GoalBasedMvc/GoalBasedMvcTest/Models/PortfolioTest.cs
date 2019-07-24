@@ -16,7 +16,7 @@ namespace GoalBasedMvcTest.Models
             var simulation3 = new Simulation { Price = 119.64969234571 };
             var simulation4 = new Simulation { Price = 113.754221009641 };
             var simulations = new[] { simulation1, simulation2, simulation3, simulation4 };
-            var node = new Node(null)
+            var node = new Node(null, null)
             {
                 InitialInvestment = 200000,
                 InitialPrice = 100,

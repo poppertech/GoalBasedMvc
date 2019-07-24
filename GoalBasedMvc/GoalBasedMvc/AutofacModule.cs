@@ -24,7 +24,8 @@ namespace GoalBasedMvc
             builder.RegisterType<Portfolio>().As<IPortfolio>();
             builder.RegisterType<Network>().As<INetwork>();
             builder.RegisterType<Statistic>().As<IStatistic>();
-            builder.Register<INode>((c, p) => new Node(c.Resolve<IStatistic>()));
+            builder.RegisterType<Histogram>().As<IHistogram>();
+            builder.Register<INode>((c, p) => new Node(c.Resolve<IStatistic>(), c.Resolve<IHistogram>()));
             builder.Register<IDistribution>((c, p) =>
             {
                 var parameter = p.First() as TypedParameter;

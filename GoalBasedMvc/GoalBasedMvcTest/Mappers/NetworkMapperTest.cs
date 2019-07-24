@@ -48,7 +48,7 @@ namespace GoalBasedMvcTest.Mappers
 
             var network = new Network(null, null);
 
-            var mapper = new NetworkMapper(network, () => new Node(null), ctx => new Distribution(ctx));
+            var mapper = new NetworkMapper(network, () => new Node(null, null), ctx => new Distribution(ctx));
 
             //act
             var result = mapper.MapViewModelToEntity(networkViewModel);
