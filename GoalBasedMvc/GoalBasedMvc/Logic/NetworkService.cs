@@ -1,4 +1,5 @@
-﻿using GoalBasedMvc.Models;
+﻿using GoalBasedMvc.Mappers;
+using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,21 @@ namespace GoalBasedMvc.Logic
         private readonly INodeRepository _nodeRepository;
         private readonly ICashFlowRepository _cashFlowRepository;
         private readonly INetwork _network;
+        private readonly INetworkMapper _mapper;
 
         public NetworkService(
             INetworkRepository networkRepository, 
             INodeRepository nodeRepository, 
             ICashFlowRepository cashFlowRepository, 
-            INetwork network
+            INetwork network,
+            INetworkMapper mapper
             )
         {
             _networkRepository = networkRepository;
             _nodeRepository = nodeRepository;
             _cashFlowRepository = cashFlowRepository;
             _network = network;
+            _mapper = mapper;
         }
 
         public IEnumerable<NetworkViewModel> GetNetworks()
@@ -56,10 +60,9 @@ namespace GoalBasedMvc.Logic
                 var node = nodes[key];
                 node.Parent = node.Parent != null ? nodes[node.Parent.Id] : null;
             }
-            _network.CashFlows = viewModel.CashFlows;
-            _network.Nodes = viewModel.Nodes;
-            _network.Calculate();
-            return _network;
+            var network = _mapper.MapViewModelToEntity(viewModel);
+            network.Calculate();
+            return network;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace GoalBasedMvcTest.Logic
             var repository = new Mock<INetworkRepository>();
             repository.Setup(r => r.GetNetworks(It.IsAny<string>())).Returns(networks);
 
-            var service = new NetworkService(repository.Object, null, null, null);
+            var service = new NetworkService(repository.Object, null, null, null, null);
 
             //act
             var results = service.GetNetworks();
@@ -53,7 +53,7 @@ namespace GoalBasedMvcTest.Logic
 
             var network = new Mock<INetwork>();
 
-            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object);
+            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object, null);
 
             //act
             var result = service.GetNetworkByUrl(url);
@@ -68,17 +68,14 @@ namespace GoalBasedMvcTest.Logic
         {
             //arrange
             var parentId = 1;
-            var parent = new Mock<INode>();
-            parent.Setup(p => p.Id).Returns(parentId);
+            var parent = new NodeEditViewModel { Id = parentId };
 
             var childId = 2;
-            var child = new Mock<INode>();
-            child.Setup(c => c.Id).Returns(childId);
-            child.Setup(c => c.Parent).Returns(parent.Object);
+            var child = new NodeEditViewModel { Id = childId, Parent = parent };
  
-            var dictionary = new SortedDictionary<int, INode> {
-                {parentId, parent.Object },
-                {childId, child.Object }
+            var dictionary = new SortedDictionary<int, NodeEditViewModel> {
+                {parentId, parent },
+                {childId, child }
             };
 
             var cashFlow = new CashFlow { Id = 3, Cost = 100 };
@@ -90,7 +87,7 @@ namespace GoalBasedMvcTest.Logic
             };
 
             var network = new Mock<INetwork>();
-            var service = new NetworkService(null, null, null, network.Object);
+            var service = new NetworkService(null, null, null, network.Object, null);
 
             //act
             var result = service.CalculateNetwork(viewModel);

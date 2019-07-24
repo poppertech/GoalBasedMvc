@@ -7,7 +7,7 @@ namespace GoalBasedMvc.Models
 {
     public class NetworkEditViewModel
     {
-        public SortedDictionary<int, INode> Nodes { get; set; }
+        public SortedDictionary<int, NodeEditViewModel> Nodes { get; set; }
         public IList<CashFlow> CashFlows { get; set; }
     }
 }

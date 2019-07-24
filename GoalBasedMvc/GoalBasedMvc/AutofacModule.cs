@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using GoalBasedMvc.Logic;
+using GoalBasedMvc.Mappers;
 using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace GoalBasedMvc
             builder.RegisterType<NetworkRepository>().As<INetworkRepository>();
 
             builder.RegisterType<NetworkService>().As<INetworkService>();
-
+            builder.RegisterType<NetworkMapper>().As<INetworkMapper>();
             builder.RegisterType<NodeSimulator>().As<INodeSimulator>();
             builder.RegisterType<SimulationEvaluator>().As<ISimulationEvaluator>();
 
