@@ -52,14 +52,6 @@ namespace GoalBasedMvc.Logic
 
         public INetwork CalculateNetwork(NetworkEditViewModel viewModel)
         {
-            var nodes = viewModel.Nodes;
-            var keys = nodes.Keys.ToList();
-            for (int cnt = 0; cnt < keys.Count; cnt++)
-            {
-                var key = keys[cnt];
-                var node = nodes[key];
-                node.Parent = node.Parent != null ? nodes[node.Parent.Id] : null;
-            }
             var network = _mapper.MapViewModelToEntity(viewModel);
             network.Calculate();
             return network;

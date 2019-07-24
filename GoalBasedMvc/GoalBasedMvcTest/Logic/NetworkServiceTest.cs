@@ -1,4 +1,5 @@
 ﻿using GoalBasedMvc.Logic;
+using GoalBasedMvc.Mappers;
 using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -87,13 +88,14 @@ namespace GoalBasedMvcTest.Logic
             };
 
             var network = new Mock<INetwork>();
-            var service = new NetworkService(null, null, null, network.Object, null);
+            var mapper = new Mock<INetworkMapper>();
+            mapper.Setup(m => m.MapViewModelToEntity(It.Is<NetworkEditViewModel>(vm => vm == viewModel))).Returns(network.Object);
+
+            var service = new NetworkService(null, null, null, null, mapper.Object);
 
             //act
             var result = service.CalculateNetwork(viewModel);
 
-            network.VerifySet(n => n.CashFlows = It.Is<IList<CashFlow>>(c => c[0].Id == cashFlow.Id));
-            network.VerifySet(n => n.Nodes = It.Is<IDictionary<int, INode>>(d => d[parentId].Id == parentId && d[childId].Id == childId));
             network.Verify(n => n.Calculate());
         }
 
