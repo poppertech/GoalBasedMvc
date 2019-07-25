@@ -12,8 +12,8 @@ namespace GoalBasedMvcTest.Models
             //arrange
             var num = 4;
             var xMin = 20;
-            var xMax = 26;
-            var simulations = new double[] { 19, 21, 22, 24 };
+            var xMax = 24;
+            var simulations = new double[] { 20.5, 21.5, 22.5, 24 };
             var histogramContext = new HistogramContext { GlobalXMin = xMin, GlobalXMax = xMax, Simulations = simulations };
 
             var histogram = new Histogram();
@@ -22,10 +22,10 @@ namespace GoalBasedMvcTest.Models
             var result = histogram.GetHistogramData(histogramContext, num);
 
             //assert
-            Assert.AreEqual(20, result[0].Interval);
-            Assert.AreEqual(21.5, result[1].Interval);
+            Assert.AreEqual(21, result[0].Interval);
+            Assert.AreEqual(22, result[1].Interval);
             Assert.AreEqual(23, result[2].Interval);
-            Assert.AreEqual(24.5, result[3].Interval);
+            Assert.AreEqual(24, result[3].Interval);
 
             Assert.AreEqual(.25, result[0].Frequency);
             Assert.AreEqual(.25, result[1].Frequency);

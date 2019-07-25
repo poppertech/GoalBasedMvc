@@ -30,13 +30,12 @@ namespace GoalBasedMvcTest.Models
             var cashFlow2 = new CashFlow { Cost = 49200 };
             var cashFlows = new[] { cashFlow0, cashFlow1, cashFlow2 };
 
-            var portfolio = new Portfolio();
+            var portfolio = new Portfolio(null, null);
 
             //act
             portfolio.Init(ref nodes, cashFlows);
 
             //assert
-            Assert.AreEqual(node.InitialInvestment, portfolio.InitialValue);
             Assert.AreEqual(node.InitialInvestment, node.ValueSimulations[0,0]);
             Assert.AreEqual(node.InitialInvestment, node.ValueSimulations[1,0]);
             Assert.AreEqual(235012.0791, node.ValueSimulations[0,1], .01);

@@ -9,8 +9,6 @@ namespace GoalBasedMvc.Models
     {
         void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows);
 
-        double InitialValue { get; }
-
         IList<double> SuccessProbabilities { get; }
     }
 
@@ -18,8 +16,20 @@ namespace GoalBasedMvc.Models
     {
         private IList<INode> _nodes;
         private IList<CashFlow> _cashFlows;
+        private IStatistic _statistics;
+        private IHistogram _histogram;
 
         private int _numSimulations;
+        private double _initialValue;
+
+        public Portfolio(
+            IStatistic statistics,
+            IHistogram histogram
+            )
+        {
+            _statistics = statistics;
+            _histogram = histogram;
+        }
 
         public void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows)
         {
@@ -27,7 +37,7 @@ namespace GoalBasedMvc.Models
             _nodes = nodes.Where(n => n.IsPortfolioComponent).ToList();
             _numSimulations = _nodes[0].Simulations.Count / (cashFlows.Count - 1);
 
-            InitialValue = _nodes.Sum(n => n.InitialInvestment.Value);
+            _initialValue = _nodes.Sum(n => n.InitialInvestment.Value);
             SuccessProbabilities = new double[_cashFlows.Count];
 
             InitNodeProperties();
@@ -35,9 +45,41 @@ namespace GoalBasedMvc.Models
             CalculateSuccessProbabilities();
         }
 
-        public double InitialValue { get; private set; }
-
         public IList<double> SuccessProbabilities { get; private set; }
+
+        public IStatistic Statics
+        {
+            get
+            {
+                _statistics.Init(Simulations);
+                return _statistics;
+            }
+        }
+
+        public IList<HistogramDatum> Histogram
+        {
+            get
+            {
+                var context = new HistogramContext();
+                context.Simulations = Simulations;
+                context.GlobalXMin = Simulations.Min();
+                context.GlobalXMax = Simulations.Max();
+                var data = _histogram.GetHistogramData(context);
+                return data;
+            }
+        }
+
+        private IList<double> Simulations
+        {
+            get
+            {
+                var simulations = new double[_nodes[0].Simulations.Count];
+                foreach (var node in _nodes)
+                    for (int cnt = 0; cnt < node.Simulations.Count; cnt++)
+                        simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value) * node.PortfolioWeight.Value;
+                return simulations;
+            }
+        }
 
         private void InitNodeProperties()
         {
@@ -50,7 +92,7 @@ namespace GoalBasedMvc.Models
         private void InitializeNode(INode node)
         {
             var numCashFlows = _cashFlows.Count;
-            node.PortfolioWeight = node.InitialInvestment / InitialValue;
+            node.PortfolioWeight = node.InitialInvestment / _initialValue;
             node.ValueSimulations = new double[_numSimulations, numCashFlows];
             var cumulativeSimulations = new double[_numSimulations, numCashFlows - 1];
             Parallel.For(0, node.Simulations.Count, simulationCnt =>
@@ -59,7 +101,7 @@ namespace GoalBasedMvc.Models
                 var cashFlowCnt = simulationCnt / _numSimulations;
                 node.ValueSimulations[portfolioCnt, 0] = node.InitialInvestment.Value;
 
-                if(cashFlowCnt < (numCashFlows - 1))
+                if (cashFlowCnt < (numCashFlows - 1))
                 {
                     var simulation = node.Simulations[simulationCnt].Price;
                     var cumulativeSimulation = simulation / node.InitialPrice;
@@ -69,34 +111,34 @@ namespace GoalBasedMvc.Models
             node.CumulativeSimulations = cumulativeSimulations;
         }
 
-    private void CalculateSuccessCounts()
-    {
-        var portfolioSimulations = new double[_numSimulations][];
-        for (int portfolioCnt = 0; portfolioCnt < _numSimulations; portfolioCnt++)
+        private void CalculateSuccessCounts()
         {
-            portfolioSimulations[portfolioCnt] = new double[_cashFlows.Count];
-            for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
+            var portfolioSimulations = new double[_numSimulations][];
+            for (int portfolioCnt = 0; portfolioCnt < _numSimulations; portfolioCnt++)
             {
-                var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt, periodCnt] * n.PortfolioWeight);
-                var portfolioValueNet = portfolioValue - _cashFlows[periodCnt].Cost;
-                portfolioValueNet = portfolioValueNet > 0 ? portfolioValueNet : 0;
-                portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet.Value;
-                if (periodCnt < _cashFlows.Count - 1)
-                    foreach (var node in _nodes)
-                        node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet.Value * node.PortfolioWeight.Value;
+                portfolioSimulations[portfolioCnt] = new double[_cashFlows.Count];
+                for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
+                {
+                    var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt, periodCnt] * n.PortfolioWeight);
+                    var portfolioValueNet = portfolioValue - _cashFlows[periodCnt].Cost;
+                    portfolioValueNet = portfolioValueNet > 0 ? portfolioValueNet : 0;
+                    portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet.Value;
+                    if (periodCnt < _cashFlows.Count - 1)
+                        foreach (var node in _nodes)
+                            node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet.Value * node.PortfolioWeight.Value;
 
-                SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
+                    SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
+                }
             }
         }
-    }
 
-    private void CalculateSuccessProbabilities()
-    {
-        for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
+        private void CalculateSuccessProbabilities()
         {
-            SuccessProbabilities[periodCnt] = SuccessProbabilities[periodCnt] / _numSimulations;
+            for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
+            {
+                SuccessProbabilities[periodCnt] = SuccessProbabilities[periodCnt] / _numSimulations;
+            }
         }
-    }
 
-}
+    }
 }
