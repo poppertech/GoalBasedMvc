@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using GoalBasedMvc.Models;
 using System.Collections.Generic;
 using GoalBasedMvc.Logic;
+using System.Linq;
 
 namespace GoalBasedMvc.Controllers
 {
@@ -31,6 +32,11 @@ namespace GoalBasedMvc.Controllers
         [HttpPost]
         public IActionResult Edit([FromBody]NetworkEditViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                viewModel.ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                return Json(viewModel);
+            }
             var network = _service.CalculateNetwork(viewModel);
             return Json(network);
         }

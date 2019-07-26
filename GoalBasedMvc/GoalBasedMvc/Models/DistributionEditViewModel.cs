@@ -29,7 +29,7 @@ namespace GoalBasedMvc.Models
                 if (!isValid)
                     return false;
             }
-            return base.IsValid(value);
+            return true;
         }
     }
 }

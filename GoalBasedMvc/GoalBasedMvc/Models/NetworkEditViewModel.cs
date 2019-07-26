@@ -13,6 +13,8 @@ namespace GoalBasedMvc.Models
         [Required]
         [CashFlowsValidation]
         public IList<CashFlow> CashFlows { get; set; }
+
+        public IList<string> ErrorMessages { get; set; }
     }
 
     public class NodesValidationAttribute : ValidationAttribute
@@ -25,7 +27,7 @@ namespace GoalBasedMvc.Models
                 if (dictionary.Count < 1 || dictionary.Keys.Any(k => k < 1))
                     return false;
             }
-            return base.IsValid(value);
+            return true;
         }
     }
 
@@ -39,7 +41,7 @@ namespace GoalBasedMvc.Models
                 if (list.Count < 1)
                     return false;
             }
-            return base.IsValid(value);
+            return true;
         }
     }
 }

@@ -363,17 +363,42 @@
 
             function calculateNetwork() {
                 network.cashFlows = network.cashFlows.map(function (cashflow, idx) { return { id: idx, cost: cashflow } });
+                network.cashFlows = null;
+                $('#processingMessage').removeClass('hidden');
                 $.ajax({
                     method: "Post",
                     url: '/Network/Edit',
                     data: JSON.stringify(network),
                     dataType: "json",
-                    contentType: "application/json; charset=utf-8",
-                    success: calculateNetworkSuccess
-                })
+                    contentType: "application/json; charset=utf-8"
+                }).then(calculateNetworkCallback)
+            }
+
+            function calculateNetworkCallback(response) {
+                if (response.errorMessages) {
+                    calculateNetworkError(response);
+                } else {
+                    calculateNetworkSuccess(response);
+                }
+            }
+
+            function calculateNetworkError(response) {
+                $('#processingMessage').addClass('hidden');
+                $.each(response.errorMessages, function (index, value) {
+                    $('#errorMessages').append('<li><strong>' + value + '</strong></li>');
+                });
+                $('#errorMessages').removeClass('hidden');
+                setTimeout(function () {
+                    $('#errorMessages').addClass('hidden');
+                    $('#errorMessages').empty()
+                    , 10000
+                });
             }
 
             function calculateNetworkSuccess(response) {
+                $('#processingMessage').addClass('hidden');
+                $('#successMessage').removeClass('hidden');
+                setTimeout(function () { $('#successMessage').addClass('hidden'); }, 3000);
                 network = response;
                 network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
                 updateNodes();
@@ -548,6 +573,14 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <ul id="errorMessages" class="bg-danger text-center hidden"></ul>
+                <p id="successMessage" class="bg-success text-center hidden"><strong>Calculation completed successfully.</strong></p>
+                <p id="processingMessage" class="bg-info text-center hidden"><strong>Calculation is processing...</strong></p> 
             </div>
         </div>
 

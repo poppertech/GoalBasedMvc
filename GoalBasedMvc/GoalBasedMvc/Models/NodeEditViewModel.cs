@@ -42,7 +42,7 @@ namespace GoalBasedMvc.Models
                 if (list.Count < 1)
                     return false;
             }
-            return base.IsValid(value);
+            return true;
         }
     }
 }
