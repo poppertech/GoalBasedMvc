@@ -18,7 +18,7 @@ namespace GoalBasedMvc.Models
     {
         public override bool IsValid(object value)
         {
-            if(value is Distribution)
+            if(value is DistributionEditViewModel)
             {
                 var distribution = (DistributionEditViewModel)value;
                 var isValid = true;
