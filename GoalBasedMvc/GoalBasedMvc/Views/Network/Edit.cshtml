@@ -362,8 +362,8 @@
             }
 
             function calculateNetwork() {
+                removeErrorMessages();
                 network.cashFlows = network.cashFlows.map(function (cashflow, idx) { return { id: idx, cost: cashflow } });
-                network.cashFlows = null;
                 $('#processingMessage').removeClass('hidden');
                 $.ajax({
                     method: "Post",
@@ -388,11 +388,12 @@
                     $('#errorMessages').append('<li><strong>' + value + '</strong></li>');
                 });
                 $('#errorMessages').removeClass('hidden');
-                setTimeout(function () {
-                    $('#errorMessages').addClass('hidden');
-                    $('#errorMessages').empty()
-                    , 10000
-                });
+                setTimeout(removeErrorMessages, 10000);
+            }
+
+            function removeErrorMessages() {
+                $('#errorMessages').addClass('hidden');
+                $('#errorMessages').empty()
             }
 
             function calculateNetworkSuccess(response) {
@@ -578,7 +579,7 @@
 
         <div class="row">
             <div class="col-md-12">
-                <ul id="errorMessages" class="bg-danger text-center hidden"></ul>
+                <ul id="errorMessages" class="bg-danger hidden"></ul>
                 <p id="successMessage" class="bg-success text-center hidden"><strong>Calculation completed successfully.</strong></p>
                 <p id="processingMessage" class="bg-info text-center hidden"><strong>Calculation is processing...</strong></p> 
             </div>
