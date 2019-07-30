@@ -7,17 +7,21 @@ namespace GoalBasedMvc.Models
 {
     public interface IPortfolio
     {
-        void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows);
-
+        IStatistic Statistics { get; }
+        IList<HistogramDatum> Histogram { get; }
         IList<double> SuccessProbabilities { get; }
+
+        void Init(ref IList<INode> nodes, IList<CashFlow> cashFlows);
     }
 
     public class Portfolio : IPortfolio
     {
+        private readonly IStatistic _statistics;
+        private readonly IHistogram _histogram;
+
         private IList<INode> _nodes;
         private IList<CashFlow> _cashFlows;
-        private IStatistic _statistics;
-        private IHistogram _histogram;
+        private IList<double> _simulations;
 
         private int _numSimulations;
         private double _initialValue;
@@ -47,7 +51,7 @@ namespace GoalBasedMvc.Models
 
         public IList<double> SuccessProbabilities { get; private set; }
 
-        public IStatistic Statics
+        public IStatistic Statistics
         {
             get
             {
@@ -73,11 +77,14 @@ namespace GoalBasedMvc.Models
         {
             get
             {
-                var simulations = new double[_nodes[0].Simulations.Count];
-                foreach (var node in _nodes)
-                    for (int cnt = 0; cnt < node.Simulations.Count; cnt++)
-                        simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value) * node.PortfolioWeight.Value;
-                return simulations;
+                if(_simulations == null)
+                {
+                    _simulations = new double[_nodes[0].Simulations.Count];
+                    foreach (var node in _nodes)
+                        for (int cnt = 0; cnt < node.Simulations.Count; cnt++)
+                            _simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value) * node.PortfolioWeight.Value;
+                }
+                return _simulations;
             }
         }
 
