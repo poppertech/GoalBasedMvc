@@ -109,6 +109,7 @@
                 element.addClass('btn-success');
                 var nodeId = element.data('nodeId');
                 selectedNode = network.nodes[nodeId];
+                setNodeStatistics(selectedNode);
                 setSelectDistributionOptions(selectedNode);
                 selectDistributionByIndex();
             }
@@ -127,13 +128,20 @@
                 selectedDistribution[distributionField] = element.val();
             }
 
+            function setNodeStatistics(selectedNode) {
+                $('#nodeMean').html(selectedNode.statistics.mean.toFixed(3));
+                $('#nodeStdev').html(selectedNode.statistics.stdev.toFixed(3));
+                $('#nodeSkew').html(selectedNode.statistics.skew.toFixed(3));
+                $('#nodeKurt').html(selectedNode.statistics.kurt.toFixed(3));
+            }
+
             function selectDistributionByIndex() {
                 var index = $('#selectDistribution').val();
                 selectedDistribution = selectedNode.distributions[index];
-                $('#mean').html(selectedDistribution.mean.toFixed(3));
-                $('#stdev').html(selectedDistribution.stdev.toFixed(3));
-                $('#skew').html(selectedDistribution.skew.toFixed(3));
-                $('#kurt').html(selectedDistribution.kurt.toFixed(3));
+                $('#distributionMean').html(selectedDistribution.mean.toFixed(3));
+                $('#distributionStdev').html(selectedDistribution.stdev.toFixed(3));
+                $('#distributionSkew').html(selectedDistribution.skew.toFixed(3));
+                $('#distributionKurt').html(selectedDistribution.kurt.toFixed(3));
                 $("input[data-distribution-field='minimum']").val(selectedDistribution.minimum);
                 $("input[data-distribution-field='worst']").val(selectedDistribution.worst);
                 $("input[data-distribution-field='likely']").val(selectedDistribution.likely);
@@ -489,61 +497,12 @@
                 </table>
             </div>
 
-
             <div class="panel-body">
-
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h5 class="panel-title">Distribution</h5>
+                        <h5 class="panel-title">Selected Node</h5>
                     </div>
-
-                    <div class="row">
-                        <div class="col-xs-8 col-sm-6 col-md-4">
-                            <select id="selectDistribution" class="form-control"></select>
-                        </div>
-                    </div>
-
                     <div class="panel-body">
-
-                        <div class="row">
-                            <div class="col-sm-2 col-sm-offset-1">
-                                <div class="form-group">
-                                    <label>Minimum</label>
-                                    <input data-distribution-field="minimum" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label>Worst</label>
-                                    <input data-distribution-field="worst" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label>Likely</label>
-                                    <input data-distribution-field="likely" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label>Best</label>
-                                    <input data-distribution-field="best" class="form-control" />
-                                </div>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    <label>Maximum</label>
-                                    <input data-distribution-field="maximum" class="form-control" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1">
-                                <canvas id="distributionChart"></canvas>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <div class="col-md-10 col-md-offset-1">
                                 <div class="table-responsive">
@@ -558,22 +517,105 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td id="mean"></td>
-                                                <td id="stdev"></td>
-                                                <td id="skew"></td>
-                                                <td id="kurt"></td>
+                                                <td id="nodeMean"></td>
+                                                <td id="nodeStdev"></td>
+                                                <td id="nodeSkew"></td>
+                                                <td id="nodeKurt"></td>
                                             </tr>
-
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h5 class="panel-title">Distributions</h5>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-8 col-sm-6 col-md-4">
+                                    <select id="selectDistribution" class="form-control"></select>
+                                </div>
+                            </div>
+
+                            <div class="panel-body">
+
+                                <div class="row">
+                                    <div class="col-sm-2 col-sm-offset-1">
+                                        <div class="form-group">
+                                            <label>Minimum</label>
+                                            <input data-distribution-field="minimum" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>Worst</label>
+                                            <input data-distribution-field="worst" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>Likely</label>
+                                            <input data-distribution-field="likely" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>Best</label>
+                                            <input data-distribution-field="best" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <label>Maximum</label>
+                                            <input data-distribution-field="maximum" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-10 col-md-offset-1">
+                                        <canvas id="distributionChart"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-10 col-md-offset-1">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Average</th>
+                                                        <th>Volatility</th>
+                                                        <th>Skewness</th>
+                                                        <th>Kurtosis</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td id="distributionMean"></td>
+                                                        <td id="distributionStdev"></td>
+                                                        <td id="distributionSkew"></td>
+                                                        <td id="distributionKurt"></td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
                                 </div>
 
                             </div>
                         </div>
 
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
 
