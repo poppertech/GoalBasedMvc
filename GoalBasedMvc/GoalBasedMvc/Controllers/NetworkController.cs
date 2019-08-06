@@ -36,6 +36,16 @@ namespace GoalBasedMvc.Controllers
             return View("Nodes", network);
         }
 
+        [HttpGet("{url}/nodes/{nodeid}")]
+        public IActionResult Node(string url, int nodeid)
+        {
+            var network = _service.GetNetworkByUrl(url);
+            var node = network.Nodes[nodeid];
+            node.NetworkName = network.Name;
+            node.NetworkUrl = network.Url;
+            return View("Node", node);
+        }
+
         [HttpPost]
         public IActionResult Edit([FromBody]NetworkEditViewModel viewModel)
         {

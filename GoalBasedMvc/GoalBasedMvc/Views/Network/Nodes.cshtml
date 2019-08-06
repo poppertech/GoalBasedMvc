@@ -4,7 +4,7 @@
 
     <ol class="breadcrumb">
         <li><a href="/">Networks</a></li>
-        <li>@Html.ActionLink(Model.Name, "Get", "Network", new {url = Model.Name})</li>
+        <li>@Html.ActionLink(Model.Name, "Get", "Network", new {url = Model.Url})</li>
         <li class="active">@Html.ActionLink("Nodes", "Nodes", "Network")</li>
     </ol>
 
@@ -31,7 +31,7 @@
                         @foreach (var node in Model.Nodes.Values)
                         {
                             <tr>
-                                <td>@Html.ActionLink(node.Name, "Nodes", "Network", new {url = Model.Name, nodeid = node.Id })</td>
+                                <td>@Html.ActionLink(node.Name, "Node", "Network", new {url = Model.Url, nodeid = node.Id })</td>
                                 <td>@node.Parent?.Name</td>
                                 <td>@node.InitialInvestment</td>
                                 <td>@node.InitialPrice</td>

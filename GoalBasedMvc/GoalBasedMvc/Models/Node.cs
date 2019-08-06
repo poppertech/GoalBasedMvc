@@ -8,6 +8,8 @@ namespace GoalBasedMvc.Models
     {
         int Id { get; set; }
         string Name { get; set; }
+        string NetworkName { get; set; }
+        string NetworkUrl { get; set; }
         double? InitialPrice { get; set; }
         double? InitialInvestment { get; set; }
         double? PortfolioWeight { get; set; }
@@ -44,6 +46,8 @@ namespace GoalBasedMvc.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public string NetworkName { get; set; }
+        public string NetworkUrl { get; set; }
         public double? InitialPrice { get; set; }
         public double? InitialInvestment { get; set; }
         public double? PortfolioWeight { get; set; }
