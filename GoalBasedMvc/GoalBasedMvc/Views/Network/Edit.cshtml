@@ -112,6 +112,7 @@
                 setNodeStatistics(selectedNode);
                 setSelectDistributionOptions(selectedNode);
                 selectDistributionByIndex();
+                createNodeHistogramGraph();
             }
 
             function changeNodeInput() {
@@ -298,6 +299,47 @@
                                 ticks: {
                                     fontSize: 14,
                                     fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function createNodeHistogramGraph() {
+                debugger
+                var labels = selectedNode.histogram.map(function (point) { return point.interval });
+                var data = selectedNode.histogram.map(function (point) { return point.frequency }); 
+                var goalAttainmentCtx = document.getElementById("nodeHistogramChart").getContext("2d");
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: data
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold',
+                                    autoSkip: true,
+                                    maxTicksLimit: 20
                                 }
                             }]
                         }
@@ -503,6 +545,11 @@
                         <h5 class="panel-title">Selected Node</h5>
                     </div>
                     <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <canvas id="nodeHistogramChart"></canvas>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-10 col-md-offset-1">
                                 <div class="table-responsive">
