@@ -6,6 +6,7 @@ namespace GoalBasedMvc.Models
 {
     public interface INetwork
     {
+        string Name { get; set; }
         IDictionary<int, INode> Nodes { get; set; }
         IPortfolio Portfolio { get; }
         IList<CashFlow> CashFlows { get; set; }
@@ -23,6 +24,8 @@ namespace GoalBasedMvc.Models
             _nodeSimulator = nodeSimulator;
             _portfolio = portfolio;
         }
+
+        public string Name { get; set; }
 
         public IDictionary<int, INode> Nodes { get; set; }
 

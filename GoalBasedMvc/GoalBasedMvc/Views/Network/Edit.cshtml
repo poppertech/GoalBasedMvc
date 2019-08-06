@@ -32,11 +32,7 @@
                 var strTemplate;
                 for (var nodeId in network.nodes) {
                     var node = network.nodes[nodeId];
-                    if (node.isPortfolioComponent) {
-                        var strTemplate = $('#PortfolioComponentTemplate').html();
-                    } else {
-                        var strTemplate = $('#NonPortfolioComponentTemplate').html();
-                    }
+                        var strTemplate = $('#NodeTemplate').html();
                     fillTemplate(node, strTemplate);
                 }
             }
@@ -112,11 +108,11 @@
                 $('#distributionStdev').html(selectedDistribution.stdev.toFixed(3));
                 $('#distributionSkew').html(selectedDistribution.skew.toFixed(3));
                 $('#distributionKurt').html(selectedDistribution.kurt.toFixed(3));
-                $("input[data-distribution-field='minimum']").val(selectedDistribution.minimum);
-                $("input[data-distribution-field='worst']").val(selectedDistribution.worst);
-                $("input[data-distribution-field='likely']").val(selectedDistribution.likely);
-                $("input[data-distribution-field='best']").val(selectedDistribution.best);
-                $("input[data-distribution-field='maximum']").val(selectedDistribution.maximum);
+                $("p[data-distribution-field='minimum']").text(selectedDistribution.minimum);
+                $("p[data-distribution-field='worst']").text(selectedDistribution.worst);
+                $("p[data-distribution-field='likely']").text(selectedDistribution.likely);
+                $("p[data-distribution-field='best']").text(selectedDistribution.best);
+                $("p[data-distribution-field='maximum']").text(selectedDistribution.maximum);
 
                 if (distributionChart) {
                     var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
@@ -369,17 +365,11 @@
 }
 
 <div class="panel panel-primary">
-    <div class="panel-heading clearfix">
-        <h1 class="panel-title">
-            Network
-            <span class="pull-right">
-                <a href="/" class="btn btn-lg btn-primary">Search</a>
-                <a class="btn btn-info" href="instructions" )">
-                    Instructions
-                </a>
-            </span>
-        </h1>
-    </div>
+
+    <ol class="breadcrumb">
+        <li><a href="/">Search</a></li>
+        <li class="active">@Model.Name</li>
+    </ol>
 
     <form class="panel-body">
 
@@ -463,10 +453,21 @@
                                 <th>Initial Investment</th>
                                 <th>Initial Price</th>
                                 <th>Portfolio Component?</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            @foreach (var node in Model.Nodes.Values)
+                            {
+                                <tr>
+                                    <td>@node.Id</td>
+                                    <td>@node.Name</td>
+                                    <td>@node.Parent?.Name</td>
+                                    <td>@node.InitialInvestment</td>
+                                    <td>@node.InitialPrice</td>
+                                    <td>@node.IsPortfolioComponent</td>
+                                </tr>
+                            }
+                        </tbody>
                     </table>
                 </div>
 
@@ -526,31 +527,31 @@
                                         <div class="col-sm-2 col-sm-offset-1">
                                             <div class="form-group">
                                                 <label>Minimum</label>
-                                                <input data-distribution-field="minimum" class="form-control" />
+                                                <p data-distribution-field="minimum" class="form-control-static"></p>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
                                             <div class="form-group">
                                                 <label>Worst</label>
-                                                <input data-distribution-field="worst" class="form-control" />
+                                                <p data-distribution-field="worst" class="form-control-static"></p>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
                                             <div class="form-group">
                                                 <label>Likely</label>
-                                                <input data-distribution-field="likely" class="form-control" />
+                                                <p data-distribution-field="likely" class="form-control-static"></p>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
                                             <div class="form-group">
                                                 <label>Best</label>
-                                                <input data-distribution-field="best" class="form-control" />
+                                                <p data-distribution-field="best" class="form-control-static"></p>
                                             </div>
                                         </div>
                                         <div class="col-sm-2">
                                             <div class="form-group">
                                                 <label>Maximum</label>
-                                                <input data-distribution-field="maximum" class="form-control" />
+                                                <p data-distribution-field="maximum" class="form-control-static"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -602,34 +603,6 @@
 
 </div>
 
-<script id="NonPortfolioComponentTemplate" type="text/x-jquery-tmpl">
-    <tr>
-        <td data-node-field="id"></td>
-        <td data-node-field="name"></td>
-        <td data-node-field="parent.name"></td>
-        <td data-node-field='initialInvestment'></td>
-        <td data-node-field="initialPrice"></td>
-        <td data-node-field="isPortfolioComponent"></td>
-        <td><button type="button" data-node-id="">Select</button></td>
-    </tr>
-</script>
 
-<script id="PortfolioComponentTemplate" type="text/x-jquery-tmpl">
-    <tr>
-        <td data-node-field="id"></td>
-        <td data-node-field="name"></td>
-        <td data-node-field="parent.name"></td>
-        <td>
-            <input class='form-control' data-node-field='initialInvestment' data-node-id='' />
-        </td>
-        <td>
-            <input class="form-control" data-node-field='initialPrice' data-node-id='' />
-        </td>
-        <td data-node-field="isPortfolioComponent"></td>
-        <td>
-            <button type="button" data-node-id="">
-                Select
-            </button>
-        </td>
-    </tr>
-</script>
+
+
