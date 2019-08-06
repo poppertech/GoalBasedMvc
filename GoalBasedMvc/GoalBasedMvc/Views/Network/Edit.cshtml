@@ -29,7 +29,8 @@
                 $('button[data-node-id]').first().click();
                 createCashFlowsGraph();
                 createGoalAttainmentGraph();
-
+                setPortfolioStatistics();
+                createPortfolioHistogramGraph();
             }
 
             function createNodeTable() {
@@ -134,6 +135,13 @@
                 $('#nodeStdev').html(selectedNode.statistics.stdev.toFixed(3));
                 $('#nodeSkew').html(selectedNode.statistics.skew.toFixed(3));
                 $('#nodeKurt').html(selectedNode.statistics.kurt.toFixed(3));
+            }
+
+            function setPortfolioStatistics() {
+                $('#portfolioMean').html(network.portfolio.statistics.mean.toFixed(3));
+                $('#portfolioStdev').html(network.portfolio.statistics.stdev.toFixed(3));
+                $('#portfolioSkew').html(network.portfolio.statistics.skew.toFixed(3));
+                $('#portfolioKurt').html(network.portfolio.statistics.kurt.toFixed(3));
             }
 
             function selectDistributionByIndex() {
@@ -307,10 +315,49 @@
             }
 
             function createNodeHistogramGraph() {
-                debugger
-                var labels = selectedNode.histogram.map(function (point) { return point.interval });
+                var labels = selectedNode.histogram.map(function (point) { return point.interval.toFixed(0) });
                 var data = selectedNode.histogram.map(function (point) { return point.frequency }); 
                 var goalAttainmentCtx = document.getElementById("nodeHistogramChart").getContext("2d");
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: data
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold',
+                                    autoSkip: true,
+                                    maxTicksLimit: 20
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function createPortfolioHistogramGraph() {
+                var labels = network.portfolio.histogram.map(function (point) { return point.interval.toFixed(0) });
+                var data = network.portfolio.histogram.map(function (point) { return point.frequency });
+                var goalAttainmentCtx = document.getElementById("portfolioHistogramChart").getContext("2d");
 
                 goalAttainmentChart = new Chart(goalAttainmentCtx, {
                     type: 'bar',
@@ -378,8 +425,6 @@
                 var labels = getTimeSeriesGraphLabels(network.cashFlows);
                 addGraphData(cashFlowsChart, network.cashFlows, labels);
             }
-
-
 
             function updateGoalAttainmentChart() {
                 $("#goalAttainmentContainer").show();
@@ -509,181 +554,218 @@
 
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title">Nodes</h3>
+                <h3 class="panel-title">Portfolio</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="portfolioHistogramChart"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Average</th>
+                                        <th>Volatility</th>
+                                        <th>Skewness</th>
+                                        <th>Kurtosis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="portfolioMean"></td>
+                                        <td id="portfolioStdev"></td>
+                                        <td id="portfolioSkew"></td>
+                                        <td id="portfolioKurt"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Nodes</h3>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-8 col-sm-6 col-md-4">
+                        <input type="file" id="Nodes" class="form-control" aria-label="Upload Nodes" />
+                    </div>
+                    <a id="btnDownloadNodes" class="btn btn-default" aria-label="Download Nodes">
+                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                    </a>
+                </div>
+
+
+                <div class="table-responsive">
+                    <table id="tblNodes" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Parent</th>
+                                <th>Initial Investment</th>
+                                <th>Initial Price</th>
+                                <th>Portfolio Component?</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <div class="panel-body">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h5 class="panel-title">Selected Node</h5>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-10 col-md-offset-1">
+                                    <canvas id="nodeHistogramChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-10 col-md-offset-1">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Average</th>
+                                                    <th>Volatility</th>
+                                                    <th>Skewness</th>
+                                                    <th>Kurtosis</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td id="nodeMean"></td>
+                                                    <td id="nodeStdev"></td>
+                                                    <td id="nodeSkew"></td>
+                                                    <td id="nodeKurt"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h5 class="panel-title">Distributions</h5>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-8 col-sm-6 col-md-4">
+                                        <select id="selectDistribution" class="form-control"></select>
+                                    </div>
+                                </div>
+
+                                <div class="panel-body">
+
+                                    <div class="row">
+                                        <div class="col-sm-2 col-sm-offset-1">
+                                            <div class="form-group">
+                                                <label>Minimum</label>
+                                                <input data-distribution-field="minimum" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label>Worst</label>
+                                                <input data-distribution-field="worst" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label>Likely</label>
+                                                <input data-distribution-field="likely" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label>Best</label>
+                                                <input data-distribution-field="best" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="form-group">
+                                                <label>Maximum</label>
+                                                <input data-distribution-field="maximum" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-10 col-md-offset-1">
+                                            <canvas id="distributionChart"></canvas>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-10 col-md-offset-1">
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Average</th>
+                                                            <th>Volatility</th>
+                                                            <th>Skewness</th>
+                                                            <th>Kurtosis</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td id="distributionMean"></td>
+                                                            <td id="distributionStdev"></td>
+                                                            <td id="distributionSkew"></td>
+                                                            <td id="distributionKurt"></td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <div class="row">
-                <div class="col-xs-8 col-sm-6 col-md-4">
-                    <input type="file" id="Nodes" class="form-control" aria-label="Upload Nodes" />
-                </div>
-                <a id="btnDownloadNodes" class="btn btn-default" aria-label="Download Nodes">
-                    <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
-                </a>
-            </div>
-
-
-            <div class="table-responsive">
-                <table id="tblNodes" class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Parent</th>
-                            <th>Initial Investment</th>
-                            <th>Initial Price</th>
-                            <th>Portfolio Component?</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="panel-body">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h5 class="panel-title">Selected Node</h5>
-                    </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1">
-                                <canvas id="nodeHistogramChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-10 col-md-offset-1">
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>Average</th>
-                                                <th>Volatility</th>
-                                                <th>Skewness</th>
-                                                <th>Kurtosis</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td id="nodeMean"></td>
-                                                <td id="nodeStdev"></td>
-                                                <td id="nodeSkew"></td>
-                                                <td id="nodeKurt"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel-body">
-
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h5 class="panel-title">Distributions</h5>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-xs-8 col-sm-6 col-md-4">
-                                    <select id="selectDistribution" class="form-control"></select>
-                                </div>
-                            </div>
-
-                            <div class="panel-body">
-
-                                <div class="row">
-                                    <div class="col-sm-2 col-sm-offset-1">
-                                        <div class="form-group">
-                                            <label>Minimum</label>
-                                            <input data-distribution-field="minimum" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label>Worst</label>
-                                            <input data-distribution-field="worst" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label>Likely</label>
-                                            <input data-distribution-field="likely" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label>Best</label>
-                                            <input data-distribution-field="best" class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-2">
-                                        <div class="form-group">
-                                            <label>Maximum</label>
-                                            <input data-distribution-field="maximum" class="form-control" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-10 col-md-offset-1">
-                                        <canvas id="distributionChart"></canvas>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-10 col-md-offset-1">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Average</th>
-                                                        <th>Volatility</th>
-                                                        <th>Skewness</th>
-                                                        <th>Kurtosis</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td id="distributionMean"></td>
-                                                        <td id="distributionStdev"></td>
-                                                        <td id="distributionSkew"></td>
-                                                        <td id="distributionKurt"></td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-
+                <div class="col-md-12">
+                    <ul id="errorMessages" class="bg-danger hidden"></ul>
+                    <p id="successMessage" class="bg-success text-center hidden"><strong>Calculation completed successfully.</strong></p>
+                    <p id="processingMessage" class="bg-info text-center hidden"><strong>Calculation is processing...</strong></p>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <ul id="errorMessages" class="bg-danger hidden"></ul>
-                <p id="successMessage" class="bg-success text-center hidden"><strong>Calculation completed successfully.</strong></p>
-                <p id="processingMessage" class="bg-info text-center hidden"><strong>Calculation is processing...</strong></p> 
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="btn-group pull-right" role="group">
-                    <button type="button" id="btnCalculate" class="btn btn-lg btn-primary">Calculate</button>
-                    <a href="/" class="btn btn-lg btn-danger pull-right">Search</a>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="btn-group pull-right" role="group">
+                        <button type="button" id="btnCalculate" class="btn btn-lg btn-primary">Calculate</button>
+                        <a href="/" class="btn btn-lg btn-danger pull-right">Search</a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </form>
+</form>
 
 </div>
 
