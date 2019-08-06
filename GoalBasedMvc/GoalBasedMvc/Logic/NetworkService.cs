@@ -44,6 +44,8 @@ namespace GoalBasedMvc.Logic
         public INetwork GetNetworkByUrl(string url)
         {
             var network = _networkRepository.GetNetworks(url).Single();
+            _network.Name = network.Name;
+            _network.Url = network.Url;
             _network.Nodes = _nodeRepository.GetNodesByNetworkId(network.Id);
             _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
             _network.Calculate();

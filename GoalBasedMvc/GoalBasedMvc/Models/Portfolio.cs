@@ -79,10 +79,11 @@ namespace GoalBasedMvc.Models
             {
                 if(_simulations == null)
                 {
+                    const double SCALING_FACTOR = 100;
                     _simulations = new double[_nodes[0].Simulations.Count];
                     foreach (var node in _nodes)
                         for (int cnt = 0; cnt < node.Simulations.Count; cnt++)
-                            _simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value) * node.PortfolioWeight.Value;
+                            _simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value-1)* SCALING_FACTOR * node.PortfolioWeight.Value;
                 }
                 return _simulations;
             }

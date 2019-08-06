@@ -34,10 +34,10 @@ namespace GoalBasedMvcTest.Models
 
             var expectedSimulations = new double[4]
             {
-                simulation1.Price / node.InitialPrice.Value,
-                simulation2.Price / node.InitialPrice.Value,
-                simulation3.Price / node.InitialPrice.Value,
-                simulation4.Price / node.InitialPrice.Value
+                (simulation1.Price / node.InitialPrice.Value - 1)*100,
+                (simulation2.Price / node.InitialPrice.Value - 1)*100,
+                (simulation3.Price / node.InitialPrice.Value - 1)*100,
+                (simulation4.Price / node.InitialPrice.Value - 1)*100
             };
 
             var statistics = new Mock<IStatistic>();

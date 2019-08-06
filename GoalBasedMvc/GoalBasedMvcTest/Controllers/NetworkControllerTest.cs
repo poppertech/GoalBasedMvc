@@ -44,7 +44,7 @@ namespace GoalBasedMvcTest.Controllers
             var controller = new NetworkController(service.Object);
 
             //act
-            var response = (ViewResult)controller.Edit(url);
+            var response = (ViewResult)controller.Get(url);
             var result = response.Model as INetwork;
 
             //assert

@@ -1,0 +1,236 @@
+﻿@model GoalBasedMvc.Models.INetwork
+
+@section Scripts{
+
+    <script>
+        $(function () {
+
+            var network = @Html.Raw(Json.Serialize(Model));
+
+            var cashFlowsChart, goalAttainmentChart;
+
+            init();
+
+            function init() {
+                Chart.defaults.scale.gridLines.display = false;
+                createCashFlowsGraph();
+                createGoalAttainmentGraph();
+                setPortfolioStatistics();
+                createPortfolioHistogramGraph();
+            }
+
+            function setPortfolioStatistics() {
+                $('#portfolioMean').html(network.portfolio.statistics.mean.toFixed(3));
+                $('#portfolioStdev').html(network.portfolio.statistics.stdev.toFixed(3));
+                $('#portfolioSkew').html(network.portfolio.statistics.skew.toFixed(3));
+                $('#portfolioKurt').html(network.portfolio.statistics.kurt.toFixed(3));
+            }
+
+            function createCashFlowsGraph() {
+                var cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
+                var cashFlowsLabels = getTimeSeriesGraphLabels(cashFlows);
+                var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
+
+                cashFlowsChart = new Chart(cashFlowsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: cashFlowsLabels,
+                        datasets: [{
+                            label: 'Cash Flow',
+                            lineTension: 0,
+                            data: cashFlows
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function createGoalAttainmentGraph() {
+                var goalAttainmentLabels = getTimeSeriesGraphLabels(network.portfolio.successProbabilities);
+                var goalAttainmentCtx = document.getElementById("goalAttainmentChart").getContext("2d");
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                    type: 'line',
+                    data: {
+                        labels: goalAttainmentLabels,
+                        datasets: [{
+                            label: 'Goal Attainment',
+                            lineTension: 0,
+                            data: network.portfolio.successProbabilities
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function createPortfolioHistogramGraph() {
+                var labels = network.portfolio.histogram.map(function (point) { return point.interval.toFixed(0) });
+                var data = network.portfolio.histogram.map(function (point) { return point.frequency });
+                var goalAttainmentCtx = document.getElementById("portfolioHistogramChart").getContext("2d");
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: data
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold',
+                                    autoSkip: true,
+                                    maxTicksLimit: 20
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function getTimeSeriesGraphLabels(data) {
+                var labels = [];
+                for (var cnt = 0; cnt < data.length; cnt++) {
+                        labels.push("Year " + cnt);
+                }
+                return labels;
+            }
+
+         });
+    </script>
+
+}
+
+<div class="panel panel-primary">
+
+    <ol class="breadcrumb">
+        <li><a href="/">Networks</a></li>
+        <li class="active">@Model.Name</li>
+        <li>@Html.ActionLink("Nodes", "Nodes", "Network")</li>
+    </ol>
+
+    <form class="panel-body">
+
+        <div id="goalAttainmentContainer" class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Probability of Success</h3>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="goalAttainmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cash Flows</h3>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="cashFlowsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">Portfolio</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="portfolioHistogramChart"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Average</th>
+                                        <th>Volatility</th>
+                                        <th>Skewness</th>
+                                        <th>Kurtosis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="portfolioMean"></td>
+                                        <td id="portfolioStdev"></td>
+                                        <td id="portfolioSkew"></td>
+                                        <td id="portfolioKurt"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</form>
+
+</div>
+
+
+
+
