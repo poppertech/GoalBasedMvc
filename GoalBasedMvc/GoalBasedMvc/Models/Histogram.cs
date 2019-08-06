@@ -5,12 +5,12 @@ namespace GoalBasedMvc.Models
 {
     public interface IHistogram
     {
-        IList<HistogramDatum> GetHistogramData(HistogramContext context, int num = 100);
+        IList<HistogramDatum> GetHistogramData(HistogramContext context, int num = 30);
     }
 
     public class Histogram:IHistogram
     {
-        public IList<HistogramDatum> GetHistogramData(HistogramContext context, int num = 100)
+        public IList<HistogramDatum> GetHistogramData(HistogramContext context, int num = 30)
         {
             var histogramDataArray = new HistogramDatum[num];
             double lastCumulativeFrequency = 0;

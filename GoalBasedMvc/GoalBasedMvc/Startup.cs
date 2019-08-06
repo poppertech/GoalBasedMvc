@@ -33,6 +33,13 @@ namespace GoalBasedMvc
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.Use(async (context, next) =>
+            {
+                var x = 1;
+                await next.Invoke();
+                x = 2;
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseBrowserLink();
@@ -61,6 +68,8 @@ namespace GoalBasedMvc
                     name: "default",
                     template: "{controller=Network}/{action=Index}/{id?}");
             });
+
+            
         }
     }
 }

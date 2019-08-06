@@ -16,7 +16,7 @@ namespace GoalBasedMvc.Repository
         private static readonly Random _random = new Random();
         public IList<double> GetUniformRandoms()
         {
-            var uniformRandoms = new double[1000000];
+            var uniformRandoms = new double[10000];
             for (int cnt = 0; cnt < uniformRandoms.Length; cnt++)
             {
                 uniformRandoms[cnt] = _random.NextDouble()*100;
