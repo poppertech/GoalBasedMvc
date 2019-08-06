@@ -3,13 +3,12 @@
 <div class="panel panel-primary">
 
     <ol class="breadcrumb">
-        <li><a class="active">Search</a></li>
+        <li><a class="active">Networks</a></li>
     </ol>
 
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Name</th>
                 <th>Url</th>
             </tr>
@@ -18,8 +17,7 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Id</td>
-                    <td><a asp-area="" asp-controller="Network" asp-action="Edit" asp-route-url="@item.Url">@item.Name</a></td>
+                    <td><a asp-area="" asp-controller="Network" asp-action="Get" asp-route-url="@item.Url">@item.Name</a></td>
                     <td>@item.Url</td>
                 </tr>
             }

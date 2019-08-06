@@ -23,10 +23,17 @@ namespace GoalBasedMvc.Controllers
         }
 
         [HttpGet("{url}")]
-        public IActionResult Edit(string url)
+        public IActionResult Get(string url)
         {
             var network = _service.GetNetworkByUrl(url);
             return View(network);
+        }
+
+        [HttpGet("{url}/nodes")]
+        public IActionResult Nodes(string url)
+        {
+            var network = _service.GetNetworkByUrl(url);
+            return View("Nodes", network);
         }
 
         [HttpPost]
@@ -44,12 +51,6 @@ namespace GoalBasedMvc.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-        [HttpGet("instructions")]
-        public IActionResult Instructions()
-        {
-            return View();
         }
 
 

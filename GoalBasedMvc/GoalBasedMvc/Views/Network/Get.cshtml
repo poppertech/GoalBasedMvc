@@ -14,9 +14,7 @@
             init();
 
             function init() {
-                network.cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
                 Chart.defaults.scale.gridLines.display = false;
-                createNodeTable();
                 $('#selectDistribution').change(selectDistributionByIndex);
                 $('button[data-node-id]').click(selectNode);
                 $('input[data-node-id]').change(changeNodeInput);
@@ -26,39 +24,6 @@
                 createGoalAttainmentGraph();
                 setPortfolioStatistics();
                 createPortfolioHistogramGraph();
-            }
-
-            function createNodeTable() {
-                var strTemplate;
-                for (var nodeId in network.nodes) {
-                    var node = network.nodes[nodeId];
-                        var strTemplate = $('#NodeTemplate').html();
-                    fillTemplate(node, strTemplate);
-                }
-            }
-
-            function fillTemplate(node, strTemplate) {
-                    var template = $($.parseHTML(strTemplate));
-                    template.find('td[data-node-field]').each(function () {
-                        var fieldValue;
-                        var fieldName = $(this).attr('data-node-field');
-                            if (fieldName === 'parent.name') {
-                                var parent = node['parent'];
-                                fieldValue = parent ? parent['name']:"";
-                            } else {
-                                fieldValue = node[fieldName];
-                            }
-                            $(this).html(fieldValue);
-                    });
-                template.find('[data-node-id]').each(function () {
-                            $(this).attr('data-node-id', node.id);
-                    });
-                    template.find('input[data-node-field]').each(function () {
-                            var fieldName = $(this).attr('data-node-field');
-                            var fieldValue = node[fieldName];
-                            $(this).val(fieldValue);
-                    });
-                    $('#tblNodes tbody').append(template);
             }
 
             function selectNode() {
@@ -200,7 +165,8 @@
             }
 
             function createCashFlowsGraph() {
-                var cashFlowsLabels = getTimeSeriesGraphLabels(network.cashFlows);
+                var cashFlows = network.cashFlows.map(function (cashFlow) { return cashFlow.cost });
+                var cashFlowsLabels = getTimeSeriesGraphLabels(cashFlows);
                 var cashFlowsCtx = document.getElementById("cashFlowsChart").getContext("2d");
 
                 cashFlowsChart = new Chart(cashFlowsCtx, {
@@ -210,7 +176,7 @@
                         datasets: [{
                             label: 'Cash Flow',
                             lineTension: 0,
-                            data: network.cashFlows
+                            data: cashFlows
                         }]
                     },
                     options: {
@@ -367,8 +333,9 @@
 <div class="panel panel-primary">
 
     <ol class="breadcrumb">
-        <li><a href="/">Search</a></li>
+        <li><a href="/">Networks</a></li>
         <li class="active">@Model.Name</li>
+        <li>@Html.ActionLink("Nodes", "Nodes", "Network")</li>
     </ol>
 
     <form class="panel-body">
