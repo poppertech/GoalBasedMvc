@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GoalBasedMvc.Models;
-using System.Collections.Generic;
 using GoalBasedMvc.Logic;
 using System.Linq;
 
@@ -9,38 +8,44 @@ namespace GoalBasedMvc.Controllers
 {
     public class NetworkController : Controller
     {
-        private readonly INetworkService _service;
+        private readonly INetworkService _networkService;
+        private readonly INodeService _nodeService;
 
-        public NetworkController(INetworkService service)
+        public NetworkController(
+            INetworkService networkService,
+            INodeService nodeService
+            )
         {
-            _service = service;
+            _networkService = networkService;
+            _nodeService = nodeService;
         }
 
         public IActionResult Index()
         {
-            var networks = _service.GetNetworks();
+            var networks = _networkService.GetNetworks();
             return View(networks);
         }
 
         [HttpGet("{url}")]
         public IActionResult Get(string url)
         {
-            var network = _service.GetNetworkByUrl(url);
+            var network = _networkService.GetNetworkByUrl(url);
             return View(network);
         }
 
         [HttpGet("{url}/nodes")]
         public IActionResult Nodes(string url)
         {
-            var network = _service.GetNetworkByUrl(url);
+            var network = _networkService.GetNetworkByUrl(url);
             return View("Nodes", network);
         }
 
-        [HttpGet("{url}/nodes/{nodeid}")]
-        public IActionResult Node(string url, int nodeid)
+        [HttpGet("{networkUrl}/nodes/{nodeUrl}")]
+        public IActionResult Node(string networkUrl, string nodeUrl)
         {
-            var network = _service.GetNetworkByUrl(url);
-            var node = network.Nodes[nodeid];
+            var nodeOnly = _nodeService.GetNodeByUrl(nodeUrl);
+            var network = _networkService.GetNetworkByUrl(networkUrl);
+            var node = network.Nodes[nodeOnly.Id];
             node.NetworkName = network.Name;
             node.NetworkUrl = network.Url;
             return View("Node", node);
@@ -54,7 +59,7 @@ namespace GoalBasedMvc.Controllers
                 viewModel.ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 return Json(viewModel);
             }
-            var network = _service.CalculateNetwork(viewModel);
+            var network = _networkService.CalculateNetwork(viewModel);
             return Json(network);
         }
 

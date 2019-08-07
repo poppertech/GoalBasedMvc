@@ -31,7 +31,7 @@
                         @foreach (var node in Model.Nodes.Values)
                         {
                             <tr>
-                                <td>@Html.ActionLink(node.Name, "Node", "Network", new {url = Model.Url, nodeid = node.Id })</td>
+                                <td>@Html.ActionLink(node.Name, "Node", "Network", new {networkUrl = Model.Url, nodeUrl = node.Url })</td>
                                 <td>@node.Parent?.Name</td>
                                 <td>@node.InitialInvestment</td>
                                 <td>@node.InitialPrice</td>

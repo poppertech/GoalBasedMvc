@@ -10,6 +10,7 @@ namespace GoalBasedMvc.Repository
     public interface INodeRepository
     {
         IDictionary<int, INode> GetNodesByNetworkId(int networkId);
+        INode GetNodeByUrl(string url);
     }
 
     public class NodeRepository : INodeRepository
@@ -55,6 +56,33 @@ namespace GoalBasedMvc.Repository
             return _nodeDictionary;
         }
 
+        public INode GetNodeByUrl(string url)
+        {
+            var node = _nodeFactory();
+            using (var connection = new SqlConnection(_connectionString))
+            using (var command = new SqlCommand("GetNodeByUrl", connection))
+            {
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@Url", url);
+
+                connection.Open();
+
+                using (IDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        node.Id = (int)reader["NodeId"];
+                        node.Name = (string)reader["NodeName"];
+                        node.Url = (string)reader["NodeUrl"];
+                        node.InitialInvestment = reader["InitialInvestment"] != DBNull.Value ? (double?)reader["InitialInvestment"] : null;
+                        node.InitialPrice = reader["InitialPrice"] != DBNull.Value ? (double?)reader["InitialPrice"] : null;
+                        node.IsPortfolioComponent = (bool)reader["IsPortfolioComponent"];
+                    }
+                }
+            }
+            return node;
+        }
+
         private INode GetNode(IDataReader reader)
         {
             INode node;
@@ -64,6 +92,7 @@ namespace GoalBasedMvc.Repository
                 node = _nodeFactory();
                 node.Id = nodeId;
                 node.Name = (string)reader["NodeName"];
+                node.Url = (string)reader["NodeUrl"];
                 node.InitialInvestment = reader["InitialInvestment"] != DBNull.Value ? (double?)reader["InitialInvestment"] : null;
                 node.InitialPrice = reader["InitialPrice"] != DBNull.Value ? (double?)reader["InitialPrice"] : null;
                 node.IsPortfolioComponent = (bool)reader["IsPortfolioComponent"];
