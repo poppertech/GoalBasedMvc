@@ -5,7 +5,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INodeService
     {
-        INode GetNodeByUrl(string url);
+        INode GetNodeByUrl(string nodeUrl, string networkUrl);
     }
 
     public class NodeService: INodeService
@@ -17,9 +17,9 @@ namespace GoalBasedMvc.Logic
             _nodeRepository = nodeRepository;
         }
 
-        public INode GetNodeByUrl(string url)
+        public INode GetNodeByUrl(string nodeUrl, string networkUrl)
         {
-            return _nodeRepository.GetNodeByUrl(url);
+            return _nodeRepository.GetNodeByUrl(nodeUrl, networkUrl);
         }
     }
 }

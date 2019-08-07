@@ -174,8 +174,8 @@
     <ol class="breadcrumb">
         <li><a href="/">Networks</a></li>
         <li>@Html.ActionLink(Model.NetworkName, "Get", "Network", new { url = Model.NetworkUrl })</li>
-        <li>@Html.ActionLink("Nodes", "Nodes", "Network")</li>
-        <li>@Model.Name</li>
+        <li>@Html.ActionLink("Nodes", "Nodes", "Network", new { url = Model.NetworkUrl })</li>
+        <li class="active">@Model.Name</li>
     </ol>
 
     <div class="panel-body">

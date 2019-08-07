@@ -10,7 +10,7 @@ namespace GoalBasedMvc.Repository
     public interface INodeRepository
     {
         IDictionary<int, INode> GetNodesByNetworkId(int networkId);
-        INode GetNodeByUrl(string url);
+        INode GetNodeByUrl(string nodeUrl, string networkUrl);
     }
 
     public class NodeRepository : INodeRepository
@@ -56,14 +56,15 @@ namespace GoalBasedMvc.Repository
             return _nodeDictionary;
         }
 
-        public INode GetNodeByUrl(string url)
+        public INode GetNodeByUrl(string nodeUrl, string networkUrl)
         {
             var node = _nodeFactory();
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand("GetNodeByUrl", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.AddWithValue("@Url", url);
+                command.Parameters.AddWithValue("@NodeUrl", nodeUrl);
+                command.Parameters.AddWithValue("@NetworkUrl", networkUrl);
 
                 connection.Open();
 

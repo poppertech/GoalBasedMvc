@@ -127,13 +127,13 @@ namespace GoalBasedMvc.Models
                 portfolioSimulations[portfolioCnt] = new double[_cashFlows.Count];
                 for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
                 {
-                    var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt, periodCnt] * n.PortfolioWeight);
+                    var portfolioValue = _nodes.Sum(n => n.ValueSimulations[portfolioCnt, periodCnt]);
                     var portfolioValueNet = portfolioValue - _cashFlows[periodCnt].Cost;
                     portfolioValueNet = portfolioValueNet > 0 ? portfolioValueNet : 0;
-                    portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet.Value;
+                    portfolioSimulations[portfolioCnt][periodCnt] = portfolioValueNet;
                     if (periodCnt < _cashFlows.Count - 1)
                         foreach (var node in _nodes)
-                            node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet.Value * node.PortfolioWeight.Value;
+                            node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet * node.PortfolioWeight.Value;
 
                     SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
                 }

@@ -43,7 +43,7 @@ namespace GoalBasedMvc.Controllers
         [HttpGet("{networkUrl}/nodes/{nodeUrl}")]
         public IActionResult Node(string networkUrl, string nodeUrl)
         {
-            var nodeOnly = _nodeService.GetNodeByUrl(nodeUrl);
+            var nodeOnly = _nodeService.GetNodeByUrl(nodeUrl, networkUrl);
             var network = _networkService.GetNetworkByUrl(networkUrl);
             var node = network.Nodes[nodeOnly.Id];
             node.NetworkName = network.Name;
