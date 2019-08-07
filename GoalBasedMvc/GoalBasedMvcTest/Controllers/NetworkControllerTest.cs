@@ -85,7 +85,7 @@ namespace GoalBasedMvcTest.Controllers
             nodeOnly.Setup(n => n.Id).Returns(nodeId);
 
             var nodeService = new Mock<INodeService>();
-            nodeService.Setup(s => s.GetNodeByUrl(It.Is<string>(url => url == nodeUrl))).Returns(nodeOnly.Object);
+            nodeService.Setup(s => s.GetNodeByUrl(It.Is<string>(url => url == nodeUrl), It.Is<string>(url => url == networkUrl))).Returns(nodeOnly.Object);
 
             var node = new Mock<INode>();
             node.SetupAllProperties();
