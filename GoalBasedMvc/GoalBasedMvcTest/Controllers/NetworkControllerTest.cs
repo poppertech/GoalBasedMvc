@@ -22,7 +22,7 @@ namespace GoalBasedMvcTest.Controllers
             var service = new Mock<INetworkService>();
             service.Setup(s => s.GetNetworks()).Returns(networks);
 
-            var controller = new NetworkController(service.Object);
+            var controller = new NetworkController(service.Object, null);
 
             //act
             var viewResult = (ViewResult)controller.Index();
@@ -41,7 +41,7 @@ namespace GoalBasedMvcTest.Controllers
             var service = new Mock<INetworkService>();
             service.Setup(s => s.GetNetworkByUrl(It.Is<string>(u=> u == url))).Returns(network.Object);
 
-            var controller = new NetworkController(service.Object);
+            var controller = new NetworkController(service.Object, null);
 
             //act
             var response = (ViewResult)controller.Get(url);
@@ -62,7 +62,7 @@ namespace GoalBasedMvcTest.Controllers
             var service = new Mock<INetworkService>();
             service.Setup(s => s.CalculateNetwork(It.Is<NetworkEditViewModel>(n => n == viewModel))).Returns(network.Object);
 
-            var controller = new NetworkController(service.Object);
+            var controller = new NetworkController(service.Object, null);
 
             //act
             var response = (JsonResult)controller.Edit(viewModel);
@@ -70,6 +70,43 @@ namespace GoalBasedMvcTest.Controllers
 
             //assert
             Assert.AreSame(network.Object, result);
+        }
+
+        [TestMethod]
+        public void NodeOnSuccessReturnsNode()
+        {
+            //arrange
+            var nodeId = 1;
+            var networkName = "networkname";
+            var networkUrl = "networkurl";
+            var nodeUrl = "nodeurl";
+
+            var nodeOnly = new Mock<INode>();
+            nodeOnly.Setup(n => n.Id).Returns(nodeId);
+
+            var nodeService = new Mock<INodeService>();
+            nodeService.Setup(s => s.GetNodeByUrl(It.Is<string>(url => url == nodeUrl))).Returns(nodeOnly.Object);
+
+            var node = new Mock<INode>();
+            node.SetupAllProperties();
+            var dictionary = new SortedDictionary<int, INode> { { nodeId, node.Object } };
+            var network = new Mock<INetwork>();
+            network.Setup(n => n.Nodes).Returns(dictionary);
+            network.Setup(n => n.Name).Returns(networkName);
+            network.Setup(n => n.Url).Returns(networkUrl);
+
+            var networkService = new Mock<INetworkService>();
+            networkService.Setup(s => s.GetNetworkByUrl(It.Is<string>(url => url == networkUrl))).Returns(network.Object);
+
+            var controller = new NetworkController(networkService.Object, nodeService.Object);
+
+            //act
+            var result = (ViewResult)controller.Node(networkUrl, nodeUrl);
+            var nodeResult = (INode)result.Model;
+
+            Assert.AreEqual("Node", result.ViewName);
+            Assert.AreEqual(networkName, nodeResult.NetworkName);
+            Assert.AreEqual(networkUrl, nodeResult.NetworkUrl);
         }
     }
 }
