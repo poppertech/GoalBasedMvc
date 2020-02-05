@@ -9,31 +9,28 @@ namespace GoalBasedMvc.Repository
 {
     public interface INodeRepository
     {
-        IDictionary<int, INode> GetNodesByNetworkId(int networkId);
-        INode GetNodeByUrl(string nodeUrl, string networkUrl);
+        IDictionary<int, NodeRecord> GetNodesByNetworkId(int networkId);
+        NodeRecord GetNodeByUrl(string nodeUrl, string networkUrl);
     }
 
     public class NodeRepository : INodeRepository
     {
         private readonly string _connectionString;
-        private readonly Func<INode> _nodeFactory;
         private readonly Func<DistributionContext, IDistribution> _distributionFactory;
-        private IDictionary<int, INode> _nodeDictionary;
+        private IDictionary<int, NodeRecord> _nodeDictionary;
 
         public NodeRepository(
             IOptions<MvcOptions> optionsAccessor, 
-            Func<INode> nodeFactory,
             Func<DistributionContext, IDistribution> distributionFactory
             )
         {
             _connectionString = optionsAccessor.Value.ConnString;
-            _nodeFactory = nodeFactory;
             _distributionFactory = distributionFactory;
         }
 
-        public IDictionary<int, INode> GetNodesByNetworkId(int networkId)
+        public IDictionary<int, NodeRecord> GetNodesByNetworkId(int networkId)
         {
-            _nodeDictionary = new SortedDictionary<int, INode>();
+            _nodeDictionary = new SortedDictionary<int, NodeRecord>();
 
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand("GetNodesByNetworkId", connection))
@@ -56,9 +53,9 @@ namespace GoalBasedMvc.Repository
             return _nodeDictionary;
         }
 
-        public INode GetNodeByUrl(string nodeUrl, string networkUrl)
+        public NodeRecord GetNodeByUrl(string nodeUrl, string networkUrl)
         {
-            var node = _nodeFactory();
+            var node = new NodeRecord();
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand("GetNodeByUrl", connection))
             {
@@ -84,13 +81,13 @@ namespace GoalBasedMvc.Repository
             return node;
         }
 
-        private INode GetNode(IDataReader reader)
+        private NodeRecord GetNode(IDataReader reader)
         {
-            INode node;
+            NodeRecord node;
             var nodeId = (int)reader["NodeId"];
             if (nodeId > 0 && !_nodeDictionary.ContainsKey(nodeId))
             {
-                node = _nodeFactory();
+                node = new NodeRecord();
                 node.Id = nodeId;
                 node.Name = (string)reader["NodeName"];
                 node.Url = (string)reader["NodeUrl"];

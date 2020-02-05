@@ -19,21 +19,24 @@ namespace GoalBasedMvc.Logic
         private readonly INodeRepository _nodeRepository;
         private readonly ICashFlowRepository _cashFlowRepository;
         private readonly INetwork _network;
-        private readonly INetworkMapper _mapper;
+        private readonly INetworkMapper _networkMapper;
+        private readonly INodeMapper _nodeMapper;
 
         public NetworkService(
             INetworkRepository networkRepository, 
             INodeRepository nodeRepository, 
             ICashFlowRepository cashFlowRepository, 
             INetwork network,
-            INetworkMapper mapper
+            INetworkMapper mapper,
+            INodeMapper nodeMapper
             )
         {
             _networkRepository = networkRepository;
             _nodeRepository = nodeRepository;
             _cashFlowRepository = cashFlowRepository;
             _network = network;
-            _mapper = mapper;
+            _networkMapper = mapper;
+            _nodeMapper = nodeMapper;
         }
 
         public IEnumerable<NetworkViewModel> GetNetworks()
@@ -46,7 +49,8 @@ namespace GoalBasedMvc.Logic
             var network = _networkRepository.GetNetworks(url).Single();
             _network.Name = network.Name;
             _network.Url = network.Url;
-            _network.Nodes = _nodeRepository.GetNodesByNetworkId(network.Id);
+             var nodeRecords = _nodeRepository.GetNodesByNetworkId(network.Id);
+            _network.Nodes = _nodeMapper.MapNodeRecordsToNodes(nodeRecords);
             _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
             _network.Calculate();
             return _network;
@@ -54,7 +58,7 @@ namespace GoalBasedMvc.Logic
 
         public INetwork CalculateNetwork(NetworkEditViewModel viewModel)
         {
-            var network = _mapper.MapViewModelToEntity(viewModel);
+            var network = _networkMapper.MapViewModelToEntity(viewModel);
             network.Calculate();
             return network;
         }

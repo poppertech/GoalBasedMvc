@@ -35,9 +35,7 @@ namespace GoalBasedMvc
         {
             app.Use(async (context, next) =>
             {
-                var x = 1;
                 await next.Invoke();
-                x = 2;
             });
 
             if (env.IsDevelopment())

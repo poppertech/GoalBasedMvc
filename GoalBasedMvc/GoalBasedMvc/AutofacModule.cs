@@ -19,6 +19,7 @@ namespace GoalBasedMvc
             builder.RegisterType<NetworkService>().As<INetworkService>();
             builder.RegisterType<NodeService>().As<INodeService>();
             builder.RegisterType<NetworkMapper>().As<INetworkMapper>();
+            builder.RegisterType<NodeMapper>().As<INodeMapper>();
             builder.RegisterType<NodeSimulator>().As<INodeSimulator>();
             builder.RegisterType<SimulationEvaluator>().As<ISimulationEvaluator>();
 

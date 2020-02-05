@@ -27,8 +27,7 @@ namespace GoalBasedMvc.Logic
             var keys = nodeDictionary.Keys.ToList();
             for (int cnt = 0; cnt < nodeDictionary.Count; cnt++)
             {
-                var key = keys[cnt];
-                var node = nodeDictionary[key];
+                var node = nodeDictionary[keys[cnt]];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
                 SimulateNode(ref node, uniformRandoms);
             }
@@ -43,10 +42,8 @@ namespace GoalBasedMvc.Logic
             _evaluator.Init(node.Distributions);
             Parallel.For(0, uniformRandoms.Count, cnt =>
             {
-                var uniformRandom = uniformRandoms[cnt];
                 var distributionIndex = parent == null ? 0 : parent.Simulations[cnt].DistributionIndex;
-                var simulation = _evaluator.Evaluate(distributionIndex, uniformRandom);
-                simulations[cnt] = simulation;
+                simulations[cnt] = _evaluator.Evaluate(distributionIndex, uniformRandoms[cnt]);
             });
             node.Simulations = simulations;
         }

@@ -22,7 +22,7 @@ namespace GoalBasedMvcTest.Logic
             var repository = new Mock<INetworkRepository>();
             repository.Setup(r => r.GetNetworks(It.IsAny<string>())).Returns(networks);
 
-            var service = new NetworkService(repository.Object, null, null, null, null);
+            var service = new NetworkService(repository.Object, null, null, null, null, null);
 
             //act
             var results = service.GetNetworks();
@@ -37,7 +37,17 @@ namespace GoalBasedMvcTest.Logic
             //arrange
             var url = "url";
             var networkId = 1;
-            IDictionary<int, INode> nodeDictionary = new SortedDictionary<int, INode>();
+            var nodeId = 2;
+
+            var nodeRecord = new NodeRecord { Id = nodeId };
+            var nodeRecords = new SortedDictionary<int, NodeRecord>();
+            nodeRecords.Add(nodeId, nodeRecord);
+
+            var node = new Mock<INode>();
+            node.Setup(n => n.Id).Returns(nodeId);
+            var nodes = new SortedDictionary<int, INode>();
+            nodes.Add(nodeId, node.Object);
+
             var cashFlows = new CashFlow[0];
 
             var view = new NetworkViewModel { Id = 1 };
@@ -47,14 +57,19 @@ namespace GoalBasedMvcTest.Logic
             repository.Setup(r => r.GetNetworks(It.Is<string>(u => u == url))).Returns(networks);
 
             var nodeRepository = new Mock<INodeRepository>();
-            nodeRepository.Setup(r => r.GetNodesByNetworkId(It.Is<int>(id => id == networkId))).Returns(nodeDictionary);
+            nodeRepository.Setup(r => r.GetNodesByNetworkId(It.Is<int>(id => id == networkId))).Returns(nodeRecords);
+
+            var nodeMapper = new Mock<INodeMapper>();
+            nodeMapper
+                .Setup(m => m.MapNodeRecordsToNodes(It.Is<IDictionary<int, NodeRecord>>(dict => dict[nodeId].Id == nodeId)))
+                .Returns(nodes);
 
             var cashFlowRepository = new Mock<ICashFlowRepository>();
             cashFlowRepository.Setup(r => r.GetCashFlowsByNetworkId(It.Is<int>(id => id == networkId))).Returns(cashFlows);
 
             var network = new Mock<INetwork>();
 
-            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object, null);
+            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object, null, nodeMapper.Object);
 
             //act
             var result = service.GetNetworkByUrl(url);
@@ -91,7 +106,7 @@ namespace GoalBasedMvcTest.Logic
             var mapper = new Mock<INetworkMapper>();
             mapper.Setup(m => m.MapViewModelToEntity(It.Is<NetworkEditViewModel>(vm => vm == viewModel))).Returns(network.Object);
 
-            var service = new NetworkService(null, null, null, null, mapper.Object);
+            var service = new NetworkService(null, null, null, null, mapper.Object, null);
 
             //act
             var result = service.CalculateNetwork(viewModel);
