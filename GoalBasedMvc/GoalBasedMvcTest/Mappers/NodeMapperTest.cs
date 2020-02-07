@@ -54,7 +54,7 @@ namespace GoalBasedMvcTest.Mappers
             Func<DistributionRecord, IDistribution> distributionFactory = (r) =>
              {
                  var distribution = new Mock<IDistribution>();
-                 distribution.Setup(d => d.Id).Returns(distributionId);
+                 distribution.Setup(d => d.Id).Returns(r.Id);
                  return distribution.Object;
              };
 
