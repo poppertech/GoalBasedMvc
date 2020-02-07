@@ -13,12 +13,12 @@ namespace GoalBasedMvc.Mappers
     {
         private readonly INetwork _network;
         private readonly Func<INode> _nodeFactory;
-        private readonly Func<DistributionContext, IDistribution> _distributionFactory;
+        private readonly Func<DistributionRecord, IDistribution> _distributionFactory;
 
         public NetworkMapper(
             INetwork network,
             Func<INode> nodeFactory,
-            Func<DistributionContext, IDistribution> distributionFactory
+            Func<DistributionRecord, IDistribution> distributionFactory
             )
         {
             _network = network;
@@ -72,7 +72,7 @@ namespace GoalBasedMvc.Mappers
 
         private IDistribution MapDistributionViewModelToEntity(DistributionEditViewModel viewModel)
         {
-            var context = new DistributionContext();
+            var context = new DistributionRecord();
             context.Id = viewModel.Id;
             context.Minimum = viewModel.Minimum;
             context.Worst = viewModel.Worst;

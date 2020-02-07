@@ -16,12 +16,12 @@ namespace GoalBasedMvc.Repository
     public class NodeRepository : INodeRepository
     {
         private readonly string _connectionString;
-        private readonly Func<DistributionContext, IDistribution> _distributionFactory;
+        private readonly Func<DistributionRecord, IDistribution> _distributionFactory;
         private IDictionary<int, NodeRecord> _nodeDictionary;
 
         public NodeRepository(
             IOptions<MvcOptions> optionsAccessor, 
-            Func<DistributionContext, IDistribution> distributionFactory
+            Func<DistributionRecord, IDistribution> distributionFactory
             )
         {
             _connectionString = optionsAccessor.Value.ConnString;
@@ -108,17 +108,16 @@ namespace GoalBasedMvc.Repository
             return node;
         }
 
-        private IDistribution GetDistribution(IDataReader reader)
+        private DistributionRecord GetDistribution(IDataReader reader)
         {
-            var context = new DistributionContext();
-            context.Id = (int)reader["DistributionId"];
-            context.Minimum = (double)reader["Minimum"];
-            context.Worst = (double)reader["Worst"];
-            context.Likely = (double)reader["Likely"];
-            context.Best = (double)reader["Best"];
-            context.Maximum = (double)reader["Maximum"];
-            var distribution = _distributionFactory(context);
-            return distribution;
+            var record = new DistributionRecord();
+            record.Id = (int)reader["DistributionId"];
+            record.Minimum = (double)reader["Minimum"];
+            record.Worst = (double)reader["Worst"];
+            record.Likely = (double)reader["Likely"];
+            record.Best = (double)reader["Best"];
+            record.Maximum = (double)reader["Maximum"];
+            return record;
         }
 
     }

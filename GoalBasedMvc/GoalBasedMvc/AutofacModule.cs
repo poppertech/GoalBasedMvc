@@ -31,7 +31,7 @@ namespace GoalBasedMvc
             builder.Register<IDistribution>((c, p) =>
             {
                 var parameter = p.First() as TypedParameter;
-                return new Distribution(parameter.Value as DistributionContext);
+                return new Distribution(parameter.Value as DistributionRecord);
             });
 
             base.Load(builder);

@@ -1,6 +1,6 @@
 ﻿namespace GoalBasedMvc.Models
 {
-    public class DistributionContext
+    public class DistributionRecord
     {
         public int Id { get; set; }
         public double Minimum { get; set; }

@@ -40,7 +40,7 @@ namespace GoalBasedMvc.Models
         private readonly double _leftNormalProbability, _rightNormalProbability;
         private readonly double _moment3;
 
-        public Distribution(DistributionContext context)
+        public Distribution(DistributionRecord context)
         {
             Id = context.Id;
             Minimum = context.Minimum;

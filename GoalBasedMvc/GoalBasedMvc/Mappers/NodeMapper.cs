@@ -1,6 +1,7 @@
 ﻿using GoalBasedMvc.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GoalBasedMvc.Mappers
 {
@@ -12,10 +13,15 @@ namespace GoalBasedMvc.Mappers
     public class NodeMapper : INodeMapper
     {
         private readonly Func<INode> _nodeFactory;
+        private readonly Func<DistributionRecord, IDistribution> _distributionFactory;
 
-        public NodeMapper(Func<INode> nodeFactory)
+        public NodeMapper(
+            Func<INode> nodeFactory,
+            Func<DistributionRecord, IDistribution> distributionFactory
+            )
         {
             _nodeFactory = nodeFactory;
+            _distributionFactory = distributionFactory;
         }
 
         public IDictionary<int, INode> MapNodeRecordsToNodes(IDictionary<int, NodeRecord> records)
@@ -44,7 +50,7 @@ namespace GoalBasedMvc.Mappers
             node.InitialInvestment = record.InitialInvestment;
             node.PortfolioWeight = record.PortfolioWeight;
             node.IsPortfolioComponent = record.IsPortfolioComponent;
-            node.Distributions = record.Distributions;
+            node.Distributions = record.Distributions.Select(r => _distributionFactory(r)).ToList();
             return node;
         }
     }

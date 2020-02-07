@@ -22,7 +22,7 @@ namespace GoalBasedMvcTest.Models
             var uniformRandom3 = 66.673560619284;
             var uniformRandom4 = 94.5083821398705;
 
-            var context = new DistributionContext();
+            var context = new DistributionRecord();
             context.Id = id;
             context.Minimum = xMin;
             context.Worst = xBad;

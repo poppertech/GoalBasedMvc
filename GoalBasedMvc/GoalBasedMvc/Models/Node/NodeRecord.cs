@@ -6,7 +6,7 @@ namespace GoalBasedMvc.Models
     {
         public NodeRecord()
         {
-            Distributions = new List<IDistribution>();
+            Distributions = new List<DistributionRecord>();
         }
 
         public int Id { get; set; }
@@ -18,7 +18,7 @@ namespace GoalBasedMvc.Models
         public double? InitialInvestment { get; set; }
         public double? PortfolioWeight { get; set; }
         public bool IsPortfolioComponent { get; set; }
-        public IList<IDistribution> Distributions { get; set; }
+        public IList<DistributionRecord> Distributions { get; set; }
         public NodeRecord Parent { get; set; }
     }
 }
