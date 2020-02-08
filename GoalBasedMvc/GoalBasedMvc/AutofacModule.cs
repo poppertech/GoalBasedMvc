@@ -21,7 +21,6 @@ namespace GoalBasedMvc
             builder.RegisterType<NetworkMapper>().As<INetworkMapper>();
             builder.RegisterType<NodeMapper>().As<INodeMapper>();
             builder.RegisterType<NodeSimulator>().As<INodeSimulator>();
-            builder.RegisterType<SimulationEvaluator>().As<ISimulationEvaluator>();
 
             builder.RegisterType<Portfolio>().As<IPortfolio>();
             builder.RegisterType<Network>().As<INetwork>();
