@@ -17,6 +17,15 @@ namespace GoalBasedMvc.Models
         bool IsPortfolioComponent { get; set; }
 
         IList<IDistribution> Distributions { get; set; }
+        IStatistic Statistics { get; }
+        IList<HistogramDatum> Histogram { get; }
+
+        [JsonIgnore]
+        IList<Simulation> Simulations { get; set; }
+        [JsonIgnore]
+        double[,] CumulativeSimulations { get; set; }
+        [JsonIgnore]
+        double[,] ValueSimulations { get; set; }
 
         INode Parent { get; set; }
     }
