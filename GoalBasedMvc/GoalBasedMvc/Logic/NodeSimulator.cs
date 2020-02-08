@@ -29,12 +29,12 @@ namespace GoalBasedMvc.Logic
             {
                 var node = nodeDictionary[keys[cnt]];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
-                SimulateNode(ref node, uniformRandoms);
+                node.Simulations = SimulateNode(node, uniformRandoms);
             }
             return nodeDictionary;
         }
 
-        private void SimulateNode(ref INode node, IList<double> uniformRandoms)
+        private IList<Simulation> SimulateNode(INode node, IList<double> uniformRandoms)
         {
             var simulations = new Simulation[uniformRandoms.Count];
             IList<IDistribution> distributions = node.Distributions;
@@ -45,7 +45,7 @@ namespace GoalBasedMvc.Logic
                 var distributionIndex = parent == null ? 0 : parent.Simulations[cnt].DistributionIndex;
                 simulations[cnt] = _evaluator.Evaluate(distributionIndex, uniformRandoms[cnt]);
             });
-            node.Simulations = simulations;
+            return simulations;
         }
     }
 }
