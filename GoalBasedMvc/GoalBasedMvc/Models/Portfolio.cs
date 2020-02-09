@@ -42,11 +42,10 @@ namespace GoalBasedMvc.Models
             _numSimulations = _nodes[0].Simulations.Count / (cashFlows.Count - 1);
 
             _initialValue = _nodes.Sum(n => n.InitialInvestment.Value);
-            SuccessProbabilities = new double[_cashFlows.Count];
 
             InitNodeProperties();
-            CalculateSuccessCounts();
-            CalculateSuccessProbabilities();
+            var successCounts = CalculateSuccessCounts();
+            SuccessProbabilities = CalculateSuccessProbabilities(successCounts);
         }
 
         public IList<double> SuccessProbabilities { get; private set; }
@@ -119,8 +118,9 @@ namespace GoalBasedMvc.Models
             node.CumulativeSimulations = cumulativeSimulations;
         }
 
-        private void CalculateSuccessCounts()
+        private IList<double> CalculateSuccessCounts()
         {
+            var successCounts = new double[_cashFlows.Count];
             var portfolioSimulations = new double[_numSimulations][];
             for (int portfolioCnt = 0; portfolioCnt < _numSimulations; portfolioCnt++)
             {
@@ -135,17 +135,20 @@ namespace GoalBasedMvc.Models
                         foreach (var node in _nodes)
                             node.ValueSimulations[portfolioCnt, periodCnt + 1] = node.CumulativeSimulations[portfolioCnt, periodCnt] * portfolioValueNet * node.PortfolioWeight.Value;
 
-                    SuccessProbabilities[periodCnt] = portfolioValueNet > 0 ? SuccessProbabilities[periodCnt] + 1 : SuccessProbabilities[periodCnt];
+                    successCounts[periodCnt] = portfolioValueNet > 0 ? successCounts[periodCnt] + 1 : successCounts[periodCnt];
                 }
             }
+            return successCounts;
         }
 
-        private void CalculateSuccessProbabilities()
+        private IList<double> CalculateSuccessProbabilities(IList<double> successCounts)
         {
+            IList<double> successProbabilities = new double[_cashFlows.Count];
             for (int periodCnt = 0; periodCnt < _cashFlows.Count; periodCnt++)
             {
-                SuccessProbabilities[periodCnt] = SuccessProbabilities[periodCnt] / _numSimulations;
+                successProbabilities[periodCnt] = successCounts[periodCnt] / _numSimulations;
             }
+            return successProbabilities;
         }
 
     }
