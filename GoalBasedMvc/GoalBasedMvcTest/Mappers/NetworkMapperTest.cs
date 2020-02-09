@@ -13,7 +13,7 @@ namespace GoalBasedMvcTest.Mappers
         public void MapViewModelToEntityOnSuccessMapsProperties()
         {
             //arrange
-            var distributionViewModel = new DistributionEditViewModel
+            var distributionViewModel = new DistributionViewModel
             {
                 Id = 1,
                 Minimum = 2,
@@ -22,7 +22,7 @@ namespace GoalBasedMvcTest.Mappers
                 Best = 5,
                 Maximum = 6
             };
-            var parentViewModel = new NodeEditViewModel
+            var parentViewModel = new NodeViewModel
             {
                 Id = 7,
                 Name = "parent",
@@ -33,17 +33,17 @@ namespace GoalBasedMvcTest.Mappers
                 Distributions = new[] { distributionViewModel },
                 Parent = null
             };
-            var childViewModel = new NodeEditViewModel
+            var childViewModel = new NodeViewModel
             {
                 Id = 12,
                 Distributions = new[] { distributionViewModel },
                 Parent = parentViewModel
             };
             var cashFlowViewModel = new CashFlow();
-            var networkViewModel = new NetworkEditViewModel
+            var networkViewModel = new NetworkViewModel
             {
                 CashFlows = new[] { cashFlowViewModel },
-                Nodes = new SortedDictionary<int, NodeEditViewModel> { { parentViewModel.Id, parentViewModel }, { childViewModel.Id, childViewModel } }
+                Nodes = new SortedDictionary<int, NodeViewModel> { { parentViewModel.Id, parentViewModel }, { childViewModel.Id, childViewModel } }
             };
 
             var network = new Network(null, null);

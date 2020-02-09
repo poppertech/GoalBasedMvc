@@ -10,7 +10,7 @@ namespace GoalBasedMvc.Logic
     {
         IEnumerable<NetworkRecord> GetNetworks();
         INetwork GetNetworkByUrl(string url);
-        INetwork CalculateNetwork(NetworkEditViewModel viewModel);
+        INetwork CalculateNetwork(NetworkViewModel viewModel);
     }
 
     public class NetworkService: INetworkService
@@ -56,7 +56,7 @@ namespace GoalBasedMvc.Logic
             return _network;
         }
 
-        public INetwork CalculateNetwork(NetworkEditViewModel viewModel)
+        public INetwork CalculateNetwork(NetworkViewModel viewModel)
         {
             var network = _networkMapper.MapViewModelToEntity(viewModel);
             network.Calculate();

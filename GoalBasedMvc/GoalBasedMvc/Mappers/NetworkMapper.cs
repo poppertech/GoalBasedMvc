@@ -6,7 +6,7 @@ namespace GoalBasedMvc.Mappers
 {
     public interface INetworkMapper
     {
-        INetwork MapViewModelToEntity(NetworkEditViewModel viewModel);
+        INetwork MapViewModelToEntity(NetworkViewModel viewModel);
     }
 
     public class NetworkMapper: INetworkMapper
@@ -26,14 +26,14 @@ namespace GoalBasedMvc.Mappers
             _distributionFactory = distributionFactory;
         }
 
-        public INetwork MapViewModelToEntity(NetworkEditViewModel viewModel)
+        public INetwork MapViewModelToEntity(NetworkViewModel viewModel)
         {
             _network.CashFlows = viewModel.CashFlows;
             _network.Nodes = CreateNodeDictionary(viewModel.Nodes);
             return _network;
         }
 
-        private IDictionary<int, INode> CreateNodeDictionary(IDictionary<int, NodeEditViewModel> viewModelDictionary)
+        private IDictionary<int, INode> CreateNodeDictionary(IDictionary<int, NodeViewModel> viewModelDictionary)
         {
             _network.Nodes = new SortedDictionary<int, INode>();
             foreach (var key in viewModelDictionary.Keys)
@@ -45,7 +45,7 @@ namespace GoalBasedMvc.Mappers
             return _network.Nodes;
         }
 
-        private INode MapNodeViewModelToEntity(NodeEditViewModel viewModel)
+        private INode MapNodeViewModelToEntity(NodeViewModel viewModel)
         {
             var node = _nodeFactory();
             node.Id = viewModel.Id;
@@ -59,7 +59,7 @@ namespace GoalBasedMvc.Mappers
             return node;
         }
 
-        private IList<IDistribution> MapDistributionViewModelsToEntities(IList<DistributionEditViewModel> viewModels)
+        private IList<IDistribution> MapDistributionViewModelsToEntities(IList<DistributionViewModel> viewModels)
         {
             var distributions = new IDistribution[viewModels.Count];
             for (int cnt = 0; cnt < viewModels.Count; cnt++)
@@ -70,7 +70,7 @@ namespace GoalBasedMvc.Mappers
             return distributions;
         }
 
-        private IDistribution MapDistributionViewModelToEntity(DistributionEditViewModel viewModel)
+        private IDistribution MapDistributionViewModelToEntity(DistributionViewModel viewModel)
         {
             var context = new DistributionRecord();
             context.Id = viewModel.Id;

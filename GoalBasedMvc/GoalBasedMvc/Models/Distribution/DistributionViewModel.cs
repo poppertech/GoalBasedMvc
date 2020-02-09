@@ -1,6 +1,6 @@
 ﻿namespace GoalBasedMvc.Models
 {
-    public class DistributionEditViewModel
+    public class DistributionViewModel
     {
         public int Id { get; set; }
 

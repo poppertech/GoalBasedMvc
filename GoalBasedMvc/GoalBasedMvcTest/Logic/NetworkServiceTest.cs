@@ -84,12 +84,12 @@ namespace GoalBasedMvcTest.Logic
         {
             //arrange
             var parentId = 1;
-            var parent = new NodeEditViewModel { Id = parentId };
+            var parent = new NodeViewModel { Id = parentId };
 
             var childId = 2;
-            var child = new NodeEditViewModel { Id = childId, Parent = parent };
+            var child = new NodeViewModel { Id = childId, Parent = parent };
  
-            var dictionary = new SortedDictionary<int, NodeEditViewModel> {
+            var dictionary = new SortedDictionary<int, NodeViewModel> {
                 {parentId, parent },
                 {childId, child }
             };
@@ -97,14 +97,14 @@ namespace GoalBasedMvcTest.Logic
             var cashFlow = new CashFlow { Id = 3, Cost = 100 };
             var cashFlows = new[] { cashFlow };
 
-            var viewModel = new NetworkEditViewModel {
+            var viewModel = new NetworkViewModel {
                 Nodes = dictionary,
                 CashFlows = cashFlows
             };
 
             var network = new Mock<INetwork>();
             var mapper = new Mock<INetworkMapper>();
-            mapper.Setup(m => m.MapViewModelToEntity(It.Is<NetworkEditViewModel>(vm => vm == viewModel))).Returns(network.Object);
+            mapper.Setup(m => m.MapViewModelToEntity(It.Is<NetworkViewModel>(vm => vm == viewModel))).Returns(network.Object);
 
             var service = new NetworkService(null, null, null, null, mapper.Object, null);
 
