@@ -79,40 +79,5 @@ namespace GoalBasedMvcTest.Logic
             network.Verify(n => n.Calculate());
         }
 
-        [TestMethod]
-        public void CalculateNetworkOnSuccessReturnsNetwork()
-        {
-            //arrange
-            var parentId = 1;
-            var parent = new NodeViewModel { Id = parentId };
-
-            var childId = 2;
-            var child = new NodeViewModel { Id = childId, Parent = parent };
- 
-            var dictionary = new SortedDictionary<int, NodeViewModel> {
-                {parentId, parent },
-                {childId, child }
-            };
-
-            var cashFlow = new CashFlow { Id = 3, Cost = 100 };
-            var cashFlows = new[] { cashFlow };
-
-            var viewModel = new NetworkViewModel {
-                Nodes = dictionary,
-                CashFlows = cashFlows
-            };
-
-            var network = new Mock<INetwork>();
-            var mapper = new Mock<INetworkMapper>();
-            mapper.Setup(m => m.MapViewModelToEntity(It.Is<NetworkViewModel>(vm => vm == viewModel))).Returns(network.Object);
-
-            var service = new NetworkService(null, null, null, null, mapper.Object, null);
-
-            //act
-            var result = service.CalculateNetwork(viewModel);
-
-            network.Verify(n => n.Calculate());
-        }
-
     }
 }
