@@ -51,18 +51,6 @@ namespace GoalBasedMvc.Controllers
             return View("Node", node);
         }
 
-        [HttpPost]
-        public IActionResult Edit([FromBody]NetworkEditViewModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                viewModel.ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
-                return Json(viewModel);
-            }
-            var network = _networkService.CalculateNetwork(viewModel);
-            return Json(network);
-        }
-
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
