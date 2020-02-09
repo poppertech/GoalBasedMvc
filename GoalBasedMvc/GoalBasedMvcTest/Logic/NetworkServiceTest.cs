@@ -16,7 +16,7 @@ namespace GoalBasedMvcTest.Logic
         public void GetNetworksOnSuccessReturnsNetworks()
         {
             //arrange
-            var network = new NetworkViewModel { Id = 1 };
+            var network = new NetworkRecord { Id = 1 };
             var networks = new[] { network };
 
             var repository = new Mock<INetworkRepository>();
@@ -50,7 +50,7 @@ namespace GoalBasedMvcTest.Logic
 
             var cashFlows = new CashFlow[0];
 
-            var view = new NetworkViewModel { Id = 1 };
+            var view = new NetworkRecord { Id = 1 };
             var networks = new[] { view };
 
             var repository = new Mock<INetworkRepository>();

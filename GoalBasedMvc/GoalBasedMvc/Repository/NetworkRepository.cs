@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Repository
 {
     public interface INetworkRepository
     {
-        IEnumerable<NetworkViewModel> GetNetworks(string url = null);
+        IEnumerable<NetworkRecord> GetNetworks(string url = null);
     }
 
     public class NetworkRepository: INetworkRepository
@@ -20,9 +20,9 @@ namespace GoalBasedMvc.Repository
             _connectionString = optionsAccessor.Value.ConnString;
         }
 
-        public IEnumerable<NetworkViewModel> GetNetworks(string url = null)
+        public IEnumerable<NetworkRecord> GetNetworks(string url = null)
         {
-            var networks = new List<NetworkViewModel>();
+            var networks = new List<NetworkRecord>();
             using (var connection = new SqlConnection(_connectionString))
             using (var command = new SqlCommand("GetNetworks", connection))
             {
@@ -37,7 +37,7 @@ namespace GoalBasedMvc.Repository
                 {
                     while (reader.Read())
                     {
-                        var network = new NetworkViewModel();
+                        var network = new NetworkRecord();
                         network.Id = (int)reader["Id"];
                         network.Name = (string)reader["Name"];
                         network.Url = (string)reader["Url"];

@@ -8,7 +8,7 @@ namespace GoalBasedMvc.Logic
 {
     public interface INetworkService
     {
-        IEnumerable<NetworkViewModel> GetNetworks();
+        IEnumerable<NetworkRecord> GetNetworks();
         INetwork GetNetworkByUrl(string url);
         INetwork CalculateNetwork(NetworkEditViewModel viewModel);
     }
@@ -39,7 +39,7 @@ namespace GoalBasedMvc.Logic
             _nodeMapper = nodeMapper;
         }
 
-        public IEnumerable<NetworkViewModel> GetNetworks()
+        public IEnumerable<NetworkRecord> GetNetworks()
         {
             return _networkRepository.GetNetworks();
         }

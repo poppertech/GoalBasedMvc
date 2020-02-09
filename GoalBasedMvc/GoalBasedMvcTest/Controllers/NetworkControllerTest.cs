@@ -16,7 +16,7 @@ namespace GoalBasedMvcTest.Controllers
         public void GetNetworksOnSuccessReturnsNetworks()
         {
             //arrange
-            var network = new NetworkViewModel { Id = 1 };
+            var network = new NetworkRecord { Id = 1 };
             var networks = new[] { network };
 
             var service = new Mock<INetworkService>();
@@ -26,7 +26,7 @@ namespace GoalBasedMvcTest.Controllers
 
             //act
             var viewResult = (ViewResult)controller.Index();
-            var result = viewResult.Model as IEnumerable<NetworkViewModel>;
+            var result = viewResult.Model as IEnumerable<NetworkRecord>;
 
             //assert
             Assert.AreEqual(network.Id, result.First().Id);
