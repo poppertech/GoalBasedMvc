@@ -1,4 +1,4 @@
-﻿namespace GoalBasedMvc.Models
+﻿ namespace GoalBasedMvc.Models
 {
     public class HistogramDatum
     {
