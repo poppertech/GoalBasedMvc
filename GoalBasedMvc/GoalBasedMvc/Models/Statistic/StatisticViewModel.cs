@@ -2,9 +2,9 @@
 {
     public class StatisticViewModel
     {
-        double Mean { get; set; }
-        double Stdev { get; set; }
-        double Skew { get; set; }
-        double Kurt { get; set; }
+        public double Mean { get; set; }
+        public double Stdev { get; set; }
+        public double Skew { get; set; }
+        public double Kurt { get; set; }
     }
 }

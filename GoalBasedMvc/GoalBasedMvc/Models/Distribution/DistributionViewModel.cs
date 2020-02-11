@@ -2,21 +2,21 @@
 {
     public class DistributionViewModel
     {
-        int Id { get; set; }
+        public int Id { get; set; }
 
-        double Minimum { get; set; }
-        double Worst { get; set; }
-        double Likely { get; set; }
-        double Best { get; set; }
-        double Maximum { get; set; }
+        public double Minimum { get; set; }
+        public double Worst { get; set; }
+        public double Likely { get; set; }
+        public double Best { get; set; }
+        public double Maximum { get; set; }
 
-        double HeightWorst { get; set; }
-        double HeightLikely { get; set; }
-        double HeightBest { get; set; }
+        public double HeightWorst { get; set; }
+        public double HeightLikely { get; set; }
+        public double HeightBest { get; set; }
 
-        double Mean { get; set; }
-        double Stdev { get; set; }
-        double Skew { get; set; }
-        double Kurt { get; set; }
+        public double Mean { get; set; }
+        public double Stdev { get; set; }
+        public double Skew { get; set; }
+        public double Kurt { get; set; }
     }
 }

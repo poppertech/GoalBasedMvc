@@ -7,6 +7,7 @@ namespace GoalBasedMvc.Mappers
 {
     public interface INodeMapper
     {
+        IDictionary<int, NodeViewModel> MapNodesToViewModels(IDictionary<int, INode> nodes);
         IDictionary<int, INode> MapNodeRecordsToNodes(IDictionary<int, NodeRecord> records);
     }
 
@@ -15,13 +16,52 @@ namespace GoalBasedMvc.Mappers
         private readonly Func<INode> _nodeFactory;
         private readonly Func<DistributionRecord, IDistribution> _distributionFactory;
 
+        private readonly IDistributionMapper _distributionMapper;
+        private readonly IStatisticMapper _statisticMapper;
+
         public NodeMapper(
             Func<INode> nodeFactory,
-            Func<DistributionRecord, IDistribution> distributionFactory
+            Func<DistributionRecord, IDistribution> distributionFactory,
+            IDistributionMapper distributionMapper,
+            IStatisticMapper statisticMapper
             )
         {
             _nodeFactory = nodeFactory;
             _distributionFactory = distributionFactory;
+            _distributionMapper = distributionMapper;
+            _statisticMapper = statisticMapper;
+        }
+
+        public IDictionary<int, NodeViewModel> MapNodesToViewModels(IDictionary<int, INode> nodes)
+        {
+            var viewModels = new SortedDictionary<int, NodeViewModel>();
+            foreach (var key in nodes.Keys)
+            {
+                var node = nodes[key];
+                var viewModel = MapNodeToViewModel(node);
+                if (node.Parent != null)
+                    viewModel.Parent = viewModels[node.Parent.Id];
+                viewModels.Add(key, viewModel);
+            }
+            return viewModels;
+        }
+
+        private NodeViewModel MapNodeToViewModel(INode node)
+        {
+            var viewModel = new NodeViewModel();
+            viewModel.Id = node.Id;
+            viewModel.Name = node.Name;
+            viewModel.Url = node.Url;
+            viewModel.NetworkName = node.NetworkName;
+            viewModel.NetworkUrl = node.NetworkUrl;
+            viewModel.InitialPrice = node.InitialPrice;
+            viewModel.InitialInvestment = node.InitialInvestment;
+            viewModel.PortfolioWeight = node.PortfolioWeight;
+            viewModel.IsPortfolioComponent = node.IsPortfolioComponent;
+            viewModel.Distributions = _distributionMapper.MapDistributionsToViewModels(node.Distributions);
+            viewModel.Statistics = _statisticMapper.MapStatisticToViewModel(node.Statistics);
+            viewModel.Histogram = node.Histogram;
+            return viewModel;
         }
 
         public IDictionary<int, INode> MapNodeRecordsToNodes(IDictionary<int, NodeRecord> records)

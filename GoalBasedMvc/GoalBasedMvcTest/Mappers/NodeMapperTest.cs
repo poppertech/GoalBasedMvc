@@ -58,7 +58,7 @@ namespace GoalBasedMvcTest.Mappers
                  return distribution.Object;
              };
 
-            var mapper = new NodeMapper(nodeFactory, distributionFactory);
+            var mapper = new NodeMapper(nodeFactory, distributionFactory, null, null);
 
             //act
             var result = mapper.MapNodeRecordsToNodes(records);
