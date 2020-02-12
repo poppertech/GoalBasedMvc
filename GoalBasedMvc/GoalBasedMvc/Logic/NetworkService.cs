@@ -9,7 +9,7 @@ namespace GoalBasedMvc.Logic
     public interface INetworkService
     {
         IEnumerable<NetworkRecord> GetNetworks();
-        INetwork GetNetworkByUrl(string url);
+        NetworkViewModel GetNetworkByUrl(string url);
     }
 
     public class NetworkService: INetworkService
@@ -43,7 +43,7 @@ namespace GoalBasedMvc.Logic
             return _networkRepository.GetNetworks();
         }
 
-        public INetwork GetNetworkByUrl(string url)
+        public NetworkViewModel GetNetworkByUrl(string url)
         {
             var network = _networkRepository.GetNetworks(url).Single();
             _network.Name = network.Name;
@@ -52,7 +52,8 @@ namespace GoalBasedMvc.Logic
             _network.Nodes = _nodeMapper.MapNodeRecordsToNodes(nodeRecords);
             _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
             _network.Calculate();
-            return _network;
+            var networkViewModel = _networkMapper.MapNetworkToViewModel(_network);
+            return networkViewModel;
         }
 
     }
