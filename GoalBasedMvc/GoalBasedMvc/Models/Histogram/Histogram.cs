@@ -15,12 +15,15 @@ namespace GoalBasedMvc.Models
             var histogramDataArray = new HistogramDatum[num];
             double lastCumulativeFrequency = 0;
             double dblNum = num;
+            var sortedSimulations = new List<double>(context.Simulations);
+            sortedSimulations.Sort();
             for (int cnt = 1; cnt <= num; cnt++)
             {
                 var histogramData = new HistogramDatum();
                 var interval = (cnt / dblNum) * (context.GlobalXMax - context.GlobalXMin) + context.GlobalXMin;
                 histogramData.Interval = interval;
-                double cumulativeCount = context.Simulations.Count(x => x <= interval);
+                var index = sortedSimulations.BinarySearch(interval);
+                double cumulativeCount = index < 0? ~index: index + 1;
                 double totalCount = context.Simulations.Count;
                 var cumulativeFrequency = cumulativeCount / totalCount;
                 var frequency = cumulativeFrequency - lastCumulativeFrequency;
