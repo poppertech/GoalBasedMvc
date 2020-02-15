@@ -1,6 +1,7 @@
 ﻿using GoalBasedMvc.Mappers;
 using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
+using Microsoft.Extensions.Caching.Memory;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,6 +21,7 @@ namespace GoalBasedMvc.Logic
         private readonly INetwork _network;
         private readonly INetworkMapper _networkMapper;
         private readonly INodeMapper _nodeMapper;
+        private readonly IMemoryCache _cache;
 
         public NetworkService(
             INetworkRepository networkRepository, 
@@ -27,7 +29,8 @@ namespace GoalBasedMvc.Logic
             ICashFlowRepository cashFlowRepository, 
             INetwork network,
             INetworkMapper mapper,
-            INodeMapper nodeMapper
+            INodeMapper nodeMapper,
+            IMemoryCache cache
             )
         {
             _networkRepository = networkRepository;
@@ -36,6 +39,7 @@ namespace GoalBasedMvc.Logic
             _network = network;
             _networkMapper = mapper;
             _nodeMapper = nodeMapper;
+            _cache = cache;
         }
 
         public IEnumerable<NetworkRecord> GetNetworks()
@@ -45,14 +49,19 @@ namespace GoalBasedMvc.Logic
 
         public NetworkViewModel GetNetworkByUrl(string url)
         {
-            var network = _networkRepository.GetNetworks(url).Single();
-            _network.Name = network.Name;
-            _network.Url = network.Url;
-             var nodeRecords = _nodeRepository.GetNodesByNetworkId(network.Id);
-            _network.Nodes = _nodeMapper.MapNodeRecordsToNodes(nodeRecords);
-            _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
-            _network.Calculate();
-            var networkViewModel = _networkMapper.MapNetworkToViewModel(_network);
+            NetworkViewModel networkViewModel;
+            if(!_cache.TryGetValue(url, out networkViewModel)){
+                var network = _networkRepository.GetNetworks(url).Single();
+                _network.Name = network.Name;
+                _network.Url = network.Url;
+                var nodeRecords = _nodeRepository.GetNodesByNetworkId(network.Id);
+                _network.Nodes = _nodeMapper.MapNodeRecordsToNodes(nodeRecords);
+                _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
+                _network.Calculate();
+                networkViewModel = _networkMapper.MapNetworkToViewModel(_network);
+                var entryOptions = new MemoryCacheEntryOptions();
+                _cache.Set(url, networkViewModel, entryOptions);
+            }
             return networkViewModel;
         }
 

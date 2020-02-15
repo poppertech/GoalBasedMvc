@@ -3,6 +3,7 @@ using GoalBasedMvc.Logic;
 using GoalBasedMvc.Mappers;
 using GoalBasedMvc.Models;
 using GoalBasedMvc.Repository;
+using Microsoft.Extensions.Caching.Memory;
 using System.Linq;
 
 namespace GoalBasedMvc
@@ -37,6 +38,11 @@ namespace GoalBasedMvc
                 var parameter = p.First() as TypedParameter;
                 return new Distribution(parameter.Value as DistributionRecord);
             });
+
+            builder.Register<IMemoryCache>((c, p) => {
+                var options = new MemoryCacheOptions();
+                return new MemoryCache(options);
+            }).SingleInstance();
 
             base.Load(builder);
         }
