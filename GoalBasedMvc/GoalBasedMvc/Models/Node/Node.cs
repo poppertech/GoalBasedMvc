@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace GoalBasedMvc.Models
@@ -21,10 +20,6 @@ namespace GoalBasedMvc.Models
         IList<HistogramDatum> Histogram { get; }
 
         IList<double> Simulations { get; set; }
-
-        double[,] CumulativeSimulations { get; set; }
-        [JsonIgnore]
-        double[,] ValueSimulations { get; set; }
 
         INode Parent { get; set; }
     }
@@ -77,10 +72,6 @@ namespace GoalBasedMvc.Models
         }
 
         public IList<double> Simulations { get; set; }
-
-        public double[,] CumulativeSimulations { get; set; }
-
-        public double[,] ValueSimulations { get; set; }
 
         public INode Parent { get; set; }
 

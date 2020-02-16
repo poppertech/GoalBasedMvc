@@ -32,13 +32,15 @@ namespace GoalBasedMvc.Logic
             {
                 var node = nodeDictionary[keys[cnt]];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
-                SimulateNode(node, uniformRandoms);
-                node.Simulations = _simulationPrices[node.Id];
+                node.Simulations = SimulateNode(node, uniformRandoms);
+                _simulationPrices[node.Id]= node.Simulations;
             }
+            _simulationIndexes.Clear();
+            _simulationPrices.Clear();
             return nodeDictionary;
         }
 
-        private void SimulateNode(INode node, IList<double> uniformRandoms)
+        private IList<double> SimulateNode(INode node, IList<double> uniformRandoms)
         {
             var simulationIndexes = new byte[uniformRandoms.Count];
             var simulationPrices = new double[uniformRandoms.Count];
@@ -52,7 +54,7 @@ namespace GoalBasedMvc.Logic
                 simulationPrices[cnt] = simulation.Price;
             });
             _simulationIndexes[node.Id] = simulationIndexes;
-            _simulationPrices[node.Id] = simulationPrices;
+            return simulationPrices;
         }
 
         public Simulation Evaluate(IDistribution distribution, double uniformRandom)

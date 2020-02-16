@@ -38,7 +38,7 @@ namespace GoalBasedMvc.Models
         {
             IList<INode> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
-            _portfolio.Init(ref nodes, cashFlows);
+            _portfolio.Init(nodes, cashFlows);
             Portfolio = _portfolio;
             CashFlows = cashFlows;
         }
