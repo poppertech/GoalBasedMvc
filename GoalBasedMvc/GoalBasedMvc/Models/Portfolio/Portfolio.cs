@@ -46,6 +46,16 @@ namespace GoalBasedMvc.Models
             InitNodeProperties();
             var successCounts = CalculateSuccessCounts();
             SuccessProbabilities = CalculateSuccessProbabilities(successCounts);
+            RemoveTransientNodeProperties();
+        }
+
+        private void RemoveTransientNodeProperties()
+        {
+            foreach (var node in _nodes)
+            {
+                node.CumulativeSimulations = null;
+                node.ValueSimulations = null;
+            }
         }
 
         public IList<double> SuccessProbabilities { get; private set; }
@@ -82,7 +92,7 @@ namespace GoalBasedMvc.Models
                     _simulations = new double[_nodes[0].Simulations.Count];
                     foreach (var node in _nodes)
                         for (int cnt = 0; cnt < node.Simulations.Count; cnt++)
-                            _simulations[cnt] += (node.Simulations[cnt].Price / node.InitialPrice.Value-1)* SCALING_FACTOR * node.PortfolioWeight.Value;
+                            _simulations[cnt] += (node.Simulations[cnt] / node.InitialPrice.Value-1)* SCALING_FACTOR * node.PortfolioWeight.Value;
                 }
                 return _simulations;
             }
@@ -110,7 +120,7 @@ namespace GoalBasedMvc.Models
 
                 if (cashFlowCnt < (numCashFlows - 1))
                 {
-                    var simulation = node.Simulations[simulationCnt].Price;
+                    var simulation = node.Simulations[simulationCnt];
                     var cumulativeSimulation = simulation / node.InitialPrice;
                     cumulativeSimulations[portfolioCnt, cashFlowCnt] = cumulativeSimulation.Value;
                 }

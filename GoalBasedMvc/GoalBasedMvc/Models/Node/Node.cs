@@ -20,9 +20,8 @@ namespace GoalBasedMvc.Models
         IStatistic Statistics { get; }
         IList<HistogramDatum> Histogram { get; }
 
-        [JsonIgnore]
-        IList<Simulation> Simulations { get; set; }
-        [JsonIgnore]
+        IList<double> Simulations { get; set; }
+
         double[,] CumulativeSimulations { get; set; }
         [JsonIgnore]
         double[,] ValueSimulations { get; set; }
@@ -59,8 +58,7 @@ namespace GoalBasedMvc.Models
 
         public IStatistic Statistics {
             get {
-                var prices = Simulations.Select(s => s.Price).ToList();
-                _statistic.Init(prices);
+                _statistic.Init(Simulations);
                 return _statistic;
             }
         }
@@ -70,7 +68,7 @@ namespace GoalBasedMvc.Models
             get
             {
                 var context = new HistogramContext();
-                context.Simulations = Simulations.Select(s => s.Price).ToList();
+                context.Simulations = Simulations;
                 context.GlobalXMin = Distributions.Min(d => d.Minimum);
                 context.GlobalXMax = Distributions.Max(d => d.Maximum);
                 var data = _histogram.GetHistogramData(context);
@@ -78,11 +76,10 @@ namespace GoalBasedMvc.Models
             }
         }
 
-        [JsonIgnore]
-        public IList<Simulation> Simulations { get; set; }
-        [JsonIgnore]
+        public IList<double> Simulations { get; set; }
+
         public double[,] CumulativeSimulations { get; set; }
-        [JsonIgnore]
+
         public double[,] ValueSimulations { get; set; }
 
         public INode Parent { get; set; }

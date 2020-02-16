@@ -15,10 +15,14 @@ namespace GoalBasedMvc.Logic
     public class NodeSimulator : INodeSimulator
     {
         private readonly IUniformRandomRepository _uniformRandomRepository;
+        private readonly IDictionary<int, IList<byte>> _simulationIndexes;
+        private readonly IDictionary<int, IList<double>> _simulationPrices;
 
         public NodeSimulator(IUniformRandomRepository uniformRandomRepository)
         {
             _uniformRandomRepository = uniformRandomRepository;
+            _simulationIndexes = new Dictionary<int, IList<byte>>();
+            _simulationPrices = new Dictionary<int, IList<double>>();
         }
 
         public IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodeDictionary)
@@ -28,22 +32,27 @@ namespace GoalBasedMvc.Logic
             {
                 var node = nodeDictionary[keys[cnt]];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
-                node.Simulations = SimulateNode(node, uniformRandoms);
+                SimulateNode(node, uniformRandoms);
+                node.Simulations = _simulationPrices[node.Id];
             }
             return nodeDictionary;
         }
 
-        private IList<Simulation> SimulateNode(INode node, IList<double> uniformRandoms)
+        private void SimulateNode(INode node, IList<double> uniformRandoms)
         {
-            var simulations = new Simulation[uniformRandoms.Count];
+            var simulationIndexes = new byte[uniformRandoms.Count];
+            var simulationPrices = new double[uniformRandoms.Count];
             IList<IDistribution> distributions = node.Distributions;
             var parent = node.Parent;
             Parallel.For(0, uniformRandoms.Count, cnt =>
             {
-                var distributionIndex = parent == null ? 0 : parent.Simulations[cnt].DistributionIndex;
-                simulations[cnt] = Evaluate(distributions[distributionIndex], uniformRandoms[cnt]);
+                var distributionIndex = parent == null ? 0 : _simulationIndexes[parent.Id][cnt];
+                var simulation = Evaluate(distributions[distributionIndex], uniformRandoms[cnt]);
+                simulationIndexes[cnt] = simulation.DistributionIndex;
+                simulationPrices[cnt] = simulation.Price;
             });
-            return simulations;
+            _simulationIndexes[node.Id] = simulationIndexes;
+            _simulationPrices[node.Id] = simulationPrices;
         }
 
         public Simulation Evaluate(IDistribution distribution, double uniformRandom)

@@ -17,12 +17,10 @@ namespace GoalBasedMvc.Models
 
     public class Network : INetwork
     {
-        private readonly INodeSimulator _nodeSimulator;
         private readonly IPortfolio _portfolio;
 
-        public Network(INodeSimulator nodeSimulator, IPortfolio portfolio)
+        public Network(IPortfolio portfolio)
         {
-            _nodeSimulator = nodeSimulator;
             _portfolio = portfolio;
         }
 
@@ -38,7 +36,6 @@ namespace GoalBasedMvc.Models
 
         public void Calculate()
         {
-            Nodes = _nodeSimulator.SimulateNodes(Nodes);
             IList<INode> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
             _portfolio.Init(ref nodes, cashFlows);

@@ -15,9 +15,6 @@ namespace GoalBasedMvc.Models
 
     public class Statistic: IStatistic
     {
-        private double _count;
-        private IList<double> _deMeanedReturns;
-
         public double Mean { get; private set; }
         public double Stdev { get; private set; }
         public double Skew { get; private set; }
@@ -26,32 +23,32 @@ namespace GoalBasedMvc.Models
         public void Init(IList<double> inputReturns)
         {
             Mean = inputReturns.Average();
-            _count = inputReturns.Count;
-            _deMeanedReturns = inputReturns.Select(rett => rett - Mean).ToArray();
+            var count = inputReturns.Count;
+            var deMeanedReturns = inputReturns.Select(rett => rett - Mean).ToArray();
 
-            Stdev = CalculateStdev();
-            Skew = CalculateSkew();
-            Kurt = CalculateKurt();
+            Stdev = CalculateStdev(deMeanedReturns, count);
+            Skew = CalculateSkew(deMeanedReturns, count);
+            Kurt = CalculateKurt(deMeanedReturns, count);
         }
 
 
-        private double CalculateStdev()
+        private double CalculateStdev(IList<double> deMeanedReturns, double count)
         {       
-                double sumSq = _deMeanedReturns.Sum(rett => Math.Pow(rett, 2));
-                return Math.Pow(sumSq / (_count - 1), .5);    
+                double sumSq = deMeanedReturns.Sum(rett => Math.Pow(rett, 2));
+                return Math.Pow(sumSq / (count - 1), .5);    
         }
 
-        private double CalculateSkew()
+        private double CalculateSkew(IList<double> deMeanedReturns, double count)
         {
-            double sumCube = _deMeanedReturns.Sum(rett => Math.Pow(rett, 3));
-            return (_count / ((_count - 1) * (_count - 2))) * (sumCube / Math.Pow(Stdev, 3));
+            double sumCube = deMeanedReturns.Sum(rett => Math.Pow(rett, 3));
+            return (count / ((count - 1) * (count - 2))) * (sumCube / Math.Pow(Stdev, 3));
         }
 
-        private double CalculateKurt()
+        private double CalculateKurt(IList<double> deMeanedReturns, double count)
         {
-            double sumPow4 = _deMeanedReturns.Sum(rett => Math.Pow(rett, 4));
-            double coef = (((_count) * (_count + 1)) / ((_count - 1) * (_count - 2) * (_count - 3)));
-            double adjFact = (-3 * ((Math.Pow(_count - 1, 2)) / ((_count - 2) * (_count - 3))));
+            double sumPow4 = deMeanedReturns.Sum(rett => Math.Pow(rett, 4));
+            double coef = (((count) * (count + 1)) / ((count - 1) * (count - 2) * (count - 3)));
+            double adjFact = (-3 * ((Math.Pow(count - 1, 2)) / ((count - 2) * (count - 3))));
             return (coef * (sumPow4 / Math.Pow(Stdev, 4)) + adjFact);
         }
     }

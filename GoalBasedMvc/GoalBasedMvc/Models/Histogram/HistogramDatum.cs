@@ -1,6 +1,6 @@
 ﻿ namespace GoalBasedMvc.Models
 {
-    public class HistogramDatum
+    public struct HistogramDatum
     {
         public double Interval { get; set; }
         public double Frequency { get; set; }
