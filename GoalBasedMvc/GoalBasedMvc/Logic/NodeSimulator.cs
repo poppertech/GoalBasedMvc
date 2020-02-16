@@ -49,7 +49,7 @@ namespace GoalBasedMvc.Logic
         public Simulation Evaluate(IDistribution distribution, double uniformRandom)
         {
             var simulation = new Simulation();
-            for (int index = 0; index < distribution.CdfProbabilities.Count; index++)
+            for (byte index = 0; index < distribution.CdfProbabilities.Count; index++)
             {
                 if (uniformRandom < distribution.CdfProbabilities[index])
                 {

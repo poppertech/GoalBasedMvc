@@ -2,7 +2,7 @@
 {
     public struct Simulation
     {
-        public int DistributionIndex { get; set; }
+        public byte DistributionIndex { get; set; }
         public double Price { get; set; }
     }
 }

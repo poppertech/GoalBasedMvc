@@ -50,7 +50,7 @@ namespace GoalBasedMvc.Logic
         public NetworkViewModel GetNetworkByUrl(string url)
         {
             NetworkViewModel networkViewModel;
-            if(!_cache.TryGetValue(url, out networkViewModel)){
+            //if(!_cache.TryGetValue(url, out networkViewModel)){
                 var network = _networkRepository.GetNetworks(url).Single();
                 _network.Name = network.Name;
                 _network.Url = network.Url;
@@ -60,8 +60,8 @@ namespace GoalBasedMvc.Logic
                 _network.Calculate();
                 networkViewModel = _networkMapper.MapNetworkToViewModel(_network);
                 var entryOptions = new MemoryCacheEntryOptions();
-                _cache.Set(url, networkViewModel, entryOptions);
-            }
+            //    _cache.Set(url, networkViewModel, entryOptions);
+            //}
             return networkViewModel;
         }
 
