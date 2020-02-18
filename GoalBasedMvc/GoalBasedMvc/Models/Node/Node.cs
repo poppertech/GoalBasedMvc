@@ -12,7 +12,7 @@ namespace GoalBasedMvc.Models
         string NetworkUrl { get; set; }
         double? InitialPrice { get; set; }
         double? InitialInvestment { get; set; }
-        double? PortfolioWeight { get; set; }
+        double? PortfolioWeight { get; }
         bool IsPortfolioComponent { get; set; }
 
         IList<IDistribution> Distributions { get; set; }
@@ -22,9 +22,10 @@ namespace GoalBasedMvc.Models
         IList<double> Simulations { get; set; }
 
         INode Parent { get; set; }
+        IPortfolio Portfolio { set; }
     }
 
-    public class Node:INode
+    public class Node : INode
     {
         private readonly IStatistic _statistic;
         private readonly IHistogram _histogram;
@@ -46,13 +47,26 @@ namespace GoalBasedMvc.Models
         public string NetworkUrl { get; set; }
         public double? InitialPrice { get; set; }
         public double? InitialInvestment { get; set; }
-        public double? PortfolioWeight { get; set; }
         public bool IsPortfolioComponent { get; set; }
+
+        public double? PortfolioWeight
+        {
+            get
+            {
+                if (InitialInvestment.HasValue && Portfolio != null)
+                {
+                    return InitialInvestment / Portfolio.InitialValue;
+                }
+                return null;
+            }
+        }
 
         public IList<IDistribution> Distributions { get; set; }
 
-        public IStatistic Statistics {
-            get {
+        public IStatistic Statistics
+        {
+            get
+            {
                 _statistic.Init(Simulations);
                 return _statistic;
             }
@@ -72,6 +86,8 @@ namespace GoalBasedMvc.Models
         }
 
         public IList<double> Simulations { get; set; }
+
+        public IPortfolio Portfolio { private get; set; }
 
         public INode Parent { get; set; }
 

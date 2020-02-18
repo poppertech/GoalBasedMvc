@@ -16,7 +16,6 @@ namespace GoalBasedMvc.Models
         public string NetworkUrl { get; set; }
         public double? InitialPrice { get; set; }
         public double? InitialInvestment { get; set; }
-        public double? PortfolioWeight { get; set; }
         public bool IsPortfolioComponent { get; set; }
         public IList<DistributionRecord> Distributions { get; set; }
         public NodeRecord Parent { get; set; }

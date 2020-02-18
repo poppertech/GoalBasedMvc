@@ -17,11 +17,15 @@ namespace GoalBasedMvc.Models
 
     public class Network : INetwork
     {
-        private readonly IPortfolio _portfolio;
+        private readonly INodeSimulator _nodeSimulator;
 
-        public Network(IPortfolio portfolio)
+        public Network(
+            IPortfolio portfolio, 
+            INodeSimulator nodeSimulator
+            )
         {
-            _portfolio = portfolio;
+            Portfolio = portfolio;
+            _nodeSimulator = nodeSimulator;
         }
 
         public string Url { get; set; }
@@ -30,17 +34,29 @@ namespace GoalBasedMvc.Models
 
         public IDictionary<int, INode> Nodes { get; set; }
 
-        public IPortfolio Portfolio { get; private set; }
+        public IPortfolio Portfolio { get;}
 
         public IList<CashFlow> CashFlows { get; set; }
 
         public void Calculate()
         {
+            Nodes = _nodeSimulator.SimulateNodes(Nodes);
+
             IList<INode> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
-            _portfolio.Init(nodes, cashFlows);
-            Portfolio = _portfolio;
-            CashFlows = cashFlows;
+            IList<INode> portfolioNodes = nodes.Where(n => n.IsPortfolioComponent).ToList();
+            portfolioNodes = SetPortfolio(portfolioNodes, Portfolio);
+            Portfolio.Init(portfolioNodes, cashFlows);
+        }
+
+        private IList<INode> SetPortfolio(IList<INode> portfolioNodes, IPortfolio portfolio)
+        {
+            foreach (var node in portfolioNodes)
+            {
+                node.Portfolio = portfolio;
+            }
+
+            return portfolioNodes;
         }
 
     }

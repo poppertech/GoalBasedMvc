@@ -88,7 +88,6 @@ namespace GoalBasedMvc.Mappers
             node.NetworkUrl = record.NetworkUrl;
             node.InitialPrice = record.InitialPrice;
             node.InitialInvestment = record.InitialInvestment;
-            node.PortfolioWeight = record.PortfolioWeight;
             node.IsPortfolioComponent = record.IsPortfolioComponent;
             node.Distributions = record.Distributions.Select(r => _distributionFactory(r)).ToList();
             return node;

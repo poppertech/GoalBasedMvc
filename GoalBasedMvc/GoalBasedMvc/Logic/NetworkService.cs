@@ -19,7 +19,6 @@ namespace GoalBasedMvc.Logic
         private readonly INodeRepository _nodeRepository;
         private readonly ICashFlowRepository _cashFlowRepository;
         private readonly INetwork _network;
-        private readonly INodeSimulator _nodeSimulator;
         private readonly INetworkMapper _networkMapper;
         private readonly INodeMapper _nodeMapper;
         private readonly IMemoryCache _cache;
@@ -29,7 +28,6 @@ namespace GoalBasedMvc.Logic
             INodeRepository nodeRepository,
             ICashFlowRepository cashFlowRepository,
             INetwork network,
-            INodeSimulator nodeSimulator,
         INetworkMapper mapper,
             INodeMapper nodeMapper,
             IMemoryCache cache
@@ -39,7 +37,6 @@ namespace GoalBasedMvc.Logic
             _nodeRepository = nodeRepository;
             _cashFlowRepository = cashFlowRepository;
             _network = network;
-            _nodeSimulator = nodeSimulator;
             _networkMapper = mapper;
             _nodeMapper = nodeMapper;
             _cache = cache;
@@ -60,7 +57,7 @@ namespace GoalBasedMvc.Logic
                 _network.Url = network.Url;
                 var nodeRecords = _nodeRepository.GetNodesByNetworkId(network.Id);
                 var nodes = _nodeMapper.MapNodeRecordsToNodes(nodeRecords);
-                _network.Nodes = _nodeSimulator.SimulateNodes(nodes);
+                _network.Nodes = nodes;
                 _network.CashFlows = _cashFlowRepository.GetCashFlowsByNetworkId(network.Id);
                 _network.Calculate();
                 networkViewModel = _networkMapper.MapNetworkToViewModel(_network);
