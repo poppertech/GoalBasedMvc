@@ -12,17 +12,19 @@ namespace GoalBasedMvc.Logic
 
     public class PortfolioSimulator : IPortfolioSimulator
     {
-        private readonly IDictionary<int, double[,]> _cumulativeSimulations = new Dictionary<int, double[,]>();
-        private readonly IDictionary<int, double[,]> _valueSimulations = new Dictionary<int, double[,]>();
+        private IDictionary<int, double[,]> _cumulativeSimulations;
+        private IDictionary<int, double[,]> _valueSimulations;
 
         public IList<double> CalculateSuccessProbabilities(IList<INode> nodes, IList<CashFlow> cashFlows)
         {
+            _cumulativeSimulations = new Dictionary<int, double[,]>();
+            _valueSimulations = new Dictionary<int, double[,]>();
             var numSimulations = nodes[0].Simulations.Count / (cashFlows.Count - 1);
             InitSimulations(nodes, numSimulations, cashFlows.Count);
             var successCounts = CalculateSuccessCounts(nodes, cashFlows, numSimulations);
             var successProbabilities = CalculateSuccessProbabilities(successCounts, numSimulations, cashFlows.Count);
-            _cumulativeSimulations.Clear();
-            _valueSimulations.Clear();
+            _cumulativeSimulations = null;
+            _valueSimulations = null;
             return successProbabilities;
         }
 

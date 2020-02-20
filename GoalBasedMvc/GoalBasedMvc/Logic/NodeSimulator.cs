@@ -9,35 +9,31 @@ namespace GoalBasedMvc.Logic
 {
     public interface INodeSimulator
     {
-        IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodeDictionary);
+        IDictionary<int, IList<double>> SimulateNodes(IDictionary<int, INode> nodeDictionary);
     }
 
     public class NodeSimulator : INodeSimulator
     {
         private readonly IUniformRandomRepository _uniformRandomRepository;
-        private readonly IDictionary<int, IList<byte>> _simulationIndexes;
-        private readonly IDictionary<int, IList<double>> _simulationPrices;
+        private IDictionary<int, IList<byte>> _simulationIndexes;
 
         public NodeSimulator(IUniformRandomRepository uniformRandomRepository)
         {
             _uniformRandomRepository = uniformRandomRepository;
-            _simulationIndexes = new Dictionary<int, IList<byte>>();
-            _simulationPrices = new Dictionary<int, IList<double>>();
         }
 
-        public IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodeDictionary)
+        public IDictionary<int, IList<double>> SimulateNodes(IDictionary<int, INode> nodeDictionary)
         {
-            var keys = nodeDictionary.Keys.ToList();
-            for (int cnt = 0; cnt < nodeDictionary.Count; cnt++)
+            IDictionary<int, IList<double>> simulationPrices = new Dictionary<int, IList<double>>();
+            _simulationIndexes = new Dictionary<int, IList<byte>>();
+            foreach (var key in nodeDictionary.Keys)
             {
-                var node = nodeDictionary[keys[cnt]];
+                var node = nodeDictionary[key];
                 var uniformRandoms = _uniformRandomRepository.GetUniformRandoms();
-                node.Simulations = SimulateNode(node, uniformRandoms);
-                _simulationPrices[node.Id]= node.Simulations;
+                simulationPrices[node.Id] = SimulateNode(node, uniformRandoms);
             }
-            _simulationIndexes.Clear();
-            _simulationPrices.Clear();
-            return nodeDictionary;
+            _simulationIndexes = null;
+            return simulationPrices;
         }
 
         private IList<double> SimulateNode(INode node, IList<double> uniformRandoms)

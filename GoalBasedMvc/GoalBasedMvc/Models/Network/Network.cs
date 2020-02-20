@@ -40,13 +40,22 @@ namespace GoalBasedMvc.Models
 
         public void Calculate()
         {
-            Nodes = _nodeSimulator.SimulateNodes(Nodes);
-
+            Nodes = SimulateNodes(Nodes);
             IList<INode> nodes = Nodes.Values.ToList();
             IList<CashFlow> cashFlows = CashFlows.ToList();
             IList<INode> portfolioNodes = nodes.Where(n => n.IsPortfolioComponent).ToList();
             portfolioNodes = SetPortfolio(portfolioNodes, Portfolio);
             Portfolio.Init(portfolioNodes, cashFlows);
+        }
+
+        private IDictionary<int, INode> SimulateNodes(IDictionary<int, INode> nodes)
+        {
+            var nodeSimulations = _nodeSimulator.SimulateNodes(nodes);
+            foreach (var key in nodes.Keys)
+            {
+                nodes[key].Simulations = nodeSimulations[key];
+            }
+            return nodes;
         }
 
         private IList<INode> SetPortfolio(IList<INode> portfolioNodes, IPortfolio portfolio)
