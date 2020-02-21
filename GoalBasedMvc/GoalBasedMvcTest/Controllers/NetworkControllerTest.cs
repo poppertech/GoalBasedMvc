@@ -37,18 +37,18 @@ namespace GoalBasedMvcTest.Controllers
         {
             //arrange
             var url = "url";
-            var network = new Mock<INetwork>();
+            var networkViewModel = new NetworkViewModel { Url = url };
             var service = new Mock<INetworkService>();
-            service.Setup(s => s.GetNetworkByUrl(It.Is<string>(u=> u == url))).Returns(network.Object);
+            service.Setup(s => s.GetNetworkByUrl(It.Is<string>(u=> u == url))).Returns(networkViewModel);
 
             var controller = new NetworkController(service.Object, null);
 
             //act
             var response = (ViewResult)controller.Get(url);
-            var result = response.Model as INetwork;
+            var result = response.Model as NetworkViewModel;
 
             //assert
-            Assert.AreSame(network.Object, result);
+            Assert.AreEqual(url, result.Url);
             service.Verify(s => s.GetNetworkByUrl(It.Is<string>(u => u == url)));
         }
 
@@ -74,8 +74,9 @@ namespace GoalBasedMvcTest.Controllers
             network.Setup(n => n.Name).Returns(networkName);
             network.Setup(n => n.Url).Returns(networkUrl);
 
+            var networkViewModel = new NetworkViewModel { Url = networkUrl };
             var networkService = new Mock<INetworkService>();
-            networkService.Setup(s => s.GetNetworkByUrl(It.Is<string>(url => url == networkUrl))).Returns(network.Object);
+            networkService.Setup(s => s.GetNetworkByUrl(It.Is<string>(url => url == networkUrl))).Returns(networkViewModel);
 
             var controller = new NetworkController(networkService.Object, nodeService.Object);
 

@@ -66,16 +66,15 @@ namespace GoalBasedMvcTest.Logic
 
             var cashFlowRepository = new Mock<ICashFlowRepository>();
             cashFlowRepository.Setup(r => r.GetCashFlowsByNetworkId(It.Is<int>(id => id == networkId))).Returns(cashFlows);
-
             var network = new Mock<INetwork>();
 
-            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, network.Object, null, nodeMapper.Object);
+            var service = new NetworkService(repository.Object, nodeRepository.Object, cashFlowRepository.Object, null, nodeMapper.Object, null);
 
             //act
             var result = service.GetNetworkByUrl(url);
 
             //assert
-            Assert.AreSame(network.Object, result);
+            Assert.AreSame(null, result);
             network.Verify(n => n.Calculate());
         }
 

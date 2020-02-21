@@ -26,14 +26,15 @@ namespace GoalBasedMvcTest.Models
             child.Setup(c => c.Id).Returns(childId);
             child.Setup(c => c.Parent).Returns(parent.Object);
 
+            IDictionary<int, IList<double>> nodeSimulations = new Dictionary<int, IList<double>> { { parentId, new List<double>() }, { childId, new List<double>() } };
             IDictionary<int, INode> nodeDictionary = new Dictionary<int, INode> { { parentId, parent.Object }, { childId, child.Object } };
             IList<INode> nodes = new List<INode> { parent.Object, child.Object };
 
             var portfolio = new Mock<IPortfolio>();
             var nodeSimulator = new Mock<INodeSimulator>();
-            nodeSimulator.Setup(s => s.SimulateNodes(It.Is<IDictionary<int, INode>>(n => n == nodeDictionary))).Returns(nodeDictionary);
+            nodeSimulator.Setup(s => s.SimulateNodes(It.Is<IDictionary<int, INode>>(n => n == nodeSimulations))).Returns(nodeSimulations);
 
-            var network = new Network(nodeSimulator.Object, portfolio.Object);
+            var network = new Network(portfolio.Object, nodeSimulator.Object);
             network.CashFlows = cashFlows;
             network.Nodes = nodeDictionary;
 
@@ -45,7 +46,7 @@ namespace GoalBasedMvcTest.Models
             Assert.AreEqual(parentId, network.Nodes.Values.First().Id);
             Assert.AreEqual(childId, network.Nodes.Values.Last().Id);
             Assert.AreEqual(cashFlow.Id, network.CashFlows.First().Id);
-            portfolio.Verify(p => p.Init(ref It.Ref<IList<INode>>.IsAny, It.IsAny<IList<CashFlow>>()));
+            portfolio.Verify(p => p.Init(It.IsAny<IList<INode>>(), It.IsAny<IList<CashFlow>>()));
         }
     }
 }

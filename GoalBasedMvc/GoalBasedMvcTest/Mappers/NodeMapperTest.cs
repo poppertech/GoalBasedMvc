@@ -27,7 +27,6 @@ namespace GoalBasedMvcTest.Mappers
                 NetworkUrl = "networkurl",
                 InitialPrice = 2,
                 InitialInvestment = 3,
-                PortfolioWeight = 4,
                 IsPortfolioComponent = true,
                 Distributions = distributionRecords
             };
@@ -71,7 +70,6 @@ namespace GoalBasedMvcTest.Mappers
             Assert.AreEqual(nodeRecord1.NetworkUrl, result[1].NetworkUrl);
             Assert.AreEqual(nodeRecord1.InitialPrice, result[1].InitialPrice);
             Assert.AreEqual(nodeRecord1.InitialInvestment, result[1].InitialInvestment);
-            Assert.AreEqual(nodeRecord1.PortfolioWeight, result[1].PortfolioWeight);
             Assert.IsTrue(nodeRecord1.IsPortfolioComponent);
             Assert.AreEqual(distributionId, result[1].Distributions[0].Id);
             Assert.AreEqual(nodeRecord1.Id, result[2].Parent.Id);

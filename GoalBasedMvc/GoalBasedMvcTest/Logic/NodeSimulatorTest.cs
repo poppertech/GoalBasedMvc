@@ -18,7 +18,6 @@ namespace GoalBasedMvcTest.Logic
             var price = 2D;
             var distributionIndex = 0;
             var uniformRandoms = new[] { uniformRandom };
-            var simulation = new Simulation { Price = price, DistributionIndex = 0 };
 
             var cdfProbability = 1D;
             var cdfProbabilities = new[] { cdfProbability };
@@ -31,7 +30,7 @@ namespace GoalBasedMvcTest.Logic
             var parent = new Mock<INode>();
             parent.Setup(p => p.Id).Returns(parentId);
             parent.Setup(p => p.Distributions).Returns(distributions);
-            parent.Setup(p => p.Simulations).Returns(new[] { simulation });
+            parent.Setup(p => p.Simulations).Returns(new[] { price });
 
             var childId = 2;
             var child = new Mock<INode>();
@@ -50,8 +49,8 @@ namespace GoalBasedMvcTest.Logic
             var results = simulator.SimulateNodes(nodeDictionary);
 
             //assert
-            parent.VerifySet(p => p.Simulations = It.Is<IList<Simulation>>(s => s[0].Price == price && s[0].DistributionIndex == distributionIndex));
-            child.VerifySet(c => c.Simulations = It.Is<IList<Simulation>>(s => s[0].Price == price && s[0].DistributionIndex == distributionIndex));      
+            parent.VerifySet(p => p.Simulations = It.Is<IList<double>>(s => s[0] == price));
+            child.VerifySet(c => c.Simulations = It.Is<IList<double>>(s => s[0]== price));      
         }
     }
 }

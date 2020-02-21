@@ -12,9 +12,8 @@ namespace GoalBasedMvcTest.Models
         public void StatisticsOnSuccessReturnsStatistics()
         {
             //arrange
-            var price = 1;
-            var simulation = new Simulation {Price = price };
-            var simulations = new[] { simulation };
+            double price = 1;
+            var simulations = new[] { price };
 
             var statistic = new Mock<IStatistic>();
             var node = new Node(statistic.Object, null);
@@ -35,9 +34,8 @@ namespace GoalBasedMvcTest.Models
             var interval = 1;
             var datum = new HistogramDatum { Interval = interval };
             var data = new[] { datum };
-            var price = 2;
-            var simulation = new Simulation { Price = price };
-            var simulations = new[] { simulation };
+            double price = 2;
+            var simulations = new[] { price };
 
             var minimum = 3;
             var maximum = 4;

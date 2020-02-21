@@ -12,18 +12,13 @@ namespace GoalBasedMvcTest.Models
         public void InitOnSuccessReturnsCorrectProbabilities()
         {
             //arrange
-            var simulation1 = new Simulation { Price = 117.506039533933 };
-            var simulation2 = new Simulation { Price = 127.005485296386 };
-            var simulation3 = new Simulation { Price = 119.64969234571 };
-            var simulation4 = new Simulation { Price = 113.754221009641 };
-            var simulations = new[] { simulation1, simulation2, simulation3, simulation4 };
+            var simulations = new[] { 117.506039533933, 127.005485296386, 119.64969234571, 113.754221009641 };
             var node = new Node(null, null)
             {
                 InitialInvestment = 200000,
                 InitialPrice = 100,
                 IsPortfolioComponent = true,
-                Simulations = simulations,
-                PortfolioWeight = 1
+                Simulations = simulations
             };
             IList<INode> nodes = new[] { node };
 
@@ -34,10 +29,10 @@ namespace GoalBasedMvcTest.Models
 
             var expectedSimulations = new double[4]
             {
-                (simulation1.Price / node.InitialPrice.Value - 1)*100,
-                (simulation2.Price / node.InitialPrice.Value - 1)*100,
-                (simulation3.Price / node.InitialPrice.Value - 1)*100,
-                (simulation4.Price / node.InitialPrice.Value - 1)*100
+                (simulations[0] / node.InitialPrice.Value - 1)*100,
+                (simulations[1] / node.InitialPrice.Value - 1)*100,
+                (simulations[2] / node.InitialPrice.Value - 1)*100,
+                (simulations[3] / node.InitialPrice.Value - 1)*100
             };
 
             var statistics = new Mock<IStatistic>();
@@ -54,19 +49,12 @@ namespace GoalBasedMvcTest.Models
                 It.IsAny<int>()))
                 .Returns(data);
 
-            var portfolio = new Portfolio(statistics.Object, histogram.Object);
+            var portfolio = new Portfolio(statistics.Object, histogram.Object, null);
 
             //act
-            portfolio.Init(ref nodes, cashFlows);
+            portfolio.Init(nodes, cashFlows);
 
             //assert
-            Assert.AreEqual(node.InitialInvestment, node.ValueSimulations[0, 0]);
-            Assert.AreEqual(node.InitialInvestment, node.ValueSimulations[1, 0]);
-            Assert.AreEqual(235012.0791, node.ValueSimulations[0, 1], .01);
-            Assert.AreEqual(254010.9706, node.ValueSimulations[1, 1], .01);
-            Assert.AreEqual(223759.3773, node.ValueSimulations[0, 2], .01);
-            Assert.AreEqual(234346.1748, node.ValueSimulations[1, 2], .01);
-
             Assert.AreEqual(1, portfolio.SuccessProbabilities[0]);
             Assert.AreEqual(1, portfolio.SuccessProbabilities[1]);
             Assert.AreEqual(1, portfolio.SuccessProbabilities[2]);
