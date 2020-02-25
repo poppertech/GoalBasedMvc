@@ -53,6 +53,26 @@ namespace GoalBasedMvcTest.Controllers
         }
 
         [TestMethod]
+        public void GetNodesOnSuccessReturnsNetwork()
+        {
+            //arrange 
+            var url = "url";
+            var network = new NetworkViewModel { Url = url};
+
+            var service = new Mock<INetworkService>();
+            service.Setup(s => s.GetNetworkByUrl(It.Is<string>(u => u == url))).Returns(network);
+
+            var controller = new NetworkController(service.Object, null);
+
+            //act
+            var response = (ViewResult)controller.Nodes(url);
+            var result = response.Model as NetworkViewModel;
+
+            //assert
+            Assert.AreEqual(url, result.Url);
+        }
+
+        [TestMethod]
         public void NodeOnSuccessReturnsNode()
         {
             //arrange
@@ -66,23 +86,22 @@ namespace GoalBasedMvcTest.Controllers
             var nodeService = new Mock<INodeService>();
             nodeService.Setup(s => s.GetNodeByUrl(It.Is<string>(url => url == nodeUrl), It.Is<string>(url => url == networkUrl))).Returns(nodeRecord);
 
-            var node = new Mock<INode>();
-            node.SetupAllProperties();
-            var dictionary = new SortedDictionary<int, INode> { { nodeId, node.Object } };
-            var network = new Mock<INetwork>();
-            network.Setup(n => n.Nodes).Returns(dictionary);
-            network.Setup(n => n.Name).Returns(networkName);
-            network.Setup(n => n.Url).Returns(networkUrl);
+            var node = new NodeViewModel { Id = nodeId };
+            var dictionary = new Dictionary<int, NodeViewModel> { { nodeId, node } };
+            var network = new NetworkViewModel {
+                Url = networkUrl,
+                Name = networkName,
+                Nodes = dictionary
+            };
 
-            var networkViewModel = new NetworkViewModel { Url = networkUrl };
             var networkService = new Mock<INetworkService>();
-            networkService.Setup(s => s.GetNetworkByUrl(It.Is<string>(url => url == networkUrl))).Returns(networkViewModel);
+            networkService.Setup(s => s.GetNetworkByUrl(It.Is<string>(url => url == networkUrl))).Returns(network);
 
             var controller = new NetworkController(networkService.Object, nodeService.Object);
 
             //act
             var result = (ViewResult)controller.Node(networkUrl, nodeUrl);
-            var nodeResult = (INode)result.Model;
+            var nodeResult = (NodeViewModel)result.Model;
 
             Assert.AreEqual("Node", result.ViewName);
             Assert.AreEqual(networkName, nodeResult.NetworkName);
