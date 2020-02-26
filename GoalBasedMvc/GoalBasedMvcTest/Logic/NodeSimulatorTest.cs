@@ -30,7 +30,6 @@ namespace GoalBasedMvcTest.Logic
             var parent = new Mock<INode>();
             parent.Setup(p => p.Id).Returns(parentId);
             parent.Setup(p => p.Distributions).Returns(distributions);
-            parent.Setup(p => p.Simulations).Returns(new[] { price });
 
             var childId = 2;
             var child = new Mock<INode>();
@@ -49,8 +48,8 @@ namespace GoalBasedMvcTest.Logic
             var results = simulator.SimulateNodes(nodeDictionary);
 
             //assert
-            parent.VerifySet(p => p.Simulations = It.Is<IList<double>>(s => s[0] == price));
-            child.VerifySet(c => c.Simulations = It.Is<IList<double>>(s => s[0]== price));      
+            Assert.AreEqual(results[parentId][0], price);
+            Assert.AreEqual(results[childId][0], price);   
         }
     }
 }
