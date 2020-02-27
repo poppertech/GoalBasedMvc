@@ -46,6 +46,20 @@ namespace GoalBasedMvc.Mappers
             return viewModels;
         }
 
+        public IDictionary<int, INode> MapNodeRecordsToNodes(IDictionary<int, NodeRecord> records)
+        {
+            var nodes = new SortedDictionary<int, INode>();
+            foreach (var key in records.Keys)
+            {
+                var record = records[key];
+                var node = MapNodeRecordToNode(record);
+                if(records[key].Parent != null)
+                    node.Parent = nodes[records[key].Parent.Id];
+                nodes.Add(key, node);
+            }
+            return nodes;
+        }
+
         private NodeViewModel MapNodeToViewModel(INode node)
         {
             var viewModel = new NodeViewModel();
@@ -64,20 +78,6 @@ namespace GoalBasedMvc.Mappers
             return viewModel;
         }
 
-        public IDictionary<int, INode> MapNodeRecordsToNodes(IDictionary<int, NodeRecord> records)
-        {
-            var nodes = new SortedDictionary<int, INode>();
-            foreach (var key in records.Keys)
-            {
-                var record = records[key];
-                var node = MapNodeRecordToNode(record);
-                if(records[key].Parent != null)
-                    node.Parent = nodes[records[key].Parent.Id];
-                nodes.Add(key, node);
-            }
-            return nodes;
-        }
-
         private INode MapNodeRecordToNode(NodeRecord record)
         {
             var node = _nodeFactory();
@@ -92,5 +92,6 @@ namespace GoalBasedMvc.Mappers
             node.Distributions = record.Distributions.Select(r => _distributionFactory(r)).ToList();
             return node;
         }
+
     }
 }

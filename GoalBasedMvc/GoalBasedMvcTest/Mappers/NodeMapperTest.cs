@@ -12,6 +12,77 @@ namespace GoalBasedMvcTest.Mappers
     public class NodeMapperTest
     {
         [TestMethod]
+        public void MapNodesToViewModelsOnSuccessReturnsViewModels()
+        {
+            //arrange
+            var distribution = new Mock<IDistribution>();
+            IList<IDistribution> distributions = new[] { distribution.Object };
+            var statistics = new Mock<IStatistic>();
+            var parentMock = new Mock<INode>();
+            parentMock.Setup(n => n.Id).Returns(1);
+            parentMock.Setup(n => n.Name).Returns("name");
+            parentMock.Setup(n => n.NetworkName).Returns("networkname");
+            parentMock.Setup(n => n.NetworkUrl).Returns("networkurl");
+            parentMock.Setup(n => n.InitialPrice).Returns(2);
+            parentMock.Setup(n => n.InitialInvestment).Returns(3);
+            parentMock.Setup(n => n.PortfolioWeight).Returns(4);
+            parentMock.Setup(n => n.IsPortfolioComponent).Returns(true);
+            parentMock.Setup(n => n.Distributions).Returns(distributions);
+            parentMock.Setup(n => n.Statistics).Returns(statistics.Object);
+            parentMock.Setup(n => n.Histogram).Returns(new List<HistogramDatum>());
+
+            var childMock = new Mock<INode>();
+            childMock.Setup(n => n.Id).Returns(2);
+            childMock.Setup(n => n.Parent).Returns(parentMock.Object);
+            childMock.Setup(n => n.Distributions).Returns(distributions);
+            childMock.Setup(n => n.Statistics).Returns(statistics.Object);
+
+            var parent = parentMock.Object;
+            var child = childMock.Object;
+            IDictionary<int, INode> nodes = new Dictionary<int, INode>{
+                { parent.Id, parent},
+                { child.Id, child}
+            };
+
+            var distributionViewModel = new DistributionViewModel();
+            var distributionViewModels = new[] { distributionViewModel };
+            var distributionMapper = new Mock<IDistributionMapper>();
+            distributionMapper.Setup(m => m.MapDistributionsToViewModels(
+                It.Is<IList<IDistribution>>(list => list == distributions)))
+                .Returns(distributionViewModels);
+
+            var statisticsViewModel = new StatisticViewModel();
+            var statisticsMapper = new Mock<IStatisticMapper>();
+            statisticsMapper.Setup(m => m.MapStatisticToViewModel(
+                It.Is<IStatistic>(s => s == statistics.Object)))
+                .Returns(statisticsViewModel);
+
+            var nodeMapper = new NodeMapper(null, null, distributionMapper.Object, statisticsMapper.Object);
+
+            //act
+            var results = nodeMapper.MapNodesToViewModels(nodes);
+            var parentResult = results[parent.Id];
+            var childResult = results[child.Id];
+
+            //assert
+            Assert.AreEqual(parent.Id, parentResult.Id);
+            Assert.AreEqual(parent.Name, parentResult.Name);
+            Assert.AreEqual(parent.Url, parentResult.Url);
+            Assert.AreEqual(parent.NetworkName, parentResult.NetworkName);
+            Assert.AreEqual(parent.NetworkUrl, parentResult.NetworkUrl);
+            Assert.AreEqual(parent.InitialPrice, parentResult.InitialPrice);
+            Assert.AreEqual(parent.InitialInvestment, parentResult.InitialInvestment);
+            Assert.AreEqual(parent.PortfolioWeight, parentResult.PortfolioWeight);
+            Assert.IsTrue(parentResult.IsPortfolioComponent);
+            Assert.AreSame(distributionViewModels, parentResult.Distributions);
+            Assert.AreSame(statisticsViewModel, parentResult.Statistics);
+            Assert.AreSame(parent.Histogram, parentResult.Histogram);
+
+            Assert.AreEqual(child.Id, childResult.Id);
+            Assert.AreEqual(parent.Id, childResult.Parent.Id);
+        }
+
+        [TestMethod]
         public void MapNodeRecordsToNodesOnSuccessMapsProperties()
         {
             //arrange
