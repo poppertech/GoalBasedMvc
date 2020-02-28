@@ -99,10 +99,9 @@ namespace GoalBasedMvc.Models
         public double Skew { get; }
         public double Kurt { get; }
 
-        [JsonIgnore]
-        public virtual IList<double> CdfProbabilities { get; }
+        public IList<double> CdfProbabilities { get; }
 
-        public virtual double GetPrice(double uniformRandom, int index)
+        public double GetPrice(double uniformRandom, int index)
         {
             var mSim = Slopes[index];
             var bSim = Intercepts[index];
