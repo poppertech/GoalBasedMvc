@@ -45,7 +45,11 @@ namespace GoalBasedMvcTest.Models
             var distributions = new[] { distribution.Object };
 
             var histogram = new Mock<IHistogram>();
-            histogram.Setup(h => h.GetHistogramData(It.Is<HistogramContext>(c => c.GlobalXMin == minimum && c.GlobalXMax == maximum && c.Simulations[0] == price), It.IsAny<int>())).Returns(data);
+            histogram.Setup(h => h.GetHistogramData(
+                    It.Is<HistogramContext>(c => c.GlobalXMin == minimum && c.GlobalXMax == maximum && c.Simulations[0] == price), 
+                    It.IsAny<int>()))
+                .Returns(data);
+
             var node = new Node(null, histogram.Object);
             node.Simulations = simulations;
             node.Distributions = distributions;
@@ -55,6 +59,40 @@ namespace GoalBasedMvcTest.Models
 
             //assert
             Assert.AreEqual(interval, result[0].Interval);
+        }
+
+        [TestMethod]
+        public void PortfolioWeightOnSuccessReturnsCorrectResult()
+        {
+            //arrange
+            var portfolioInitialValue = 1D;
+            var portfolio = new Mock<IPortfolio>();
+            portfolio.Setup(p => p.InitialValue).Returns(portfolioInitialValue);
+
+            var node = new Node(null, null);
+            node.InitialInvestment = 2D;
+            node.Portfolio = portfolio.Object;
+
+            //act
+            var result = node.PortfolioWeight;
+
+            //assert
+            Assert.AreEqual(result, 2D);
+        }
+
+        [TestMethod]
+        public void PortfolioWeightWhenPortfolioIsNullReturnsNull()
+        {
+            //arrange
+            var node = new Node(null, null);
+            node.InitialInvestment = 2D;
+            node.Portfolio = null;
+
+            //act
+            var result = node.PortfolioWeight;
+
+            //assert
+            Assert.IsNull(result);
         }
     }
 }

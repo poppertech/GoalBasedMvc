@@ -1,4 +1,5 @@
-﻿using GoalBasedMvc.Models;
+﻿using GoalBasedMvc.Logic;
+using GoalBasedMvc.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
@@ -12,61 +13,62 @@ namespace GoalBasedMvcTest.Models
         public void InitOnSuccessReturnsCorrectProbabilities()
         {
             //arrange
-            var simulations = new[] { 117.506039533933, 127.005485296386, 119.64969234571, 113.754221009641 };
-            var node = new Node(null, null)
-            {
-                InitialInvestment = 200000,
-                InitialPrice = 100,
-                IsPortfolioComponent = true,
-                Simulations = simulations
-            };
-            IList<INode> nodes = new[] { node };
+            int expectedPortfolioSimulation = 10; // int avoids floating point errors
+            var simulation = 110D;
+            var simulations = new[] { simulation };
 
-            var cashFlow0 = new CashFlow { Cost = 0 };
-            var cashFlow1 = new CashFlow { Cost = 48000 };
-            var cashFlow2 = new CashFlow { Cost = 49200 };
-            var cashFlows = new[] { cashFlow0, cashFlow1, cashFlow2 };
+            var nodeInitialInvestment = 1000D;
+            var nodeInitialPrice = 100D;
+            var node = new Mock<INode>();
+            node.Setup(n => n.InitialInvestment).Returns(nodeInitialInvestment);
+            node.Setup(n => n.InitialPrice).Returns(nodeInitialPrice);
+            node.Setup(n => n.Simulations).Returns(simulations);
+            node.Setup(n => n.PortfolioWeight).Returns(1);
+            var nodes = new[] { node.Object };
 
-            var expectedSimulations = new double[4]
-            {
-                (simulations[0] / node.InitialPrice.Value - 1)*100,
-                (simulations[1] / node.InitialPrice.Value - 1)*100,
-                (simulations[2] / node.InitialPrice.Value - 1)*100,
-                (simulations[3] / node.InitialPrice.Value - 1)*100
-            };
+            var cashFlowId = 1;
+            var cashFlow = new CashFlow { Id = cashFlowId };
+            var cashFlows = new[] { cashFlow };
+
+            var successProbability = .5D;
+            var successProbabilities = new[] { successProbability };
+            var portfolioSimulator = new Mock<IPortfolioSimulator>();
+            portfolioSimulator.Setup(ps => ps.CalculateSuccessProbabilities(
+                It.Is<IList<INode>>(n => n[0].InitialInvestment == nodeInitialInvestment),
+                It.Is<IList<CashFlow>>(cf => cf[0].Id == cashFlowId)))
+                .Returns(successProbabilities);
 
             var statistics = new Mock<IStatistic>();
 
-            var datum = new HistogramDatum { Interval = 1 };
-            var data = new[] { datum };
+            var interval = 3D;
+            var histogramDatum = new HistogramDatum {Interval = interval};
+            var histogramData = new[] { histogramDatum };
             var histogram = new Mock<IHistogram>();
             histogram.Setup(h => h.GetHistogramData(
-                It.Is<HistogramContext>(ctx => 
-                ctx.GlobalXMin == expectedSimulations[3] &&
-                ctx.GlobalXMax == expectedSimulations[1] &&
-                ctx.Simulations[0] == expectedSimulations[0] &&
-                ctx.Simulations[2] == expectedSimulations[2]),
-                It.IsAny<int>()))
-                .Returns(data);
+                    It.Is<HistogramContext>(
+                        ctx => (int)ctx.Simulations[0] == expectedPortfolioSimulation &&
+                        (int)ctx.GlobalXMin == expectedPortfolioSimulation &&
+                        (int)ctx.GlobalXMax == expectedPortfolioSimulation),
+                    It.IsAny<int>()))
+                .Returns(histogramData);
 
-            var portfolio = new Portfolio(statistics.Object, histogram.Object, null);
+            var portfolio = new Portfolio(statistics.Object, histogram.Object, portfolioSimulator.Object);
 
             //act
             portfolio.Init(nodes, cashFlows);
+            var initialValueResult = portfolio.InitialValue;
+            var statisticsResult = portfolio.Statistics;
+            var histogramResult = portfolio.Histogram;
+            var successProbabilitiesResult = portfolio.SuccessProbabilities;
 
             //assert
-            Assert.AreEqual(1, portfolio.SuccessProbabilities[0]);
-            Assert.AreEqual(1, portfolio.SuccessProbabilities[1]);
-            Assert.AreEqual(1, portfolio.SuccessProbabilities[2]);
-
-            Assert.AreSame(portfolio.Statistics, statistics.Object);
-            statistics.Verify(s => s.Init(It.Is<IList<double>>(
-                sims => sims[0] == expectedSimulations[0] &&
-                sims[1] == expectedSimulations[1] &&
-                sims[2] == expectedSimulations[2] &&
-                sims[3] == expectedSimulations[3])));
-
-            Assert.AreEqual(datum.Interval, portfolio.Histogram[0].Interval);
+            Assert.AreEqual(nodeInitialInvestment, initialValueResult);
+            Assert.AreSame(statistics.Object, statisticsResult);
+            statistics.Verify(s => s.Init(
+                It.Is<IList<double>>(sim => (int)sim[0] == expectedPortfolioSimulation)
+                )); 
+            Assert.AreEqual(interval, histogramResult[0].Interval);
+            Assert.AreEqual(successProbability, successProbabilitiesResult[0]);
         }
     }
 }
