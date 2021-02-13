@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goalbasedmvc
+spec:
+  containers:
+  - name: goalbasedmvc
+    image: poppertech/goalbasedmvc:latest
+  imagePullSecrets:
+  - name: regcred
+
+  # expose via: kubectl port-forward goalbasedmvc 80:80

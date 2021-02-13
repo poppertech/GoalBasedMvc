@@ -1,10 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: private-reg
+  name: goalbasedmvc
 spec:
   containers:
-  - name: private-reg-container
+  - name: goalbasedmvc
     image: poppertech/goalbasedmvc:latest
   imagePullSecrets:
   - name: regcred
+  
+
+
