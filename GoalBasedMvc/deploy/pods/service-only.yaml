@@ -1,13 +1,18 @@
 apiVersion: v1
-kind: Pod
+kind: Service
 metadata:
   name: goalbasedmvc
+  labels:
+    app: goalbasedmvc  
 spec:
-  containers:
-  - name: goalbasedmvc
-    image: poppertech/goalbasedmvc:latest
-  imagePullSecrets:
-  - name: regcred
+  type: NodePort
+  selector:
+    app: goalbasedmvc
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001
   
-
+# apply: kubectl apply -f deploy/pods/service-only.yaml
 
