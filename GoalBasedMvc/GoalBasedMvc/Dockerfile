@@ -8,3 +8,5 @@
 # docker build -f C:/Users/bwynn/Documents/GoalBasedMvc/GoalBasedMvc/GoalBasedMvc/Dockerfile -t goalbasedmvc C:/Users/bwynn/Documents/GoalBasedMvc/GoalBasedMvc/GoalBasedMvc
 # docker run -d -p 80:80 --name=goalbasedmvc goalbasedmvc
 # docker exec -it goalbasedmvc bash
+# docker tag goalbasedmvc:latest poppertech/goalbasedmvc:latest
+# docker push poppertech/goalbasedmvc:latest

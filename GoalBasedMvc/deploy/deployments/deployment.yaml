@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-configmap
+  labels: 
+    app: goalbasedmvc
+data:
+  goalbaseddb: ""
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goalbasedmvc
+  labels:
+    app: goalbasedmvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goalbasedmvc
+  template:
+    metadata:
+      labels:
+        app: goalbasedmvc
+    spec:
+      containers:
+      - name: goalbasedmvc
+        image: poppertech/goalbasedmvc:latest
+        env:
+        - name: ConnectionStrings__Debug
+          valueFrom:
+            configMapKeyRef:
+              name: env-configmap
+              key: goalbaseddb
+      imagePullSecrets:
+      - name: regcred
