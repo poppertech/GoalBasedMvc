@@ -9,6 +9,24 @@ data:
 
 ---
 
+apiVersion: v1
+kind: Service
+metadata:
+  name: goalbasedmvc
+  labels:
+    app: goalbasedmvc  
+spec:
+  type: NodePort
+  selector:
+    app: goalbasedmvc
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,24 +54,6 @@ spec:
               key: goalbaseddb
       imagePullSecrets:
       - name: regcred
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: goalbasedmvc
-  labels:
-    app: goalbasedmvc  
-spec:
-  type: NodePort
-  selector:
-    app: goalbasedmvc
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30001
 
 # kubectl apply -f C:/Users/bwynn/Documents/GoalBasedMvc/GoalBasedMvc/deploy/deployments/deployment.yaml
 # http://localhost:30001/
