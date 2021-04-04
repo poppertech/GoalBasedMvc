@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goalbasedmvc
+  labels: 
+    app: goalbasedmvc
+spec:
+  containers:
+  - name: goalbasedmvc
+    image: poppertech/goalbasedmvc:latest
+  imagePullSecrets:
+  - name: regcred
+
+# apply: kubectl apply -f deploy/pods/pod-only.yaml
+# expose via port forwarding: kubectl port-forward goalbasedmvc 80:80
+# expose via proxy: 
+#   kubectl proxy
+#   http://localhost:8001/api/v1/namespaces/default/pods/goalbasedmvc/proxy/
+# expose via service (assigns arbitrary node port): 
+#   kubectl expose pod goalbasedmvc --port=80 --name=goalbasedmvc --type=NodePort
+# expose via service (ClusterIP) and proxy
+#   kubectl expose pod goalbasedmvc --port=80 --name=goalbasedmvc
+#   kubectl proxy
+#   http://localhost:8001/api/v1/namespaces/default/services/goalbasedmvc/proxy/

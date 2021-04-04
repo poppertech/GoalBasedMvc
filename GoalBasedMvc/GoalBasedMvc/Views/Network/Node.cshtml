@@ -1,0 +1,304 @@
+﻿@model GoalBasedMvc.Models.NodeViewModel
+
+@section Scripts{
+
+    <script>
+        $(function () {
+
+            var selectedNode = @Html.Raw(Json.Serialize(Model));
+            var distributionChart;
+
+            init();
+
+            function init() {
+                Chart.defaults.scale.gridLines.display = false;
+                $('#selectDistribution').change(selectDistributionByIndex);
+                setNodeStatistics(selectedNode);
+                setSelectDistributionOptions(selectedNode);
+                selectDistributionByIndex();
+                createNodeHistogramGraph();
+            }
+
+            function setNodeStatistics(selectedNode) {
+                $('#nodeMean').html(selectedNode.statistics.mean.toFixed(3));
+                $('#nodeStdev').html(selectedNode.statistics.stdev.toFixed(3));
+                $('#nodeSkew').html(selectedNode.statistics.skew.toFixed(3));
+                $('#nodeKurt').html(selectedNode.statistics.kurt.toFixed(3));
+            }
+
+            function selectDistributionByIndex() {
+                var index = $('#selectDistribution').val();
+                selectedDistribution = selectedNode.distributions[index];
+                $('#distributionMean').html(selectedDistribution.mean.toFixed(3));
+                $('#distributionStdev').html(selectedDistribution.stdev.toFixed(3));
+                $('#distributionSkew').html(selectedDistribution.skew.toFixed(3));
+                $('#distributionKurt').html(selectedDistribution.kurt.toFixed(3));
+                $("p[data-distribution-field='minimum']").text(selectedDistribution.minimum);
+                $("p[data-distribution-field='worst']").text(selectedDistribution.worst);
+                $("p[data-distribution-field='likely']").text(selectedDistribution.likely);
+                $("p[data-distribution-field='best']").text(selectedDistribution.best);
+                $("p[data-distribution-field='maximum']").text(selectedDistribution.maximum);
+
+                if (distributionChart) {
+                    var label = ["Minimum", "Worst", "Likely", "Best", "Maximum"];
+                    var distributionData = getDistributionGraphData(selectedDistribution);
+                    removeGraphData(distributionChart);
+                    addGraphData(distributionChart, distributionData, label);
+                } else {
+                    createDistributionGraph(selectedDistribution);
+                }
+
+            }
+
+            function setSelectDistributionOptions(selectedNode) {
+                $('#selectDistribution').empty();
+                if (!selectedNode.parent) {
+                    $('<option>Distribution</option>').val(0).appendTo('#selectDistribution');
+                }else{
+                    $('<option>Left Tail</option>').val(0).appendTo('#selectDistribution');
+                    $('<option>Left Normal</option>').val(1).appendTo('#selectDistribution');
+                    $('<option>Right Normal</option>').val(2).appendTo('#selectDistribution');
+                    $('<option>Right Tail</option>').val(3).appendTo('#selectDistribution');
+                }
+            }
+
+            function createDistributionGraph(selectedDistribution) {
+                var distributionData = getDistributionGraphData(selectedDistribution);
+                var distributionCtx = document.getElementById("distributionChart").getContext("2d");
+                distributionChart = new Chart(distributionCtx, {
+                    type: 'scatter',
+                    data: {
+                        labels: ["Minimum", "Worst", "Likely", "Best", "Maximum"],
+                        datasets: [{
+                            label: 'Distribution',
+                            showLine: true,
+                            lineTension: 0,
+                            data: distributionData
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                type: 'linear',
+                                position: 'bottom',
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold'
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+            function removeGraphData(chart) {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+            }
+
+            function addGraphData(chart, data, labels) {
+                chart.data.labels = labels
+                chart.data.datasets[0].data = data;
+                chart.update();
+            }
+
+            function getDistributionGraphData(distribution) {
+                return [
+                    { x: distribution.minimum, y: 0 },
+                    { x: distribution.worst, y: distribution.heightWorst },
+                    { x: distribution.likely, y: distribution.heightLikely },
+                    { x: distribution.best, y: distribution.heightBest },
+                    { x: distribution.maximum, y: 0 }
+                ];
+            }
+
+            function createNodeHistogramGraph() {
+                var labels = selectedNode.histogram.map(function (point) { return point.interval.toFixed(0) });
+                var data = selectedNode.histogram.map(function (point) { return point.frequency });
+                var goalAttainmentCtx = document.getElementById("nodeHistogramChart").getContext("2d");
+
+                goalAttainmentChart = new Chart(goalAttainmentCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency',
+                            data: data
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                gridLines: {
+                                    drawBorder: false,
+                                },
+                                ticks: {
+                                    display: false
+                                }
+                            }],
+                            xAxes: [{
+                                ticks: {
+                                    fontSize: 14,
+                                    fontStyle: 'bold',
+                                    autoSkip: true,
+                                    maxTicksLimit: 20
+                                }
+                            }]
+                        }
+                    }
+                });
+            }
+
+         });
+    </script>
+
+}
+
+<div class="panel panel-primary">
+
+    <ol class="breadcrumb">
+        <li><a href="/">Networks</a></li>
+        <li>@Html.ActionLink(Model.NetworkName, "Get", "Network", new { url = Model.NetworkUrl })</li>
+        <li>@Html.ActionLink("Nodes", "Nodes", "Network", new { url = Model.NetworkUrl })</li>
+        <li class="active">@Model.Name</li>
+    </ol>
+
+    <div class="panel-body">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <canvas id="nodeHistogramChart"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Average</th>
+                                        <th>Volatility</th>
+                                        <th>Skewness</th>
+                                        <th>Kurtosis</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="nodeMean">@Model.Statistics.Mean</td>
+                                        <td id="nodeStdev">@Model.Statistics.Stdev</td>
+                                        <td id="nodeSkew">@Model.Statistics.Skew</td>
+                                        <td id="nodeKurt">@Model.Statistics.Kurt</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h5 class="panel-title">Distributions</h5>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-8 col-sm-6 col-md-4">
+                            <select id="selectDistribution" class="form-control"></select>
+                        </div>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <div class="row">
+                            <div class="col-sm-2 col-sm-offset-1">
+                                <div class="form-group">
+                                    <label>Minimum</label>
+                                    <p data-distribution-field="minimum" class="form-control-static"></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Worst</label>
+                                    <p data-distribution-field="worst" class="form-control-static"></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Likely</label>
+                                    <p data-distribution-field="likely" class="form-control-static"></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Best</label>
+                                    <p data-distribution-field="best" class="form-control-static"></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <label>Maximum</label>
+                                    <p data-distribution-field="maximum" class="form-control-static"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <canvas id="distributionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-10 col-md-offset-1">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Average</th>
+                                                <th>Volatility</th>
+                                                <th>Skewness</th>
+                                                <th>Kurtosis</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td id="distributionMean"></td>
+                                                <td id="distributionStdev"></td>
+                                                <td id="distributionSkew"></td>
+                                                <td id="distributionKurt"></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

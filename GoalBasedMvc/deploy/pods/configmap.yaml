@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-configmap
+  labels: 
+    app: goalbasedmvc-envtest
+data:
+  goalbaseddb: ""
+
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: goalbasedmvc-envtest
+  labels: 
+    app: goalbasedmvc-envtest
+spec:
+  containers:
+  - name: goalbasedmvc-envtest
+    image: poppertech/goalbasedmvc-envtest:latest
+    env:
+    - name: ConnectionStrings__Debug
+      valueFrom:
+        configMapKeyRef:
+          name: env-configmap
+          key: goalbaseddb
+  imagePullSecrets:
+  - name: regcred
+
+# apply: kubectl apply -f deploy/pods/configmap.yaml
+# expose via port forwarding: kubectl port-forward goalbasedmvc-envtest 80:80

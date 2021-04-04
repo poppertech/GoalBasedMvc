@@ -1,0 +1,50 @@
+﻿@model GoalBasedMvc.Models.NetworkViewModel
+
+<div class="panel panel-primary">
+
+    <ol class="breadcrumb">
+        <li><a href="/">Networks</a></li>
+        <li>@Html.ActionLink(Model.Name, "Get", "Network", new {url = Model.Url})</li>
+        <li class="active">Nodes</li>
+    </ol>
+
+    <form class="panel-body">
+
+        <div class="panel panel-info">
+
+            <div class="panel-heading">
+                <h3 class="panel-title">Nodes</h3>
+            </div>
+
+            <div class="table-responsive">
+                <table id="tblNodes" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Parent</th>
+                            <th>Initial Investment</th>
+                            <th>Initial Price</th>
+                            <th>Portfolio Component?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var node in Model.Nodes.Values)
+                        {
+                            <tr>
+                                <td>@Html.ActionLink(node.Name, "Node", "Network", new {networkUrl = Model.Url, nodeUrl = node.Url })</td>
+                                <td>@node.Parent?.Name</td>
+                                <td>@node.InitialInvestment</td>
+                                <td>@node.InitialPrice</td>
+                                <td>@node.IsPortfolioComponent</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </form>
+
+</div>
+
